@@ -1,6 +1,5 @@
 #!/bin/bash
 
-VAR_cfgdir="config"
 VAR_target="pc"
 VAR_mode='install'
 VAR_project="tech-doc"
@@ -96,8 +95,8 @@ fi
 # 系统安装过程
 # #############################################################################
 
-# 使用默认env更新/.env
-cp -fv ${VAR_cfgdir}/env .env
+# 使用默认env更新/.env， docker-compose需要使用.env
+cp -fv config/env .env
 datadir_cfgitem=$(cat .env | grep "ROOTFS_DATA=" | sed 's/\xd//')
 datadir=${datadir_cfgitem:12}
 if [ ! -d "${datadir}" ]; then 
@@ -117,9 +116,9 @@ cp -fv dummy.js index.js
 
 # 提取docker-compose.yml
 if [ "${VAR_target}" == "pc" ]; then
-    cp -fv ${VAR_cfgdir}/docker-compose_pc.yml docker-compose.yml
+    cp -fv config/docker-compose_pc.yml docker-compose.yml
 else
-    cp -fv ${VAR_cfgdir}/docker-compose_rpi.yml docker-compose.yml
+    cp -fv config/docker-compose_rpi.yml docker-compose.yml
 fi
 
 # 重建容器
