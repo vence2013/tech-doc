@@ -1,0 +1,4 @@
+html, body { margin: 0px; padding: 0px; font-size: 14px; }
+
+a { text-decoration: none; font-style: italic; color: #000000; }
+a:hover { color: #ff0000; }

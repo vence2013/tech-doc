@@ -1,0 +1,17 @@
+<style>
+    #nav1 { height: 40px; line-height: 40px; background-color: #563d7c; }
+    #nav1>a { font-size: 16px; font-weight: bold; color: #ffffff; }
+
+    #nav2 { display: none; line-height: 40px; background-color: rgb(240, 239, 239); z-index: 999; }
+</style>
+<div id="nav" class="container-fluid" ng-controller="navCtrl">
+    <div class="row">
+        <div id="nav1" class="col">
+            <a ng-repeat="x in navlist" ng-mouseenter="subShow(x);" ng-mouseleave="subDelay();" name="{{x.name}}" href="{{x.url}}" class="mx-2">{{x.name}}</a>
+        </div>
+    </div>
+    <!-- 二级菜单 -->
+    <div id="nav2" class="rounded px-2" ng-mouseenter="subEnter();" ng-mouseleave="subDelay();">
+        <a ng-repeat="x in sub" href="{{x.url}}" class="mx-2">{{x.name}}</a>
+    </div>
+</div>
