@@ -4,7 +4,7 @@ const Op = Sequelize.Op;
 exports.create = async (ctx, name)=>{
     const Tag = ctx.models['Tag'];
 
-    var [tagIns, created] = await Tag.findOrCreate({logging: false, 
+    var [ins, created] = await Tag.findOrCreate({logging: false, 
         where: {'name': name}
     });
     return created;

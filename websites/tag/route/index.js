@@ -1,6 +1,4 @@
-const moment = require('moment');
 const Router = require('koa-router');
-
 
 var router = new Router();
 
@@ -19,8 +17,10 @@ router.post('/', async (ctx)=>{
     var name = req.name;
 
     var ret = await TagCtrl.create(ctx, name);
-    ctx.body = ret ? {'error': 0, 'message': 'success'}
-                   : {'error': -1, 'message': '该标签已经存在！'};
+    if (await TagCtrl.create(ctx, name))
+        ctx.body = {'error': 0, 'message': 'success'};
+    else
+        ctx.body = {'error': -1, 'message': '该标签已经存在！'};
 });
 
 
