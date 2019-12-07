@@ -20,6 +20,8 @@
     <link  href="/node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <!-- 文件上传 -->   
     <script src="/node_modules/angular-file-upload/dist/angular-file-upload.min.js" type="text/javascript"></script>
+    <!-- angularjs clipboard -->
+    <script type="text/javascript" src="/node_modules/angular-clipboard/angular-clipboard.js"></script>
 
     <!-- 自定义 -->   
     <link  href="/view/css/all.css" rel="stylesheet" />
@@ -75,8 +77,8 @@
                                 <span>
                                     <b>{{x.file.name|limitTo:60}}</b>
                                     {{x.file.size/1024/1024|number:2 }}MB, {{item.progress}}%
-                                </span>
-                                <i class="fa fa-close" ng-click="x.remove();"></i>
+                                </span>                                
+                                <i class="fa fa-close mr-1" ng-click="x.remove();"></i>
                             </div>
                         </div>
                         <div class="row mx-3">
@@ -98,12 +100,13 @@
             <!--- 侧栏结束 --->
             <div class="col-md">
                 <div class="list">
-                    <div ng-repeat="x in filelist" ng-mouseenter='fsel=x' ng-mouseleave='fsel=null' ng-class="{itemsel:fsel==x}">                        
+                    <div ng-repeat="x in filelist" ng-mouseenter='fsel=x; copyText=x.location' ng-mouseleave='fsel=null' ng-class="{itemsel:fsel==x}">                        
                         <span>
                             <b><a href="{{x.location}}" target="_blank">{{x.name|limitTo:200}}</a></b>
                             {{x.createdAt|limitTo:10}}, {{x.size/1024/1024|number:2 }}MB
                         </span>
-                        <i class="fa fa-close" data-toggle="modal" data-target="#deleteWnd" ng-click="selectDel(x.id);"></i>
+                        <i clipboard class="fa fa-copy ml-2" text="copyText" on-copied="copySuccess()"></i>
+                        <i class="fa fa-close mr-1" data-toggle="modal" data-target="#deleteWnd" ng-click="selectDel(x.id);"></i>
                     </div>
                 </div>
                 <!--- 分页信息开始 --->

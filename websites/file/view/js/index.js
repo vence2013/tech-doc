@@ -1,4 +1,4 @@
-var app = angular.module('indexApp', ['angularFileUpload'])
+var app = angular.module('indexApp', ['angularFileUpload', 'angular-clipboard'])
 
 loadResource(app).controller('indexCtrl', indexCtrl);
 
@@ -83,5 +83,10 @@ function indexCtrl($scope, $http, FileUploader)
     $scope.jump = () => {        
         $scope.opts.page = $scope.pagejump;
         $scope.pagejump = '';
+    }
+
+
+    $scope.copySuccess = ()=>{
+        toastr.info('Success! Copyed file location.');
     }
 }
