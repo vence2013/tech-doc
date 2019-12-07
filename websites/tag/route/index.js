@@ -17,7 +17,7 @@ router.post('/', async (ctx)=>{
     var name = req.name;
 
     var ret = await TagCtrl.create(ctx, name);
-    if (await TagCtrl.create(ctx, name))
+    if (ret)
         ctx.body = {'error': 0, 'message': 'success'};
     else
         ctx.body = {'error': -1, 'message': '该标签已经存在！'};

@@ -1,0 +1,11 @@
+.uploadblock { height: 620px; }
+.uploadblock>div>.list { height: 570px; }
+.uploadblock>div>.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }
+.uploadblock>div>.list>div>i { float: right; margin: 5px; cursor: pointer; }
+
+.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }
+.list>div>span { margin-left: 10px; color: #888888; font-style: italic; }
+.list>div>span>b { color: #000000; margin: 0px 10px 0px 0px; }
+.list>div>i { float: right; margin: 5px; cursor: pointer; }
+
+.itemsel { background-color: #eeeeee; }
