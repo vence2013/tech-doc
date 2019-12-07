@@ -2,3 +2,14 @@ html, body { margin: 0px; padding: 0px; font-size: 14px; }
 
 a { text-decoration: none; font-style: italic; color: #000000; }
 a:hover { color: #ff0000; }
+
+.wrapper>div>div { height: 800px; }
+.wrapper>div>div>.list { height: 768px; }
+
+.info { color: #aaaaaa; font-style: italic; }
+.info>b { margin: 0px 5px; color: #000000; }
+
+.page>div { display: inline; float: left; }
+.page>.pagelist>nav>ul>li>input { width: 120px; text-align: center; border-color: #6A0888; color: #000000; }
+.page>.pageinfo { margin-top: 10px; }
+.page>.pageinfo>span { margin-left: 20px; font-size: 16px; }
