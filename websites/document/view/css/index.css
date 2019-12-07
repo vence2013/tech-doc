@@ -1,0 +1,5 @@
+.taglist>div:first-child { height: 160px; }
+.taglist>div:last-child { height: 470px; }
+.taglist>div>span { min-width: 100px; line-height: 25px; margin: 5px 0px 0px 5px; font-size: 16px; cursor: pointer; }
+
+.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }

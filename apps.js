@@ -70,8 +70,7 @@ function loadWebsites()
      * 1. 加载所有子网站的数据模型， 除了表示模型关系的Relations.js的所有文件。
      * 2. 加载所有子网站的模型关系
      */
-    var models = [];
-    app.context.models = models;
+    app.context.models = models = [];
     sequelize = app.context.sequelize;
     // 导入数据模型
     for (var i=0; i<modeldirs.length; i++) {
@@ -80,7 +79,7 @@ function loadWebsites()
         .forEach(async (e, idx)=>{
             let file = path.join(modeldirs[i], e);
             let fileObj = path.parse(file);
-            if (fs.statSync(file).isFile()) { models[ fileObj.name ] = await sequelize.import(file); }
+            if (fs.statSync(file).isFile()) { models[ fileObj.name ] = sequelize.import(file); }
         })
     }
     // 导入数据模型的关系

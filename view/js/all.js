@@ -1,8 +1,8 @@
 function navCtrl($scope) {
     $scope.navlist = [
-        {'name':'Tech-doc', 'url':'/', 'children':[
-            {'name':'edit', 'url':'/document/edit/0'},
-            {'name':'category', 'url':'/document/view/category.html'},            
+        {'name':'Tech-doc', 'url':'/document', 'children':[
+            {'name':'category', 'url':'/document/view/category.html'}, 
+            {'name':'edit', 'url':'/document/edit/0'},                       
         ]},
         {'name':'File', 'url':'/file', 'children':[
             {'name':'Pictures', 'url':'/file/view/picture.html'}
@@ -13,6 +13,7 @@ function navCtrl($scope) {
             {'name':'edit', 'url':''},
             {'name':'document', 'url':''},
         ]},
+        {'name':'System', 'url':'/view/system.html'}
     ];
     $scope.sub = null; 
 
