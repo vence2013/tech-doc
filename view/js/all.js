@@ -5,8 +5,7 @@ function navCtrl($scope) {
             {'name':'category', 'url':'/document/view/category.html'},            
         ]},
         {'name':'File', 'url':'/file', 'children':[
-            {'name':'Pictures', 'url':'/file/view/picture.html'},
-            {'name':'upload', 'url':'/file/view/upload.html'},
+            {'name':'Pictures', 'url':'/file/view/picture.html'}
         ]},
         {'name':'Tag', 'url':'/tag'},
         {'name':'Category', 'url':'/category'},

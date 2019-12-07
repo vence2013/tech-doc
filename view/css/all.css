@@ -5,11 +5,12 @@ a:hover { color: #ff0000; }
 
 .wrapper>div>div { height: 800px; }
 .wrapper>div>div>.list { height: 768px; }
+.wrapper2>div:first-child { height: 760px; }
 
 .info { color: #aaaaaa; font-style: italic; }
 .info>b { margin: 0px 5px; color: #000000; }
 
 .page>div { display: inline; float: left; }
-.page>.pagelist>nav>ul>li>input { width: 120px; text-align: center; border-color: #6A0888; color: #000000; }
+.page>.pagelist>nav>ul>li>input { width: 100px; text-align: center; border-color: #6A0888; color: #000000; }
 .page>.pageinfo { margin-top: 10px; }
 .page>.pageinfo>span { margin-left: 20px; font-size: 16px; }

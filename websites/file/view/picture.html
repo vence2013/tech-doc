@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="data:;base64,=">  <!-- 禁止加载facon.ico -->
-    <title>tag</title>
+    <title>pictures</title>
 
     <!-- 软件包导入(jquery放在anguarjs前， bootstrap放在jquery-ui前) -->
     <script src="/node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script> 
@@ -17,54 +17,42 @@
     <script src="/node_modules/toastr/build/toastr.min.js" type="text/javascript"></script>
     <link  href="/node_modules/toastr/build/toastr.min.css" rel="stylesheet" /> 
     <!-- font-awesome -->
-    <link  href="/node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" />  
-    
+    <link  href="/node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- angularjs clipboard -->
+    <script type="text/javascript" src="/node_modules/angular-clipboard/angular-clipboard.js"></script>
+    <!-- Magnific Popup -->
+    <link rel="stylesheet" href="/node_modules/magnific-popup/dist/magnific-popup.css">
+    <script type="text/javascript" src="/node_modules/magnific-popup/dist/jquery.magnific-popup.js"></script>
+
     <!-- 自定义 -->   
     <link  href="/view/css/all.css" rel="stylesheet" />
     <script src="/view/js/all.js" type="text/javascript"></script>
-    <link  href="/tag/view/css/index.css" rel="stylesheet" />
-    <script src="/tag/view/js/index.js" type="text/javascript"></script>    
+    <link  href="/file/view/css/index.css" rel="stylesheet" />
+    <script src="/file/view/js/picture.js" type="text/javascript"></script>    
 </head>
-<body ng-app="indexApp">
+<body ng-app="pictureApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper container-fluid mt-2" ng-controller="indexCtrl">
+    <div class="wrapper2 container-fluid mt-2" ng-controller="pictureCtrl">
         <div class="row">
-            <!--- 侧栏开始 --->
-            <div class="col-md-2 ml-2 rounded border border-secondary">  
-                <div class="row my-4">
-                    <div class="col-md-8 pr-0">
-                        <input type="text" class="form-control form-control-lg" ng-model="opts.str" placeholder="添加或搜索">
-                    </div>
-                    <div class="col-md" ng-show="!taginfo">
-                        <button type="button" class="btn btn-secondary btn-lg btn-block" ng-click="add();">添加</button>        
-                    </div>
-                    <div class="col-md" ng-show="taginfo">
-                        <button type="button" data-toggle="modal" data-target="#deleteWnd" class="btn btn-danger btn-lg btn-block">删除</button>                
-                    </div>
-                </div>                
-                <div class="row">
-                    <div class="col">
-                        <span class="info" ng-show="taginfo">创建日期：<b>{{taginfo.createdAt|limitTo:10}}</b>，</span>
-                        <span class="info" ng-show="taginfo">关联文章：<b>{{tagdocs.total}}</b></span>
-                        <span class="info" ng-show="!taginfo">显示标签信息</span>
-                    </div>                    
-                </div>
-                <hr />
-                <div class="row">
-                    <div class="col rel_doc_list">
-                        <div ng-repeat="x in tagdocs.list">
-                            <a href="#" title="fullname, create date">link doc list, order by link date desc</a>
-                        </div>
-                    </div>                    
-                </div>
+            <div class="col-md piclist"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-1 pr-0">
+                <input type="text" class="form-control" ng-model="opts.str" placeholder="文件名称搜索">
             </div>
-            <!--- 侧栏结束 --->
+            <div class="col-md-2 pr-0">
+                    <input type="text" class="form-control" ng-model="opts.ext" placeholder="扩展名筛选">
+            </div>
+            <div class="col-md-1 pr-0">    
+                <select class="form-control" ng-model="opts.order">
+                    <option value="4">创建时间-降序</option> 
+                    <option value="3">创建时间-升序</option>
+                    <option value="2">文件大小-降序</option>
+                    <option value="1">文件大小-升序</option>                               
+                </select>
+            </div>
             <div class="col-md">
-                <div class="list">
-                    <span class="badge badge-secondary" ng-repeat="x in taglist" ng-click="select(x.name)">{{x.name}}</span>
-                </div>
-                <!--- 分页信息开始 --->
                 <div class="page">
                     <div class="pagelist">
                         <nav>
@@ -75,7 +63,7 @@
                                         <a class="page-link" href="#">{{x.name}}</a>
                                 </li>
                                 <li class="page-item">
-                                    <input class="page-link" type="text" placeholder="输入后回车" />
+                                    <input class="page-link" type="text" placeholder="输入后回车" ng-model="pagejump" ng-keydown="$event.keyCode == 13 && jump();" />
                                 </li>
                             </ul>
                         </nav>
@@ -87,7 +75,6 @@
                         <span class="info">共<b>{{page.total}}</b>条</span>
                     </div>
                 </div>
-                <!--- 分页信息结束 --->
             </div>
         </div>
 
@@ -96,11 +83,11 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title font-weight-bold font-italic">标签删除确认</h5>
+                        <h5 class="modal-title font-weight-bold font-italic">文件删除确认</h5>
                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        该操作将删除标签，同时取消该标签与文档的关联。确认删除吗？
+                        该操作将删除文件，如果仍有文档引用该文件，将无效。确认删除吗？
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger px-4" data-dismiss="modal" ng-click="delete();">删除</button>
