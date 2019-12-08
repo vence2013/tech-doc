@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-exports.create = async (ctx, name)=>{
+exports.create = async (ctx, name) => {
     const Tag = ctx.models['Tag'];
 
     var [ins, created] = await Tag.findOrCreate({logging: false, 
@@ -19,7 +19,7 @@ exports.create = async (ctx, name)=>{
  * 返回值：
  *   {tag: {...}, docs:{'total':x, 'list':[[], ... ]} list:[{}, ... ], }
  */
-exports.search = async (ctx, str, page, pageSize)=>{
+exports.search = async (ctx, str, page, pageSize) => {
     const Tag = ctx.models['Tag'];
 
     /* 查找名称为str的标签 */
@@ -52,8 +52,33 @@ exports.search = async (ctx, str, page, pageSize)=>{
     return {'total':total, 'page':page, 'tag':tagObj, 'docs':docs, 'list':list};
 }
 
+exports.searchWithExcept = async (ctx, str, limit, except) => {
+    const Tag = ctx.models['Tag'];
 
-exports.delete = async (ctx, tagname)=>{
+    /* 查找str关联的标签 */
+    var queryCond = {'raw': true, 'logging': false, 'offset':0, 'limit':parseInt(limit), 
+        'order':[['createdAt', 'DESC']], 'where': {}};
+    if (str)
+    {
+        if (except instanceof Array) 
+            queryCond['where']['name'] = {[Op.and]: [{[Op.like]: '%'+str+'%'}, {[Op.notIn]: except}]}; 
+        else if (except) 
+            queryCond['where']['name'] = {[Op.and]: [{[Op.like]: '%'+str+'%'}, {[Op.notIn]: [except]}]}; 
+        else 
+            queryCond['where']['name'] = {[Op.like]: '%'+str+'%'}; 
+    } else {
+        if (except instanceof Array) 
+            queryCond['where']['name'] = {[Op.notIn]: except}; 
+        else if (except) 
+            queryCond['where']['name'] = {[Op.notIn]: [except]}; 
+    }
+
+    var list = await Tag.findAll(queryCond);
+    return list;
+}
+
+
+exports.delete = async (ctx, tagname) => {
     const Tag = ctx.models['Tag'];
 
     await Tag.destroy({logging: false, 'where': {'name': tagname}});

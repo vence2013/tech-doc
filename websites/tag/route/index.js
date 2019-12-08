@@ -4,12 +4,12 @@ var router = new Router();
 
 
 /* 系统首页 */
-router.get('/', async (ctx)=>{
+router.get('/', async (ctx) => {
     await ctx.render('websites/tag/view/index.html'); 
 })
 
 
-router.post('/', async (ctx)=>{
+router.post('/', async (ctx) => {
     const TagCtrl = ctx.controls['tag/tag'];
 
     /* 提取有效的参数 */
@@ -25,7 +25,7 @@ router.post('/', async (ctx)=>{
 
 
 /* 搜索标签，参数为：{str, page, pageSize } */
-router.get('/search', async (ctx)=>{
+router.get('/search', async (ctx) => {
     const TagCtrl = ctx.controls['tag/tag'];
 
     /* 提取有效的参数 */
@@ -39,7 +39,22 @@ router.get('/search', async (ctx)=>{
 })
 
 
-router.delete('/:tagname', async (ctx)=>{
+/* 搜索标签， 除了某些标签。参数为：{str, limit, except} */
+router.get('/except', async (ctx) => {
+    const TagCtrl = ctx.controls['tag/tag'];
+
+    /* 提取有效的参数 */
+    var req = ctx.query;
+    var str = req.str.replace(/^\s*(.*?)\s*$/, "$1"); // 去除首尾空格
+    var limit = /^\d+$/.test(req.limit) ? req.limit : 10;  // 当前的页面
+    var except = req.except;
+
+    var ret = await TagCtrl.searchWithExcept(ctx, str, limit, except);
+    ctx.body = {'error': 0, 'message': ret};
+})
+
+
+router.delete('/:tagname', async (ctx) => {
     const TagCtrl = ctx.controls['tag/tag'];
 
     /* 提取有效的参数 */

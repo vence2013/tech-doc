@@ -1,5 +1,4 @@
 exports.link = async (models)=>{
-    console.log('a', models);
     // 文档 - 标签
     models['Document'].belongsToMany(models['Tag'], {through: 'DocumentTag'});
     models['Tag'].belongsToMany(models['Document'], {through: 'DocumentTag'});
