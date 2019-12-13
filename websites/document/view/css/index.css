@@ -1,4 +1,4 @@
 .tagrelate { height: 160px; }
 .tagunrelate { height: 470px; }
 
-.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }
+#backupinfile { float: right; line-height: 30px; font-size: 16px; font-weight: bold; margin-top: 10px; }

@@ -3,12 +3,6 @@
 .uploadblock>div>.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }
 .uploadblock>div>.list>div>i { float: right; margin: 5px; cursor: pointer; }
 
-.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }
-.list>div>span { margin-left: 10px; color: #888888; font-style: italic; }
-.list>div>span>b { color: #000000; margin: 0px 10px 0px 0px; }
-.list>div>i { cursor: pointer; }
-.list>div>i:last-child { float: right; margin-top: 10px; }
-
 .itemsel { background-color: #eeeeee; }
 
 .piclist>div { display: inline; float: left; border: 1px solid rgb(128, 42, 13); border-radius: 3px; margin: 15px 10px 0px 0px; }
