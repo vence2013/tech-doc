@@ -42,7 +42,8 @@
                         <span class="info">ID：<b>{{categoryinfo.id}}</b>，</span>
                         <span class="info">创建日期：<b>{{categoryinfo.createdAt|limitTo:10}}</b>，</span>
                         <span class="info">关联文章数目：<b>{{categoryinfo.relcount}}</b></span>      
-                        <button type="button" class="btn btn-lg btn-danger float-right" data-toggle="modal" data-target="#deleteWnd">删除</button>                   
+                        <button type="button" class="btn btn-lg btn-danger float-right" ng-show="categoryinfo.id" 
+                            data-toggle="modal" data-target="#deleteWnd">删除</button>                   
                     </div>                    
                 </div>                
                 <div class="row mt-3">

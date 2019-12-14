@@ -10,6 +10,7 @@ function editCtrl($scope, $http, $interval)
     $scope.taglist = []; // 搜索结果列表
     // 文档数据
     $scope.docid = docid = $('.wrapper').attr('docid');
+    $scope.doc   = null;
 
     var content = '';
     var editor = editormd("editormd", {
@@ -55,7 +56,7 @@ function editCtrl($scope, $http, $interval)
             
             var ret = res.data.message;
             editor.setMarkdown(ret.content); 
-            // 关联标签
+            $scope.doc  = ret;
             $scope.taglink = ret.tagnames;
         });
     }

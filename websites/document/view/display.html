@@ -26,14 +26,42 @@
     <link  href="/view/css/all.css" rel="stylesheet" />
     <script src="/view/js/all.js" type="text/javascript"></script>
     <link  href="/document/view/css/index.css" rel="stylesheet" />
-    <script src="/document/view/js/display.js" type="text/javascript"></script>    
+    <script src="/document/view/js/display.js" type="text/javascript"></script>  
+    <style>
+        ul { padding-left: 10px; font-size: 12px; }
+        ul>li { line-height: 20px; }
+        ul>li>a { text-decoration: none; color: #000000; }
+    </style>  
 </head>
 <body ng-app="displayApp">
 
     <div ng-include="'/view/header.html'"></div>
     <div class="wrapper container-fluid mt-2" ng-controller="displayCtrl" docid="<%=id%>">
         <div class="row">
-            display
+            <div class="col-md border border-success rounded my-2 mx-1">
+                <div class="row my-1" style="line-height: 30px;">
+                    <div class="col-md">
+                        <span class="info">ID：<b>{{detail.id}}</b></span>
+                        <span class="info">创建时间：<b>{{detail.createdAt|limitTo:10}}</b></span>
+                        <span class="info">更新时间：<b>{{detail.updatedAt|limitTo:10}}</b></span>
+                    </div>
+                    <div class="col-md-1">
+                        <a href="/document/edit/{{detail.id}}" class="ml-2"><i class="fa fa-edit"></i></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md taglist">
+                        <span class="badge badge-secondary" ng-repeat="x in detail.tagnames">{{x}}</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md TOC" style="height: 640px; overflow: auto"></div>
+                </div>
+            </div>
+            <div class="col-md-7 border border-secondary rounded my-2 mr-1 p-1">
+                <div id="editormd" style="border:0px;"><textarea style="display:none;"></textarea></div>
+            </div>
         </div>
     </div>
 
