@@ -45,7 +45,8 @@ exports.list = async (ctx, moduleid)=>{
 
     var ret = await ChipRegister.findAll({logging: false, raw: true, where: {'ChipModuleId': moduleid}});
     var registerlist = ret.map((x)=>{
-        x['desc'] = x['desc'].toString();
+        if (x['desc'])
+            x['desc'] = x['desc'].toString();
         return x;
     });
     return registerlist;

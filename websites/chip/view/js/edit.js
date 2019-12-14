@@ -1,13 +1,13 @@
-var app = angular.module('bitsApp', [])
+var app = angular.module('editApp', [])
 
-loadResource(app).controller('bitsCtrl', bitsCtrl);
+loadResource(app).controller('editCtrl', editCtrl);
 
-function bitsCtrl($scope, $http, locals) 
+function editCtrl($scope, $http, locals) 
 {
     var emptyChip = {'id':0, 'name':'', 'width':''},
         emptyModule = {'id':0, 'name':'', 'fullname':''},
         emptyRegister = {'id':0, 'name':'', 'fullname':'', 'address':'', 'desc':''},
-        emptyBit = {'id':0, 'name':'', 'fullname':'', 'bitlist':'', 'valuelist':'', 'rw':'', 'desc':''};
+        emptyBits = {'id':0, 'name':'', 'fullname':'', 'bitlist':'', 'valuelist':'', 'rw':'', 'desc':''};
 
     $scope.chip     = null;
     $scope.module   = null;
@@ -19,9 +19,123 @@ function bitsCtrl($scope, $http, locals)
     $scope.bitslist     = [];
 
 
+    /* 位组 ******************************************************************/
+
+    $scope.bitsReset = bitsReset;
+
+    function bitsReset() 
+    {
+        $scope.bits = angular.copy(emptyBits);
+        $(".bitsContainer>.badge-success").removeClass('badge-success').addClass('badge-warning');
+    }
+
+    $scope.bitsEdit = (create) => {
+        var i, regid, id, name, rw;
+
+        regid = $scope.register.id;
+        if (!regid)
+            return toastr.warning('请选择位组属于的寄存器！');
+
+        var bitlist   = $scope.bits.bitlist;
+        var valuelist = $scope.bits.valuelist; 
+        if (create)
+        {
+            name = $scope.bits.name;
+            rw   = $scope.bits.rw;
+            if (!name || !rw || !/^(\d+,)*\d+$/.test(bitlist) || !/^(.,)*.$/.test(valuelist)) 
+                return toastr.warning('请输入有效的位组参数！');
+        } else {
+            id = $scope.bits.id;
+            if (!id) return toastr.warning('请选择要编辑的位组！');
+        }       
+
+        var arr1 = bitlist.split(',');
+        var arr2 = valuelist.split(',');
+        if (arr1.length!=arr2.length) return toastr.warning('位组的位序号和值数量不一样，请确认！');
+        // 检查位组序号的有效性
+        var chipWidth = parseInt($scope.chip.width);            
+        for (i=0; (i<arr1.length) && (parseInt(arr1[i])<chipWidth); i++) ;
+        if (i<arr1.length) return toastr.warning('位组的序号应小于芯片位宽度， 请输入有效位组序号！');
+        // 复位之可以为0/1/x
+
+        $http.post('/chip/bits/'+regid, $scope.bits).then((res)=>{
+            if (errorCheck(res)) return ; 
+
+            toastr.success(res.data.message);
+            bitsGet(name);            
+        });
+    }
+
+    $scope.bitsDelete = () => {
+        if (!/^\d+$/.test($scope.bits.id)) return toastr.warning('请选择要删除的寄存器！');
+
+        var spath = '/chip/edit/'+$scope.chip.id+'/'+$scope.module.id+'/'+$scope.register.id;
+        $http.delete('/chip/bits/'+$scope.bits.id).then((res)=>{
+            if (errorCheck(res)) return ; 
+
+            toastr.success(res.data.message);
+            locals.set(spath, '');
+            $scope.bits = angular.copy(emptyBits);
+            bitsGet();            
+        });
+    }
+
+    $scope.bitsSelect = bitsSelect;
+
+    function bitsSelect(bits)
+    {        
+        var spath = '/chip/edit/'+$scope.chip.id+'/'+$scope.module.id+'/'+$scope.register.id;
+
+        $scope.bits = angular.copy(bits);
+        locals.set(spath, bits.id);
+
+        $(".bitsContainer>.badge-success").removeClass('badge-success').addClass('badge-warning');
+        window.setTimeout(()=>{
+            var idx = $scope.bitslist.indexOf(bits);
+            $(".bitsContainer>span:eq("+idx+")").removeClass('badge-warning').addClass('badge-success');
+        }, 0);
+    }
+
+    function bitsGet(namePreselect) 
+    {
+        var spath = '/chip/edit/'+$scope.chip.id+'/'+$scope.module.id+'/'+$scope.register.id;
+
+        $http.get('/chip/bits/register/'+$scope.register.id).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            var ret = res.data.message;
+            $scope.bitslist = ret;            
+            if (ret.length) {
+                if (namePreselect) {                    
+                    for (var i=0; (i<ret.length) && (ret[i].name!=namePreselect); i++) ;
+                    if (i<ret.length) {
+                        bitsSelect(ret[i]);
+                    }
+                } else {
+                    var bitsidPrevious = locals.get(spath);
+                    if (bitsidPrevious) {
+                        for (var i = 0; (i < ret.length) && (ret[i].id != bitsidPrevious); i++) ;
+                        if (i < ret.length) 
+                            bitsSelect(ret[i]);
+                    } else { // 默认选择第一个
+                        bitsSelect(ret[0]);
+                    }
+                }
+            } else {
+                bitsReset();
+            }            
+        })
+    }
+
+
     /* 寄存器 ****************************************************************/
 
-    $scope.registerReset = () => {
+    $scope.registerReset = registerReset;
+
+    function registerReset() 
+    {
+        bitsReset();
+
         $scope.register = angular.copy(emptyRegister);
         $(".registerContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary'); 
     }
@@ -49,7 +163,6 @@ function bitsCtrl($scope, $http, locals)
             if (errorCheck(res)) return ; 
 
             toastr.success(res.data.message);
-            $scope.register = angular.copy(emptyRegister);  
             registersGet(name);            
         });
     }
@@ -57,10 +170,12 @@ function bitsCtrl($scope, $http, locals)
     $scope.registerDelete = ()=>{
         if (!/^\d+$/.test($scope.register.id)) return toastr.warning('请选择要删除的寄存器！');
 
+        var spath = '/chip/edit/'+$scope.chip.id+'/'+$scope.module.id;
         $http.delete('/chip/register/'+$scope.register.id).then((res)=>{
             if (errorCheck(res)) return ; 
 
             toastr.success(res.data.message);
+            locals.set(spath, '');
             $scope.register = angular.copy(emptyRegister);  
             registersGet();            
         });
@@ -70,8 +185,10 @@ function bitsCtrl($scope, $http, locals)
 
     function registerSelect(register)
     {
-        $scope.register = register;
-        locals.set('/chip/bits/registersel', register.id);
+        var spath = '/chip/edit/'+$scope.chip.id+'/'+$scope.module.id;
+
+        $scope.register = angular.copy(register);
+        locals.set(spath, register.id);
         
         $(".registerContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary');
         window.setTimeout(()=>{
@@ -79,11 +196,13 @@ function bitsCtrl($scope, $http, locals)
             $(".registerContainer>span:eq("+idx+")").removeClass('badge-secondary').addClass('badge-success');
         }, 0);
 
-        //getBitsList();
+        bitsGet();
     }
 
     function registersGet(namePreselect) 
     {
+        var spath = '/chip/edit/'+$scope.chip.id+'/'+$scope.module.id;
+
         $http.get('/chip/register/module/'+$scope.module.id).then((res)=>{
             if (errorCheck(res)) return ;
 
@@ -95,8 +214,8 @@ function bitsCtrl($scope, $http, locals)
                     if (i<ret.length) {
                         registerSelect(ret[i]);
                     }
-                } else {
-                    var registeridPrevious = locals.get('/chip/bits/registersel');
+                } else {                    
+                    var registeridPrevious = locals.get(spath);
                     if (registeridPrevious) {
                         for (var i = 0; (i < ret.length) && (ret[i].id != registeridPrevious); i++) ;
                         if (i < ret.length) {
@@ -107,15 +226,24 @@ function bitsCtrl($scope, $http, locals)
                     }
                 }                
             } else {          
-                $scope.register = angular.copy(emptyRegister);                
-                $scope.bit      = angular.copy(emptyBit);
-                $scope.bitslist     = [];
+                registerReset();
+                $scope.bitslist = [];
             }            
         })
     }
 
 
     /* 模块 ******************************************************************/
+
+    $scope.moduleReset = moduleReset;
+    
+    function moduleReset() 
+    {
+        registerReset();
+
+        $scope.module = angular.copy(emptyModule);  
+        $(".moduleContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary');
+    }
 
     $scope.moduleEdit = (create) => {
         var chipid, id, name;
@@ -146,10 +274,12 @@ function bitsCtrl($scope, $http, locals)
     $scope.moduleDelete = () => {
         if (!/^\d+$/.test($scope.module.id)) return toastr.warning('请选择要删除的模块！');
 
+        var spath = '/chip/edit/'+$scope.chip.id;
         $http.delete('/chip/module/'+$scope.module.id).then((res)=>{
             if (errorCheck(res)) return ; 
 
             toastr.success(res.data.message);
+            locals.set(spath, '');
             $scope.module = angular.copy(emptyModule);   
             modulesGet();            
         });
@@ -159,8 +289,10 @@ function bitsCtrl($scope, $http, locals)
 
     function moduleSelect(module)
     {
+        var spath = '/chip/edit/'+$scope.chip.id;
+
         $scope.module = angular.copy(module);
-        locals.set('/chip/bits/modulesel', module.id);
+        locals.set(spath, module.id);
         
         $(".moduleContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary');
         window.setTimeout(()=>{
@@ -173,6 +305,8 @@ function bitsCtrl($scope, $http, locals)
 
     function modulesGet(namePreselect)
     {
+        var spath = '/chip/edit/'+$scope.chip.id;
+
         $http.get('/chip/module/chip/'+$scope.chip.id).then((res)=>{
             if (errorCheck(res)) return ;
 
@@ -184,8 +318,8 @@ function bitsCtrl($scope, $http, locals)
                     if (i<ret.length) {
                         moduleSelect(ret[i]);
                     }
-                } else {
-                    var moduleidPrevious = locals.get('/chip/bits/modulesel');
+                } else {                    
+                    var moduleidPrevious = locals.get(spath);
                     if (moduleidPrevious) {
                         for (var i = 0; (i < ret.length) && (ret[i].id != moduleidPrevious); i++) ;
                         if (i < ret.length) {
@@ -197,9 +331,7 @@ function bitsCtrl($scope, $http, locals)
                 }
             } else {
                 // 没有任何模块时，需要清除所有后续元素：模块编辑， 寄存器列表，编辑， 位组列表， 编辑
-                $scope.module   = angular.copy(emptyModule);                
-                $scope.register = angular.copy(emptyRegister);                
-                $scope.bit      = angular.copy(emptyBit);
+                moduleReset();
                 $scope.registerlist = [];
                 $scope.bitslist     = [];
             }
@@ -208,6 +340,16 @@ function bitsCtrl($scope, $http, locals)
 
 
     /* 芯片 ******************************************************************/
+
+    $scope.chipReset = chipReset;
+    
+    function chipReset() 
+    {
+        moduleReset();
+
+        $scope.chip = angular.copy(emptyChip);   
+        $(".chipContainer>.badge-success").removeClass('badge-success').addClass('badge-dark');
+    }
 
     $scope.chipEdit = (create)=>{
         var id, name;
@@ -237,6 +379,7 @@ function bitsCtrl($scope, $http, locals)
             if (errorCheck(res)) return ; 
 
             toastr.success(res.data.message);
+            locals.set('/chip/edit', '');
             $scope.chip = angular.copy(emptyChip); 
             chipsGet();            
         });
@@ -252,7 +395,7 @@ function bitsCtrl($scope, $http, locals)
     function chipSelect(chip)
     {
         $scope.chip = angular.copy(chip);
-        locals.set('/chip/bits/chipsel', chip.id);
+        locals.set('/chip/edit', chip.id);
         
         $(".chipContainer>.badge-success").removeClass('badge-success').addClass('badge-dark');
         window.setTimeout(()=>{
@@ -283,7 +426,7 @@ function bitsCtrl($scope, $http, locals)
                         chipSelect(ret[i]);
                     }
                 } else { 
-                    var chipidPrevious = locals.get('/chip/bits/chipsel');
+                    var chipidPrevious = locals.get('/chip/edit');
                     if (chipidPrevious) {  // 恢复上次的选择
                         for (var i = 0; (i < ret.length) && (ret[i].id != chipidPrevious); i++) ;
                         if (i < ret.length) {
@@ -294,10 +437,7 @@ function bitsCtrl($scope, $http, locals)
                     }
                 }
             } else {
-                $scope.chip     = angular.copy(emptyChip);                
-                $scope.module   = angular.copy(emptyModule);                
-                $scope.register = angular.copy(emptyRegister);                
-                $scope.bit      = angular.copy(emptyBit);
+                chipReset();
                 $scope.modulelist   = [];
                 $scope.registerlist = [];
                 $scope.bitslist     = [];
