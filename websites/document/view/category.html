@@ -45,7 +45,7 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-8 pr-0">
-                        <input type="text" class="form-control" ng-model="opts.str" placeholder="文档搜索，多个字符串用空格分隔">
+                        <input type="text" class="form-control" ng-model="docOpts.str" placeholder="文档搜索，多个字符串用空格分隔">
                     </div>
                     <div class="col-md">
                         <input type="text" class="form-control" ng-model="predicate" placeholder="目录过滤">
@@ -70,7 +70,7 @@
                             <ul class="pagination">
                                 <li ng-repeat="x in page.list" class="page-item"
                                     ng-class="{'disabled': x.disable, 'active':x.active}" 
-                                    ng-click="opts.page=x.page">
+                                    ng-click="docOpts.page=x.page">
                                         <a class="page-link" href="#">{{x.name}}</a>
                                 </li>
                                 <li class="page-item">

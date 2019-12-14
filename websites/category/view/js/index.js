@@ -18,12 +18,12 @@ function indexCtrl($scope, $http, locals)
     $scope.name = '';
     $scope.categoryinfo= angular.copy(categoryRoot);
     // 文档搜索
-    $scope.docopts = {'str':'', 'limit':20};
+    $scope.docOpts = {'page':1, 'pageSize':24, 'str':''};
     $scope.doclist = [];
     $scope.docrel  = false; 
-
+    
     var docUpdateTimer = null;
-    $scope.$watch('docopts', ()=>{
+    $scope.$watch('docOpts', ()=>{
         /* 避免在输入过程中频繁请求服务器 */
         if (docUpdateTimer)
             window.clearTimeout(docUpdateTimer);
@@ -31,24 +31,25 @@ function indexCtrl($scope, $http, locals)
     }, true);
     $scope.$watch('docrel', ()=>{ docUpdate(); });
 
-
+    
     function docUpdate(categoryid)
     {
         function docRelate(categoryid)
         {
             $http.get('/document/category/in/'+categoryid, {
-                'params': $scope.docopts
+                'params': $scope.docOpts
             }).then((res)=>{
                 if (errorCheck(res)) return ;
     
-                $scope.doclist = res.data.message;
+                var ret = res.data.message;
+                $scope.doclist = ret.list;
             })
         }
     
         function docUnrelate(categoryid)
         {
             $http.get('/document/category/out/'+categoryid, {
-                'params': $scope.docopts
+                'params': $scope.docOpts
             }).then((res)=>{
                 if (errorCheck(res)) return ;
     

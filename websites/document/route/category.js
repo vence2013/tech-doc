@@ -39,7 +39,8 @@ router.delete('/:categoryid', async (ctx)=>{
 function reqCheck(req2) {
     var query = {};
 
-    query['limit']     = parseInt(req2.limit);
+    query['page']     = parseInt(req2.page);
+    query['pageSize'] = parseInt(req2.pageSize);
     // 以空格分开的字符串
     var fields = ['str'];
     for (var i=0; i<fields.length; i++) {
@@ -76,7 +77,7 @@ router.get('/out/:categoryid', async (ctx)=>{
     var req3 = ctx.params;      
     var categoryid = parseInt(req3.categoryid);
     var query = reqCheck(req2); 
-
+    console.log('a', query);
     var res = await CategoryCtrl.out(ctx, categoryid, query);
     ctx.body = {'error': 0, 'message': res};
 })

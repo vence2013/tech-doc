@@ -51,23 +51,34 @@ exports.in = async (ctx, categoryid, query) => {
         docids.map((x)=>{ idstr += ', '+x; });
         sqlCond += " AND `id` IN ("+idstr.substr(1)+") "; 
     } else {
-        return []; // 没有文档
+        return {'total':0, 'page':1, 'list':[]}; // 没有文档
     }
     if (query.str && query.str.length) {
         query.str.map((x)=>{ sqlCond += " AND `content` LIKE '%"+x+"%' " });
     }
     sqlCond = sqlCond ? " WHERE "+sqlCond.substr(4) : "";
 
+    var page     = query.page;
+    var pageSize = query.pageSize;
+    // 计算分页数据
+    sql = "SELECT COUNT(*) AS num FROM `Documents` "+sqlCond;
+    var [res, meta] = await ctx.sequelize.query(sql, {logging: true});
+    var total = res[0]['num'];
+    var maxpage  = Math.ceil(total/pageSize);
+    maxpage = (maxpage<1) ? 1 : maxpage;
+    page = (page>maxpage) ? maxpage : (page<1 ? 1 : page);
+
     // 查询当前分页的列表数据
-    sql = "SELECT * FROM `Documents` "+sqlCond+" ORDER BY `createdAt` DESC LIMIT 0, "+query.limit+" ;";
-    var [res, meta] = await ctx.sequelize.query(sql, {logging: false});
+    var offset = (page - 1) * pageSize;
+    sql = "SELECT * FROM `Documents` "+sqlCond+" ORDER BY `createdAt` DESC LIMIT "+offset+", "+pageSize+" ;";
+    var [res, meta] = await ctx.sequelize.query(sql, {logging: true});
     var doclist = res.map((x)=>{
         // 将buffer转换为字符串
         x['content'] = x.content ? x.content.toString() : '';
         return x;
     });
 
-    return doclist;
+    return {'total':total, 'page':page, 'list':doclist};
 }
 
 /* 搜索不在指定子目录的文档 */
@@ -101,7 +112,7 @@ exports.out = async (ctx, categoryid, query) => {
     sqlCond = sqlCond ? " WHERE "+sqlCond.substr(4) : "";
 
     // 查询当前分页的列表数据
-    sql = "SELECT * FROM `Documents` "+sqlCond+" ORDER BY `createdAt` DESC LIMIT 0, "+query.limit+" ;";
+    sql = "SELECT * FROM `Documents` "+sqlCond+" ORDER BY `createdAt` DESC LIMIT 0, "+query.pageSize+" ;";
     var [res, meta] = await ctx.sequelize.query(sql, {logging: false});
     var doclist = res.map((x)=>{
         // 将buffer转换为字符串

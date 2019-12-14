@@ -4,6 +4,7 @@ loadResource(app).controller('categoryCtrl', categoryCtrl);
 
 function categoryCtrl($scope, $http, locals) 
 {
+    const categoryRoot = {'id':0, 'name':'根节点', 'createdAt':'0000-00-00'};
     // 目录树相关
     $scope.treeRoot = [];
     $scope.listRoot = [];
@@ -13,38 +14,46 @@ function categoryCtrl($scope, $http, locals)
     $scope.treeOptions = {dirSelectable: true};
     $scope.predicate = "";
     $scope.comparator = false;
+    $scope.nodeSel = angular.copy(categoryRoot);
     // 文档搜索
-    $scope.opts = opts = {'page':1, 'pageSize':24, 'str':''};
-    $scope.page = pageSet(0, opts.pageSize, 10, 0);
-
+    $scope.docOpts = docOpts = {'page':1, 'pageSize':24, 'str':''};
+    $scope.page = pageSet(0, docOpts.pageSize, 10, 0);
+    
+    var docUpdateTimer = null;
+    $scope.$watch('docOpts', ()=>{
+        /* 避免在输入过程中频繁请求服务器 */
+        if (docUpdateTimer)
+            window.clearTimeout(docUpdateTimer);
+        docUpdateTimer = window.setTimeout(docUpdate, 500);  
+    }, true);
 
     // 更新在目录中的文档列表
-    function docUpdate()
+    function docUpdate(categoryid)
     {
         docUpdateTimer = null;
 
-        var query = angular.copy($scope.opts);
-        var createget = $scope.opts.createget;
-        var createlet = $scope.opts.createlet;
-        query['createget'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createget)) ? createget : '';
-        query['createlet'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createlet)) ? createlet : '';
-        query['tag'] = $scope.taglink;
+        categoryid = categoryid ? categoryid : $scope.nodeSel.id;
 
-        $http.get('/document/search', {params: query}).then((res)=>{
+        $http.get('/document/category/in/'+categoryid, {
+            'params': $scope.docOpts
+        }).then((res)=>{
             if (errorCheck(res)) return ;
 
             var ret = res.data.message;
             $scope.doclist = ret.list;
-            $scope.page = pageSet(ret.total, opts.pageSize, 10, ret.page);        
+            $scope.page = pageSet(ret.total, docOpts.pageSize, 10, ret.page);  
         })
     }
-    docUpdate();
 
     function update() {
         $http.get('/category/tree/0', {}).then((res)=>{
             if (errorCheck(res)) return ;
             var ret = res.data.message;
-            var root = [{'id':0, 'name':'根节点', 'children': ret}];
+            
+            var tmp = angular.copy(categoryRoot);
+            tmp['children'] = ret;
+            var root = [ tmp ];
+            $scope.categoryinfo = root;
             var {dir, list} = treeTravel(root, 0, $scope.expand);
 
             $scope.treeRoot = $scope.treeView = root;       
@@ -65,7 +74,7 @@ function categoryCtrl($scope, $http, locals)
 
     $scope.select = (node, sel) => { 
         $scope.nodeSel = node;
-        
+        docUpdate(node.id);
     }
 
 
