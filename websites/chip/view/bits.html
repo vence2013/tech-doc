@@ -43,11 +43,9 @@
                         ng-click="moduleSelect(x);" title="{{x.fullname}}">{{x.name}}</span>
                 </div>
                 <div class="ititle">寄存器</div>
-                <div class="ilist">
-                    <span class="badge badge-secondary mr-1 mt-1">DMA</span>
-                    <span class="badge badge-secondary mr-1 mt-1">ADC</span>
-                    <span class="badge badge-secondary mr-1 mt-1">DAC</span>
-                    <span class="badge badge-secondary mr-1 mt-1">CRC</span>
+                <div class="ilist registerContainer">
+                    <span class="badge badge-secondary mr-1 mt-1" ng-repeat="x in registerlist"
+                        ng-click="registerSelect(x);"  title="{{x.name}}, {{x.fullname}}, {{x.address}}">{{x.name}}</span>
                 </div>
                 <div class="ititle">位组</div>
                 <div class="ilist">
@@ -81,7 +79,7 @@
                     </div>
                 </div>
                 <!--- 模块编辑 --->
-                <div class="card bg-light mt-4">
+                <div class="card mt-4" style="background-color: #cccccc;">
                     <div class="card-body row">
                         <div class="col-md-6">
                             <input type="text" class="form-control" ng-model="module.fullname" placeholder="模块名称">
@@ -106,38 +104,42 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <input type="text" class="form-control" ng-model="registersel.fullname" placeholder="寄存器名称">
+                                <input type="text" class="form-control" ng-model="register.fullname" placeholder="寄存器名称">
                             </div>
                             <div class="col-md pl-0">
-                                <input type="text" class="form-control" ng-model="registersel.name" placeholder="寄存器缩写，必填">
+                                <input type="text" class="form-control" ng-model="register.name" placeholder="寄存器缩写，必填">
                             </div>
                             <div class="col-md-1 pl-0">
-                                <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#registerDeleteConfirmWnd" disabled>删除</button>
+                                <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#registerDeleteConfirmWnd" 
+                                    ng-disabled="!register.id">删除</button>
                             </div>
                             <div class="col-md-1 pl-0">
-                                <button type="button" class="btn btn-block btn-secondary" ng-click="registerEdit();">编辑</button>
+                                <button type="button" class="btn btn-block btn-secondary" ng-click="registerEdit(false);">编辑</button>
                             </div>
                             <div class="col-md-1 pl-0">
-                                <button type="button" class="btn btn-block btn-secondary" ng-click="registerEdit();">创建</button>
+                                <button type="button" class="btn btn-block btn-secondary" ng-click="registerEdit(true);">创建</button>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-3">
-                                <input type="text" class="form-control" ng-model="registersel.address" placeholder="寄存器地址，必填">
+                                <input type="text" class="form-control" ng-model="register.address" placeholder="寄存器地址，必填">
                             </div>
                             <div class="col-md">
                                 输入寄存器地址的规则
                             </div>
+                            <div class="col-md-1 pl-0">
+                                <button type="button" class="btn btn-block btn-dark" ng-click="registerReset();">重置</button>
+                            </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md">
-                                <textarea class="form-control" rows="4" ng-model="registersel.desc" placeholder="寄存器描述"></textarea>
+                                <textarea class="form-control" rows="4" ng-model="register.desc" placeholder="寄存器描述"></textarea>
                             </div>
                         </div>  
                     </div>
                 </div>
                 <!--- 位组编辑 --->
-                <div class="card bg-light mt-3">
+                <div class="card mt-3" style="background-color: #cccccc;">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -160,11 +162,14 @@
                             <div class="col-md">
                                 <input type="text" class="form-control" ng-model="bitsel.bitlist" placeholder="位组序号列表，用逗号分开，比如:1,2,3,4,5,7">
                             </div>
-                            <div class="col-md">
+                            <div class="col-md pl-0">
                                 <input type="text" class="form-control" ng-model="bitsel.valuelist" placeholder="位组复位值列表，用逗号分开，与序号对应，比如：1,1,1,0,0,1">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-2 pl-0">
                                 <input type="text" class="form-control" ng-model="bitsel.rw" placeholder="读写权限">
+                            </div>
+                            <div class="col-md-1 pl-0">
+                                <button type="button" class="btn btn-block btn-dark" ng-click="bitsReset();">重置</button>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -232,6 +237,26 @@
                         </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger px-4" data-dismiss="modal" ng-click="moduleDelete();">删除</button>
+                        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- register 删除确认 -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="registerDeleteConfirmWnd">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">寄存器删除确认</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                        <div class="modal-body">
+                            <p>该操作将删除与该寄存器相关的位组。确认要删除吗？</p>
+                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger px-4" data-dismiss="modal" ng-click="registerDelete();">删除</button>
                         <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">取消</button>
                     </div>
                 </div>

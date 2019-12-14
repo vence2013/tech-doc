@@ -19,6 +19,102 @@ function bitsCtrl($scope, $http, locals)
     $scope.bitslist     = [];
 
 
+    /* 寄存器 ****************************************************************/
+
+    $scope.registerReset = () => {
+        $scope.register = angular.copy(emptyRegister);
+        $(".registerContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary'); 
+    }
+
+    $scope.registerEdit = (create)=>{
+        var moduleid, id, name, address;
+
+        moduleid = $scope.module.id;
+        if (!moduleid)
+            return toastr.warning('请选择寄存器属于的模块！');
+
+        if (create)
+        {
+            name = $scope.register.name;
+            address = $scope.register.address;
+            if (!name || !/0[xX]{1}[0-9a-fA-F]+/.test(address)) 
+                return toastr.warning('请输入有效的寄存器名称以及地址！');
+            $scope.register['id'] = 0;
+        } else {
+            id = $scope.register.id;
+            if (!id) return toastr.warning('请选择要编辑的寄存器！');
+        }        
+
+        $http.post('/chip/register/'+moduleid, $scope.register).then((res)=>{
+            if (errorCheck(res)) return ; 
+
+            toastr.success(res.data.message);
+            $scope.register = angular.copy(emptyRegister);  
+            registersGet(name);            
+        });
+    }
+
+    $scope.registerDelete = ()=>{
+        if (!/^\d+$/.test($scope.register.id)) return toastr.warning('请选择要删除的寄存器！');
+
+        $http.delete('/chip/register/'+$scope.register.id).then((res)=>{
+            if (errorCheck(res)) return ; 
+
+            toastr.success(res.data.message);
+            $scope.register = angular.copy(emptyRegister);  
+            registersGet();            
+        });
+    }
+
+    $scope.registerSelect = registerSelect;
+
+    function registerSelect(register)
+    {
+        $scope.register = register;
+        locals.set('/chip/bits/registersel', register.id);
+        
+        $(".registerContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary');
+        window.setTimeout(()=>{
+            var idx = $scope.registerlist.indexOf(register);
+            $(".registerContainer>span:eq("+idx+")").removeClass('badge-secondary').addClass('badge-success');
+        }, 0);
+
+        //getBitsList();
+    }
+
+    function registersGet(namePreselect) 
+    {
+        $http.get('/chip/register/module/'+$scope.module.id).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            var ret = res.data.message;
+            $scope.registerlist = ret;            
+            if (ret.length) {
+                if (namePreselect) {
+                    for (var i=0; (i<ret.length) && (ret[i].name!=namePreselect); i++) ;
+                    if (i<ret.length) {
+                        registerSelect(ret[i]);
+                    }
+                } else {
+                    var registeridPrevious = locals.get('/chip/bits/registersel');
+                    if (registeridPrevious) {
+                        for (var i = 0; (i < ret.length) && (ret[i].id != registeridPrevious); i++) ;
+                        if (i < ret.length) {
+                            registerSelect(ret[i]);
+                        }
+                    } else { // 默认选择第一个
+                        registerSelect(ret[0]);
+                    }
+                }                
+            } else {          
+                $scope.register = angular.copy(emptyRegister);                
+                $scope.bit      = angular.copy(emptyBit);
+                $scope.bitslist     = [];
+            }            
+        })
+    }
+
+
     /* 模块 ******************************************************************/
 
     $scope.moduleEdit = (create) => {
@@ -66,13 +162,13 @@ function bitsCtrl($scope, $http, locals)
         $scope.module = angular.copy(module);
         locals.set('/chip/bits/modulesel', module.id);
         
-        $(".moduleContainer>.badge-success").removeClass('badge-success').addClass('badge-dark');
+        $(".moduleContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary');
         window.setTimeout(()=>{
             var idx = $scope.modulelist.indexOf(module);
-            $(".moduleContainer>span:eq("+idx+")").removeClass('badge-dark').addClass('badge-success');
+            $(".moduleContainer>span:eq("+idx+")").removeClass('badge-secondary').addClass('badge-success');
         }, 0);
 
-        //getRegisterList();
+        registersGet();
     }
 
     function modulesGet(namePreselect)
