@@ -103,8 +103,9 @@ function reqCheck(req2) {
 router.get('/search', async (ctx)=>{
     const DocumentCtrl = ctx.controls['document/document'];
     
+    /* 提取有效参数 */
     var req2  = ctx.query;
-    var query = reqCheck(req2); // 提取有效参数
+    var query = reqCheck(req2);
 
     var res = await DocumentCtrl.search(ctx, query);
     ctx.body = {'error': 0, 'message': res};

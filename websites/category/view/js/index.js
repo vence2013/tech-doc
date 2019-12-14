@@ -4,6 +4,7 @@ loadResource(app).controller('indexCtrl', indexCtrl);
 
 function indexCtrl($scope, $http, locals) 
 {
+    const categoryRoot = {'id':0, 'name':'根节点', 'createdAt':'0000-00-00'};
     // 目录树相关
     $scope.treeRoot = [];
     $scope.listRoot = [];
@@ -15,8 +16,81 @@ function indexCtrl($scope, $http, locals)
     $scope.comparator = false;
     // 目录编辑
     $scope.name = '';
-    $scope.categorysel = null;
-    $scope.categoryinfo= null;
+    $scope.categoryinfo= angular.copy(categoryRoot);
+    // 文档搜索
+    $scope.docopts = {'str':'', 'limit':20};
+    $scope.doclist = [];
+    $scope.docrel  = false; 
+
+    var docUpdateTimer = null;
+    $scope.$watch('docopts', ()=>{
+        /* 避免在输入过程中频繁请求服务器 */
+        if (docUpdateTimer)
+            window.clearTimeout(docUpdateTimer);
+        docUpdateTimer = window.setTimeout(docUpdate, 500);  
+    }, true);
+    $scope.$watch('docrel', ()=>{ docUpdate(); });
+
+
+    function docUpdate(categoryid)
+    {
+        function docRelate(categoryid)
+        {
+            $http.get('/document/category/in/'+categoryid, {
+                'params': $scope.docopts
+            }).then((res)=>{
+                if (errorCheck(res)) return ;
+    
+                $scope.doclist = res.data.message;
+            })
+        }
+    
+        function docUnrelate(categoryid)
+        {
+            $http.get('/document/category/out/'+categoryid, {
+                'params': $scope.docopts
+            }).then((res)=>{
+                if (errorCheck(res)) return ;
+    
+                $scope.doclist = res.data.message;
+            })
+        }
+
+        var categoryid = categoryid ? categoryid : $scope.categoryinfo.id;
+        
+        if ($scope.docrel) docRelate(categoryid);
+        else docUnrelate(categoryid);
+    }
+
+
+    $scope.link = (docid) => 
+    {
+        function attatch(docid)
+        {
+            $http.post('/document/category/'+$scope.categoryinfo.id, {
+                'docid':docid
+            }).then((res)=>{
+                if (errorCheck(res)) return ;
+    
+                docUpdate();
+            })
+        }
+
+        function dettach(docid)
+        {    
+            $http.delete('/document/category/'+$scope.categoryinfo.id, {params:{
+                'docid':docid}
+            }).then((res)=>{
+                if (errorCheck(res)) return ;
+                
+                docUpdate();
+            })
+        }
+
+        if ($scope.docrel) dettach(docid);
+        else attatch(docid);
+    }
+
 
     function detail(selid)
     {
@@ -39,7 +113,9 @@ function indexCtrl($scope, $http, locals)
         } 
         else
         {
-            $scope.categoryinfo = {'id':0, 'name':'根节点', 'createdAt':'0000-00-00', 'relcount':0}; 
+            var tmp = angular.copy(categoryRoot);
+            tmp['relcount'] = 0;
+            $scope.categoryinfo = tmp;
             $scope.name = $scope.categoryinfo.name;
         }
     }
@@ -48,7 +124,9 @@ function indexCtrl($scope, $http, locals)
         $http.get('/category/tree/0', {}).then((res)=>{
             if (errorCheck(res)) return ;
             var ret = res.data.message;
-            var root = [{'id':0, 'name':'根节点', 'children': ret}];
+            var tmp = angular.copy(categoryRoot);
+            tmp['children'] = ret;
+            var root = [ tmp ];
             var {dir, list} = treeTravel(root, 0, $scope.expand);
 
             $scope.treeRoot = $scope.treeView = root;       
@@ -117,6 +195,7 @@ function indexCtrl($scope, $http, locals)
         $scope.nodeSel = node;
         locals.setObject('/category/select', node.id)
         detail(node.id);
+        docUpdate(node.id);
     }
 
 

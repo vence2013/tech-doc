@@ -52,7 +52,6 @@ exports.search = search;
 async function search(ctx, query) 
 {
     const Tag  = ctx.models['Tag']; 
-    const Document  = ctx.models['Document']; 
     var sql, sqlCond = '';
 
     // 根据搜索条件构建SQL条件
@@ -86,12 +85,10 @@ async function search(ctx, query)
     page = (page>maxpage) ? maxpage : (page<1 ? 1 : page);
 
     // 查询当前分页的列表数据
-    var docids = [];
     var offset = (page - 1) * pageSize;
     sql = "SELECT * FROM `Documents` "+sqlCond+" ORDER BY "+query.order.join(' ')+" LIMIT "+offset+", "+pageSize+" ;";
     var [res, meta] = await ctx.sequelize.query(sql, {logging: false});
     var doclist = res.map((x)=>{
-        docids.push(x.id);
         // 将buffer转换为字符串
         x['content'] = x.content ? x.content.toString() : '';
         return x;

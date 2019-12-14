@@ -1,7 +1,3 @@
 .detail { line-height: 40px; margin-top: 10px; font-size: 16px; }
 
-.rel_doc_list { height: 560px; }
-.rel_doc_list>div { line-height: 25px; border-bottom: 1px dashed #eeeeee; margin-bottom: 5px; }
-.rel_doc_list>div>i { float: right; margin: 7px 5px 0px; cursor: pointer; }
-
-li { font-size: 14px; line-height: 32px; }
+.rel_doc_list { height: 580px; }
