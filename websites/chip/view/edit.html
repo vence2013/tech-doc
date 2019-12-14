@@ -33,23 +33,23 @@
             <!--- 侧栏开始 --->
             <div class="col-md-4 ml-2 rounded border border-secondary">  
                 <div class="ititle">芯片</div>
-                <div class="ilist chipContainer" style="min-height: 100px;">
-                    <span class="badge badge-dark mr-1 mt-1" ng-repeat="x in chiplist"
+                <div class="ilist chipContainer" style="min-height: 50px;">
+                    <span class="badge badge-dark" ng-repeat="x in chiplist"
                         ng-click="chipSelect(x);" >{{x.name}}<i>({{x.width}})</i></span>
                 </div>
                 <div class="ititle">模块</div>
-                <div class="ilist moduleContainer" style="min-height: 100px;">
-                    <span class="badge badge-secondary mr-1 mt-1" ng-repeat="x in modulelist"
+                <div class="ilist moduleContainer" style="min-height: 50px;">
+                    <span class="badge badge-secondary" ng-repeat="x in modulelist"
                         ng-click="moduleSelect(x);" title="{{x.fullname}}">{{x.name}}</span>
                 </div>
                 <div class="ititle">寄存器</div>
-                <div class="ilist registerContainer" style="min-height: 100px;">
-                    <span class="badge badge-secondary mr-1 mt-1" ng-repeat="x in registerlist"
+                <div class="ilist registerContainer" style="min-height: 50px;">
+                    <span class="badge badge-secondary" ng-repeat="x in registerlist"
                         ng-click="registerSelect(x);"  title="{{x.name}}, {{x.fullname}}, {{x.address}}">{{x.name}}</span>
                 </div>
                 <div class="ititle">位组</div>
                 <div class="ilist bitsContainer">
-                    <span class="badge badge-warning mr-1 mt-1" ng-repeat="x in bitslist"
+                    <span class="badge badge-warning" ng-repeat="x in bitslist"
                         ng-click="bitsSelect(x);" title="{{x.name}}, {{x.fullname}}">{{x.name}}</span>
                 </div>
             </div>
