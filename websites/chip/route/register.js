@@ -71,4 +71,19 @@ router.get('/:registerid', async(ctx, next)=>{
 });
 
 
+router.get('/map/:moduleid', async (ctx)=>{
+    const RegisterCtrl = ctx.controls['chip/register'];
+    
+    var req2 = ctx.params;
+    var moduleid = /^\d+$/.test(req2.moduleid) ? parseInt(req2.moduleid) : 0;
+
+    if (moduleid) {
+        var ret = await RegisterCtrl.map(ctx, moduleid);
+        ctx.body = {'error': 0, 'message': ret};
+    } else {
+        ctx.body = {'error': -1, 'message': '无效的模块参数！'};
+    }
+})
+
+
 module.exports = router;

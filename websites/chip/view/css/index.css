@@ -1,3 +1,22 @@
-.ititle { line-height: 30px; margin: 20px 0px 5px; text-indent: 10px; font-style: italic; font-weight: bold; border-bottom: 2px solid #888888; }
+.ititle { line-height: 30px; margin: 20px 0px 5px; text-indent: 10px; 
+    font-style: italic; font-weight: bold; border-bottom: 2px solid #888888; }
 .ilist>span { line-height: 16px; margin: 3px 5px 0px 0px; font-size: 12px; cursor: pointer; }
 .ilist>span>i { margin: 0px 5px; }
+
+/* 寄存器映射 ****************************************************************/
+
+.map_menu { position: fixed; bottom: 0px; left: 0px; width: 800px; height: calc(100% - 50px); 
+    padding: 0px 5px; border-top-right-radius: 5px; background-color: #eeeeee; z-index: 9; 
+    opacity: 0.9; }
+.map_starter { position: fixed; bottom: 0px; left: 0px; width: 300px; height: 50px; 
+    border: 1px solid #086A87; border-top-right-radius: 50px; }
+.map_starter>div { display: inline; float: left; }
+.map_starter>div:last-child { margin-left: 10px; line-height: 48px; font-weight: bold; font-style: italic;; cursor: pointer; }
+.map_starter>div>input { width: 200px; margin: 7px 5px; }
+
+.map { margin: 10px 0px; text-align: center; }
+.map>div { display: inline; float: left; width: 100px; overflow: hidden; margin-left: 1px; }
+.map>div:first-child>div { font-weight: bold; font-style: italic; color: #888888; }
+.map>div>div { background-color: #cccccc; border-bottom: 1px dashed #ffffff; }
+.map>div>div:first-child { border-top: 1px solid #000000; }
+.map>div>div:last-child { border-bottom: 1px solid #000000; }

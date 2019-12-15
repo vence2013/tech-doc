@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="data:;base64,=">  <!-- 禁止加载facon.ico -->
+    <title>寄存器映射</title>
+
+    <!-- 软件包导入(jquery放在anguarjs前， bootstrap放在jquery-ui前) -->
+    <script src="/node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script> 
+    <script src="/node_modules/angular/angular.min.js" type="text/javascript"></script>
+    <!-- bootstrap -->   
+    <script src="/node_modules/popper.js/dist/umd/popper.min.js" type="text/javascript"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+    <link  href="/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- toastr(notify) -->
+    <script src="/node_modules/toastr/build/toastr.min.js" type="text/javascript"></script>
+    <link  href="/node_modules/toastr/build/toastr.min.css" rel="stylesheet" /> 
+    <!-- font-awesome -->
+    <link  href="/node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+
+    <!-- 自定义 -->   
+    <link  href="/view/css/all.css" rel="stylesheet" />
+    <script src="/view/js/all.js" type="text/javascript"></script>
+    <link  href="/chip/view/css/index.css" rel="stylesheet" />
+    <script src="/chip/view/js/map.js" type="text/javascript"></script>  
+</head>
+<body ng-app="mapApp">
+
+    <div ng-include="'/view/header.html'"></div>
+    <div ng-controller="mapCtrl" style="overflow-x: auto;">        
+        <div class="map">
+            <div ng-repeat="x in reglist">
+                <div>{{x.name}}</div>
+                <div ng-repeat="y in x.bitslist2"
+                    style="height: {{20 * y.cnt}}px; line-height:{{20 * y.cnt}}px">{{y.name}}</div>
+            </div>
+        </div>
+
+        <div class="map_menu" ng-show="menu_show">
+            <a href="#" style="float: right; font-size: 16px; margin: 0px 5px;" ng-click="menu_show=false"><i class="fa fa-close"></i></a>
+            <div class="ititle">芯片</div>
+            <div class="ilist chipContainer" style="min-height: 50px;">
+                <span class="badge badge-dark" ng-repeat="x in chiplist"
+                    ng-click="chipSelect(x);" >{{x.name}}<i>({{x.width}})</i></span>
+            </div>
+            <div class="ititle">模块</div>
+            <div class="ilist moduleContainer" style="min-height: 50px;">
+                <span class="badge badge-secondary" ng-repeat="x in modulelist"
+                    ng-click="moduleSelect(x);" title="{{x.fullname}}">{{x.name}}</span>
+            </div>
+        </div>
+        <div class="map_starter" ng-show="!menu_show">
+            <div>
+                <input type="text" class="form-control" placeholder="搜索寄存器或位组" />
+            </div>
+            <div class="triger" ng-click="menu_show=true">选择模块</div> 
+        </div>
+    </div>
+
+</body>
+</html>

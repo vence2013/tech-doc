@@ -11,7 +11,7 @@ function navCtrl($scope) {
         {'name':'Category', 'url':'/category'},
         {'name':'Chip', 'url':'/chip', 'children':[
             {'name':'document', 'url':''},
-            {'name':'map', 'url':''},
+            {'name':'map', 'url':'/chip/view/map.html'},
             {'name':'edit', 'url':'/chip/view/edit.html'},
         ]},
         {'name':'System', 'url':'/view/system.html'}
