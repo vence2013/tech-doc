@@ -15,6 +15,76 @@ function mapCtrl($scope, $http, locals)
     $scope.menu_show = false;
     var bitslist_all = [];  //
 
+
+    var mouse_pos_x = 0;
+    $(document).mousemove(function(e){ mouse_pos_x = e.pageX; }); 
+
+    $scope.reg_info_display = (reg) => {
+        $(".map_info")
+        .html('')
+        .append("<div><span>寄存器：<b>"+reg.name+"</b></span><span>全称：<b>"+reg.fullname+"</b></span></div>")
+        .append("<div><span>地址：<b>"+reg.address+"</b></span></div>")
+        .append("<div><span>ID<b>"+reg.id+"</b></span><span>创建时间：<b>"+reg.createdAt.substring(0, 10)+
+            "</b></span><span>更新时间：<b>"+reg.updatedAt.substring(0, 10)+"</b></span></div>")
+        .append("<div>"+reg.desc.replace(/\n/g, '<br />')+"</div>");
+        
+        var win_width  = $(window).width();
+        if (mouse_pos_x < win_width/2) {
+            $(".map_info")
+            .removeAttr('style')
+            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'right':'0px'});
+        } else {
+            $(".map_info")
+            .removeAttr('style')
+            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'left':'0px'});
+        }
+    }
+
+    $scope.bits_info_display = (bits) => {
+        /* 将连续的位组组合 
+         * 1. 位组解析为位序数字数组， 排序
+         * 2. 按是否连续组成字符串
+         */
+        var list = bits.bitlist.split(',').map((x)=>{ return parseInt(x); });
+        var list2= list.sort((a, b)=> { return a-b; });
+        var bitstr = '';
+        for (last=-100, continues=0, i=0; i<list2.length; i++) {            
+            if ((last+1) == list2[i]) {                
+                continues = 1;
+                if ((i+1) == list2.length) bitstr += ':'+list2[i];
+            } else {                
+                if (continues) bitstr += ':'+list2[i];
+                else           bitstr += ','+list2[i];
+                continues = 0;
+            }            
+            last = list2[i];
+        }
+        /* 复位值无法显示为十六进制，因为有些为x */
+
+        $(".map_info")
+        .html('')
+        .append("<div><span>位组：<b>"+bits.name+"</b></span><span>全称：<b>"+bits.fullname+"</b></span></div>")
+        .append("<div><span>位序：<b>"+bitstr.substr(1)+"</b></span><span>复位值：<b>"+bits.valuelist+"</b></span><span>访问权限：<b>"+bits.rw+"</b></span></div>")
+        .append("<div><span>ID：<b>"+bits.id+"</b></span><span>创建时间：<b>"+bits.createdAt.substring(0, 10)+
+            "</b></span><span>更新时间：<b>"+bits.updatedAt.substring(0, 10)+"</b></span></div>")
+        .append("<div>"+bits.desc.replace(/\n/g, '<br />')+"</div>");
+        
+        var win_width  = $(window).width();
+        if (mouse_pos_x < win_width/2) {
+            $(".map_info")
+            .removeAttr('style')
+            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'right':'0px'});
+        } else {
+            $(".map_info")
+            .removeAttr('style')
+            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'left':'0px'});
+        }
+    }
+
+    $scope.info_close = (bits) => {
+        //$('.map_info')
+    }
+
     /* 1. 获取芯片列表，选择一个芯片（/chip/map/chipid或第1个芯片）
      * 2. 获取对应的模块， 选择一个模块（/chip/map/chipid/moduleid或第1个模块）
      * 3. 获取对应的寄存器，显示映射
@@ -25,7 +95,7 @@ function mapCtrl($scope, $http, locals)
 
     function mapShow(reglist) 
     {
-        $('.map').css('width', 120+101*reglist.length);
+        $('.map').css('width', 102+101*reglist.length);
             
         var width = $scope.chip.width;
         /* 重新构建位组序列，需求是：
@@ -80,7 +150,7 @@ function mapCtrl($scope, $http, locals)
 
         var bitslist = [];
         for (var i = 0; i < width; i++)
-            bitslist.push({'name':'Bit:'+i});
+            bitslist.push({'name':'Bit:'+i, 'cnt':1});
         reglist.splice(0,0,{'name':'Bits', 'bitslist2':bitslist});
         
         $scope.reglist = reglist;
