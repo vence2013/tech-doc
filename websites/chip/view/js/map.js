@@ -1,4 +1,4 @@
-var app = angular.module('mapApp', [])
+var app = angular.module('mapApp', ['angular-clipboard'])
 
 loadResource(app).controller('mapCtrl', mapCtrl);
 
@@ -13,13 +13,137 @@ function mapCtrl($scope, $http, locals)
      */
     $scope.reglist  = [];
     $scope.menu_show = false;
-    var bitslist_all = [];  //
+    var reglist_all = [];
 
+    $scope.bitslist_str = '';
+
+    $scope.copySuccess = ()=>{
+        toastr.info('Success! Copyed bits list.');
+    }
+
+    /* 选择位组 **************************************************************/
+
+    var bitslist_sel = []; // 选中位组的ID数组
+
+    function bitsShow(bitslist)
+    {
+        $(".map_bits_select").removeClass("map_bits_select").addClass("map_bits_valid");
+        for (var i = 0; i < bitslist.length; i++) {
+            $("div[idx='b"+bitslist[i]+"']").removeClass("map_bits_valid").addClass("map_bits_select");
+        }
+
+        $scope.bitslist_str = $scope.copyText = bitslist.join(',');
+    }
+
+    $scope.bitsUpdate = () => {
+        var bitslist = $scope.bitslist_str.split(',');
+        
+        var idlist = [];
+        for (var i = 0; i < bitslist.length; i++) {
+            id = parseInt(bitslist[i]);
+            idlist.push(id);
+        }
+        
+        bitslist_sel = idlist;
+        bitsShow(idlist);
+    }
+
+    /* 1. 更新选中位组：
+     *    当前点击位组时：如果当前已选择，则取消选择。否则，反之
+     *    当前点击寄存器时：如果该寄存器的位组已全选中，则全部取消选择。否则，全部选择
+     * 2. 显示选中位组
+     */
+    $scope.bitsSelect = (idstr, reg) => {
+        var id = parseInt(idstr.substr(1));
+        if (!id) return ;
+
+        if (idstr[0] == 'b') {
+            var idx= bitslist_sel.indexOf(id);
+            if (idx == -1) {
+                bitslist_sel.push(id);
+            } else {
+                bitslist_sel.splice(idx, 1);
+            }
+        } else if (idstr[0] == 'r') {
+            if (!reg.bitslist) return ;
+            var selcnt = 0;
+            var bitslist = [];
+            for (var i = 0; i < reg.bitslist.length; i++) {
+                var id = reg.bitslist[i].id;
+                bitslist.push(id);
+                if (bitslist_sel.indexOf(id) != -1) selcnt++;
+            }
+
+            if (selcnt == reg.bitslist.length) {
+                // 取消该寄存器所有位组的选择
+                for (var i = 0; i < bitslist.length; i++) {
+                    var idx = bitslist_sel.indexOf(bitslist[i]);
+                    bitslist_sel.splice(idx, 1);
+                }
+            } else {
+                // 选择该寄存器的所有位组
+                for (var i = 0; i < bitslist.length; i++) {
+                    if (bitslist_sel.indexOf(bitslist[i]) == -1) 
+                        bitslist_sel.push(bitslist[i]);
+                }
+            }
+        } else 
+            return ;
+        
+        bitsShow(bitslist_sel);
+    }
+
+    /* 寄存器&位组搜索 *******************************************************/
+
+    $scope.str = ''; // 寄存器&位组搜索，搜索名称和全称
+    $scope.$watch('str', mapSearch, true);
+
+    function mapSearch()
+    {
+        if (!$scope.module) return;
+
+        var str = $scope.str;
+        if (!str) mapShow(reglist_all);
+        else {
+            // 搜索寄存器的：name, fullname, 位组的：name, fullname
+            var list = [];
+
+            for (var i=0; i<reglist_all.length; i++) {
+                var reg = reglist_all[i];
+
+                if (!reg.id) continue; // 无效的寄存器，比如开头
+                
+                if ((reg.name.indexOf(str)!=-1) || (reg.fullname.indexOf(str)!=-1)) {
+                    
+                    list.push(reg);
+                } else {
+                    for (var j=0; reg.bitslist && (j<reg.bitslist.length); j++) {
+                        var bits = reg.bitslist[j];
+                        if ((bits.name.indexOf(str)!=-1) || (bits.fullname && (bits.fullname.indexOf(str)!=-1))) 
+                        {
+                            list.push(reg);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            mapShow(list);
+        }
+    }
+
+    /* 信息显示 **************************************************************/
 
     var mouse_pos_x = 0;
     $(document).mousemove(function(e){ mouse_pos_x = e.pageX; }); 
 
+    var info_close_timer = null;
     $scope.reg_info_display = (reg) => {
+        if (info_close_timer) {
+            window.clearTimeout(info_close_timer);
+            info_close_timer = null;
+        }
+
         $(".map_info")
         .html('')
         .append("<div><span>寄存器：<b>"+reg.name+"</b></span><span>全称：<b>"+reg.fullname+"</b></span></div>")
@@ -41,6 +165,11 @@ function mapCtrl($scope, $http, locals)
     }
 
     $scope.bits_info_display = (bits) => {
+        if (info_close_timer) {
+            window.clearTimeout(info_close_timer);
+            info_close_timer = null;
+        }
+
         /* 将连续的位组组合 
          * 1. 位组解析为位序数字数组， 排序
          * 2. 按是否连续组成字符串
@@ -82,7 +211,9 @@ function mapCtrl($scope, $http, locals)
     }
 
     $scope.info_close = (bits) => {
-        //$('.map_info')
+        info_close_timer = window.setTimeout(()=>{
+            $('.map_info').css('display', 'none');
+        }, 3000);        
     }
 
     /* 1. 获取芯片列表，选择一个芯片（/chip/map/chipid或第1个芯片）
@@ -115,7 +246,7 @@ function mapCtrl($scope, $http, locals)
             var bits = [];
             for (j=0; j<width; j++) bits[j] = {'id':0, 'cnt':1};
             // 构建寄存器位与所属位组的关系
-            for (j=0; j<reg.bitslist.length; j++) {
+            for (j=0; reg.bitslist && (j<reg.bitslist.length); j++) {
                 var bits2 = reg.bitslist[j];
                 bits2.bitlist.split(',').map((x)=>{
                     var idx = parseInt(x);
@@ -166,22 +297,15 @@ function mapCtrl($scope, $http, locals)
             /* 将寄存器根据地址排序
              * 1. 将地址字符串转换为整数
              * 2. 使用sort对address域排序
-             * 
-             * 注意：遍历寄存器的过程中，搜索所有位组数据到bitslist_all[]
              */
-            bitslist_all = []; // 刷新位组列表
             // 将寄存器根据地址排序
             var list = ret.map((x)=>{
-                // 搜集该寄存器下的位组
-                for (var i = 0; i < x.bitslist.length; i++) 
-                    bitslist_all.push(x.bitslist[i]);
-
                 x['address'] = parseInt(x['address'].substr(2),16);
                 return x;
             });
-            var list2 = list.sort(function(a,b){ return a.address-b.address; });
+            reglist_all = list.sort(function(a,b){ return a.address-b.address; });
             
-            mapShow(list2);     
+            mapShow(reglist_all);     
         })
     }
 

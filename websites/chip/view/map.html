@@ -18,6 +18,8 @@
     <link  href="/node_modules/toastr/build/toastr.min.css" rel="stylesheet" /> 
     <!-- font-awesome -->
     <link  href="/node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- angularjs clipboard -->
+    <script type="text/javascript" src="/node_modules/angular-clipboard/angular-clipboard.js"></script>
 
     <!-- 自定义 -->   
     <link  href="/view/css/all.css" rel="stylesheet" />
@@ -28,17 +30,22 @@
 <body ng-app="mapApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div ng-controller="mapCtrl" class="mt-2 mx-1" style="overflow-x: auto;">        
+    <div ng-controller="mapCtrl" class="mt-2 mx-1" style="overflow-x: auto;">
         <div class="map">
             <div ng-repeat="x in reglist">
+                <!--- 寄存器 --->
                 <div title="{{x.name}}" idx="r{{x.id}}"
-                    ng-mouseenter="reg_info_display(x);" ng-mouseleave="info_close();">{{x.name|limitTo:10}}</div>
-                <div ng-repeat="y in x.bitslist2" title="{{y.name}}" idx="r{{y.id}}"
+                    ng-mouseenter="reg_info_display(x);" ng-mouseleave="info_close();" 
+                    ng-click="bitsSelect('r'+x.id, x)">{{x.name|limitTo:10}}</div>
+                <!-- 位组 --->
+                <div ng-repeat="y in x.bitslist2" title="{{y.name}}" idx="b{{y.id}}"
                     ng-class="{'map_bits_valid':y.id}" style="height: {{21 * y.cnt}}px; line-height:{{21 * y.cnt}}px" 
-                    ng-mouseenter="y.id && bits_info_display(y);" ng-mouseleave="info_close();">{{y.name|limitTo:10}}</div>
+                    ng-mouseenter="y.id && bits_info_display(y);" ng-mouseleave="info_close();" 
+                    ng-click="bitsSelect('b'+y.id)">{{y.name|limitTo:10}}</div>
             </div>
         </div>
 
+        <!--- 模块选择菜单 --->
         <div class="map_menu" ng-show="menu_show" ng-mouseleave="menu_show=false">
             <a href="#" style="float: right; font-size: 16px; margin: 0px 5px;" ng-click="menu_show=false"><i class="fa fa-close"></i></a>
             <div class="ititle">芯片</div>
@@ -52,13 +59,21 @@
                     ng-click="moduleSelect(x);" title="{{x.fullname}}">{{x.name}}</span>
             </div>
         </div>
+        <div class="map_menu" ng-show="select_show" ng-mouseleave="select_show=false">            
+            <div><textarea class="form-control mt-2 mr-1" rows="30" ng-model="bitslist_str"></textarea></div>
+            <div style="position:inherit; bottom: 10px;">
+                <a href="#" clipboard text="copyText" on-copied="copySuccess()">复制已选位组</a>
+                <a href="#" ng-click="bitsUpdate();">更新选择位组</a>
+            </div>
+        </div>
+        <!--- 开始菜单 ---->
         <div class="map_starter" ng-show="!menu_show">
             <div>
-                <input type="text" class="form-control mx-2 my-1" placeholder="搜索寄存器或位组" />
+                <input type="text" class="form-control mx-2 my-1" ng-model="str" placeholder="搜索寄存器或位组" />
             </div>
             <div>
-                <a href="#">复制选中位组</a>
-                <a href="#" ng-click="menu_show=true">模块选择菜单</a>
+                <a href="#" ng-click="select_show=true">已选位组</a>
+                <a href="#" ng-click="menu_show=true">模块选择</a>
             </div>
         </div>
 
