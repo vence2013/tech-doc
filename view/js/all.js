@@ -9,10 +9,9 @@ function navCtrl($scope) {
         ]},
         {'name':'Tag', 'url':'/tag'},
         {'name':'Category', 'url':'/category'},
-        {'name':'Chip', 'url':'/chip', 'children':[
-            {'name':'document', 'url':''},
-            {'name':'map', 'url':'/chip/view/map.html'},
+        {'name':'Chip', 'url':'/chip', 'children':[            
             {'name':'edit', 'url':'/chip/view/edit.html'},
+            {'name':'function', 'url':'/chip/function/0'},
         ]},
         {'name':'System', 'url':'/view/system.html'}
     ];

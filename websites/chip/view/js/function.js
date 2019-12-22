@@ -1,8 +1,8 @@
-var app = angular.module('editApp', [])
+var app = angular.module('functionApp', [])
 
-loadResource(app).controller('editCtrl', editCtrl);
+loadResource(app).controller('functionCtrl', functionCtrl);
 
-function editCtrl($scope, $http, $interval) 
+function functionCtrl($scope, $http, $interval) 
 {
     // 标签数据    
     $scope.tagopts = tagopts = {'str':'', 'limit':50};    
@@ -12,7 +12,6 @@ function editCtrl($scope, $http, $interval)
     $scope.docid = docid = $('.wrapper').attr('docid');
     $scope.doc   = null;
 
-    console.log(docid, $scope.docid);
     var content = '';
     var editor = editormd("editormd", {
         path : '/node_modules/editor.md/lib/',
