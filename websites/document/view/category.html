@@ -32,7 +32,7 @@
 <body ng-app="categoryApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper container-fluid mt-2" ng-controller="categoryCtrl">
+    <div class="layout2 container-fluid mt-2" ng-controller="categoryCtrl">
         <div class="row">
             <!--- 侧栏开始 --->
             <div class="col-md-4 ml-2 rounded border border-secondary">  
@@ -74,18 +74,19 @@
                                         <a class="page-link" href="#">{{x.name}}</a>
                                 </li>
                                 <li class="page-item">
-                                    <input class="page-link" type="text" placeholder="输入后回车" ng-model="pagejump" ng-keydown="$event.keyCode == 13 && jump();" />
+                                    <input class="page-link" type="text" placeholder="跳转页码" title="回车跳转"
+                                        ng-model="pageGoto" ng-keydown="$event.keyCode == 13 && pageJump()" />
                                 </li>
                             </ul>
                         </nav>
                     </div>
                     <div class="pageinfo">
-                        <span class="info">当前在第<b>{{page.cur}}</b>页</span>                        
-                        <span class="info">每页<b>{{page.size}}</b>条</span>
-                        <span class="info">共<b>{{page.max}}</b>页</span>
-                        <span class="info">共<b>{{page.total}}</b>条</span>
+                        <span>当前在第<b>{{page.cur}}</b>页</span>                        
+                        <span>每页<b>{{page.size}}</b>条</span>
+                        <span>共<b>{{page.max}}</b>页</span>
+                        <span>共<b>{{page.total}}</b>条</span>
                     </div>
-                    <a id="backupinfile" href="#">Backup in file</a>
+                    <a id="exportfiles" href="#" ng-click="export();">导出选中文档</a>
                 </div>
                 <!--- 分页信息结束 --->
             </div>

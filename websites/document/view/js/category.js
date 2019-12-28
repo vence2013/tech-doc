@@ -4,6 +4,8 @@ loadResource(app).controller('categoryCtrl', categoryCtrl);
 
 function categoryCtrl($scope, $http, locals) 
 {
+    /* 目录 -----------------------------------------------------------------*/
+
     const categoryRoot = {'id':0, 'name':'根节点', 'createdAt':'0000-00-00'};
     // 目录树相关
     $scope.treeRoot = [];
@@ -15,35 +17,6 @@ function categoryCtrl($scope, $http, locals)
     $scope.predicate = "";
     $scope.comparator = false;
     $scope.nodeSel = angular.copy(categoryRoot);
-    // 文档搜索
-    $scope.docOpts = docOpts = {'page':1, 'pageSize':24, 'str':''};
-    $scope.page = pageSet(0, docOpts.pageSize, 10, 0);
-    
-    var docUpdateTimer = null;
-    $scope.$watch('docOpts', ()=>{
-        /* 避免在输入过程中频繁请求服务器 */
-        if (docUpdateTimer)
-            window.clearTimeout(docUpdateTimer);
-        docUpdateTimer = window.setTimeout(docUpdate, 500);  
-    }, true);
-
-    // 更新在目录中的文档列表
-    function docUpdate(categoryid)
-    {
-        docUpdateTimer = null;
-
-        categoryid = categoryid ? categoryid : $scope.nodeSel.id;
-
-        $http.get('/document/category/in/'+categoryid, {
-            'params': $scope.docOpts
-        }).then((res)=>{
-            if (errorCheck(res)) return ;
-
-            var ret = res.data.message;
-            $scope.doclist = ret.list;
-            $scope.page = pageSet(ret.total, docOpts.pageSize, 10, ret.page);  
-        })
-    }
 
     function update() {
         $http.get('/category/tree/0', {}).then((res)=>{
@@ -77,9 +50,59 @@ function categoryCtrl($scope, $http, locals)
         docUpdate(node.id);
     }
 
-
     $scope.toggle = (node, expanded) => {
         var ids = $scope.listExpand.map(node => { return node.id; });
         locals.setObject('/document/category/expaned', ids);
+    }
+
+    /* 文档 -----------------------------------------------------------------*/
+
+    $scope.docOpts = docOpts = {'page':1, 'pageSize':24, 'str':''};
+    $scope.page = pageSet(0, docOpts.pageSize, 10, 0);
+    
+    var docUpdateTimer = null;
+    $scope.$watch('docOpts', ()=>{
+        /* 避免在输入过程中频繁请求服务器 */
+        if (docUpdateTimer)
+            window.clearTimeout(docUpdateTimer);
+        docUpdateTimer = window.setTimeout(docUpdate, 500);  
+    }, true);
+
+    // 更新在目录中的文档列表
+    function docUpdate(categoryid)
+    {
+        docUpdateTimer = null;
+        categoryid = categoryid ? categoryid : $scope.nodeSel.id;
+
+        $http.get('/document/category/in/'+categoryid, {
+            'params': $scope.docOpts
+        }).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            var ret = res.data.message;
+            $scope.doclist = ret.list;
+            $scope.page = pageSet(ret.total, docOpts.pageSize, 10, ret.page);  
+        })
+    }
+
+    $scope.pageGoto = '';
+    $scope.pageJump = () => {
+        var num = parseInt($scope.pageGoto);
+        if (!num || (num <= 0) || (num > $scope.page.max))
+            return toastr.warning('请输入有效页码！');
+        
+        $scope.pageGoto = '';
+        docOpts.page = num;
+    }
+
+    $scope.export = () => {
+        // str & category
+
+        $http.get('/document/export', {params: {}}).then((res)=>{
+            if (errorCheck(res)) return ;
+            
+            console.log(res.data.message);
+            window.open('/export/file/path?t='+Math.random());
+        })
     }
 }

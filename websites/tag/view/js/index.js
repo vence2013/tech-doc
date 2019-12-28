@@ -83,6 +83,5 @@ function indexCtrl($scope, $http)
         
         $scope.pageGoto = '';
         opts.page = num;
-        update();
     }
 }

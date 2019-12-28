@@ -99,4 +99,20 @@ function indexCtrl($scope, $http)
         opts.page = num;
         docUpdate();
     }
+
+    $scope.export = () => {
+        var query = angular.copy($scope.opts);
+        var createget = $scope.opts.createget;
+        var createlet = $scope.opts.createlet;
+        query['createget'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createget)) ? createget : '';
+        query['createlet'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createlet)) ? createlet : '';
+        query['tag'] = $scope.taglink;
+
+        $http.get('/document/export', {params: query}).then((res)=>{
+            if (errorCheck(res)) return ;
+            
+            console.log(res.data.message);
+            window.open('/export/file/path?t='+Math.random());
+        })
+    }
 }

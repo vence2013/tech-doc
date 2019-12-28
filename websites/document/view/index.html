@@ -71,7 +71,7 @@
                 <div class="list">
                     <div ng-repeat="x in doclist" ng-mouseenter='fsel=x;' ng-mouseleave='fsel=null' ng-class="{selitem:(fsel==x)}">
                         <span>
-                            <b><a href="/document/display/{{x.id}}" target="_blank">{{x.title|limitTo:100}} </a></b>
+                            <b><a href="/document/display/{{x.id}}">{{x.title|limitTo:100}} </a></b>
                             {{x.createdAt|limitTo:10}}
                         </span>
                         <a ng-show="fsel==x" href="/document/edit/{{x.id}}"><i class="fa fa-edit"></i></a>
@@ -95,12 +95,12 @@
                         </nav>
                     </div>
                     <div class="pageinfo">
-                        <span class="info">当前在第<b>{{page.cur}}</b>页</span>                        
-                        <span class="info">每页<b>{{page.size}}</b>条</span>
-                        <span class="info">共<b>{{page.max}}</b>页</span>
-                        <span class="info">共<b>{{page.total}}</b>条</span>
+                        <span>当前在第<b>{{page.cur}}</b>页</span>                        
+                        <span>每页<b>{{page.size}}</b>条</span>
+                        <span>共<b>{{page.max}}</b>页</span>
+                        <span>共<b>{{page.total}}</b>条</span>
                     </div>
-                    <a id="backupinfile" href="#">Backup in file</a>
+                    <a id="exportfiles" href="#" ng-click="export();">导出选中文档</a>
                 </div>
                 <!--- 分页信息结束 --->
             </div>

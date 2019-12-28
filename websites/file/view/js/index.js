@@ -41,7 +41,7 @@ function indexCtrl($scope, $http, FileUploader)
     /* 文件搜索，删除 -------------------------------------------------------*/
 
     $scope.opts = opts = {'str':'', 'ext':'', 'createget':'', 'createlet':'', 
-        'sizeget':'', 'sizelet':'', 'order':'4', 'page':1, 'pageSize':23};
+        'sizeget':'', 'sizelet':'', 'order':'4', 'page':1, 'pageSize':24};
     $scope.page = pageSet(0, opts.pageSize, 10, 0);
     $scope.filelist = [];
 
@@ -100,7 +100,6 @@ function indexCtrl($scope, $http, FileUploader)
         
         $scope.pageGoto = '';
         opts.page = num;
-        update();
     }
 
     $scope.copySuccess = ()=>{

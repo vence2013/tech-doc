@@ -32,7 +32,7 @@
 <body ng-app="indexApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper container-fluid mt-2" ng-controller="indexCtrl">
+    <div class="layout2 container-fluid mt-2" ng-controller="indexCtrl">
         <div class="row">
             <!--- 侧栏开始 --->
             <div class="col-md-4 ml-2 rounded border border-secondary">  
@@ -59,7 +59,7 @@
                 </div>
                 <hr />
                 <div class="row mt-3">
-                    <div class="col list rel_doc_list">
+                    <div class="col list doc_list">
                         <div ng-repeat="x in doclist">
                             <span>
                                 <b><a href="/document/display/{{x.id}}" title="{{x.content|limitTo:300}}" target="_blank">{{x.content|limitTo:50}} </a></b>
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" class="form-control" ng-model="docopts.str" placeholder="搜索文章， 多个字符串用空格分开">
+                        <input type="text" class="form-control" ng-model="docOpts.str" placeholder="搜索文章， 多个字符串用空格分开">
                     </div>
                     <div class="col-md">
                         <input type="text" class="form-control" ng-model="predicate" placeholder="目录过滤">
@@ -85,18 +85,16 @@
                 </div>
             </div>
             <!--- 侧栏结束 --->
-            <div class="col-md">
-                <div style="height: 800px; overflow: auto;">
-                    <treecontrol class="tree-classic" options="treeOptions" filter-expression="predicate" filter-comparator="comparator" 
-                        tree-model="treeView" expanded-nodes="listExpand" selected-node="nodeSelected"
-                        on-selection="select(node, selected)" on-node-toggle="toggle(node, expanded);">
-                            <span>{{node.name}} /{{node.id}}</span>
-                    </treecontrol>
-                </div>
+            <div class="col-md border rounded mx-3" style="overflow: auto;">
+                <treecontrol class="tree-classic" options="treeOptions" filter-expression="predicate" filter-comparator="comparator" 
+                    tree-model="treeView" expanded-nodes="listExpand" selected-node="nodeSelected"
+                    on-selection="select(node, selected)" on-node-toggle="toggle(node, expanded);">
+                        <span>{{node.name}} /{{node.id}}</span>
+                </treecontrol>
             </div>
         </div>
 
-        <!-- 选中标签删除确认窗口 -->
+        <!-- 选中目录删除确认窗口 -->
         <div id="deleteWnd" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">

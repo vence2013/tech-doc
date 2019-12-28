@@ -18,8 +18,6 @@
     <link  href="/node_modules/toastr/build/toastr.min.css" rel="stylesheet" /> 
     <!-- font-awesome -->
     <link  href="/node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-    <!-- angularjs clipboard -->
-    <script type="text/javascript" src="/node_modules/angular-clipboard/angular-clipboard.js"></script>
     <!-- Magnific Popup -->
     <link rel="stylesheet" href="/node_modules/magnific-popup/dist/magnific-popup.css">
     <script type="text/javascript" src="/node_modules/magnific-popup/dist/jquery.magnific-popup.js"></script>
@@ -33,12 +31,12 @@
 <body ng-app="pictureApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper2 container-fluid mt-2" ng-controller="pictureCtrl">
+    <div class="layout1 container-fluid mt-2" ng-controller="pictureCtrl">
         <div class="row">
             <div class="col-md piclist"></div>
         </div>
         <div class="row">
-            <div class="col-md-1 pr-0">
+            <div class="col-md-2 pr-0">
                 <input type="text" class="form-control" ng-model="opts.str" placeholder="文件名称搜索">
             </div>
             <div class="col-md-2 pr-0">
@@ -63,39 +61,22 @@
                                         <a class="page-link" href="#">{{x.name}}</a>
                                 </li>
                                 <li class="page-item">
-                                    <input class="page-link" type="text" placeholder="输入后回车" ng-model="pagejump" ng-keydown="$event.keyCode == 13 && jump();" />
+                                    <input class="page-link" type="text" placeholder="跳转页码" title="回车跳转" 
+                                        ng-model="pageGoto" ng-keydown="$event.keyCode == 13 && pageJump()" />
                                 </li>
                             </ul>
                         </nav>
                     </div>
                     <div class="pageinfo">
-                        <span class="info">当前在第<b>{{page.cur}}</b>页</span>                        
-                        <span class="info">每页<b>{{page.size}}</b>条</span>
-                        <span class="info">共<b>{{page.max}}</b>页</span>
-                        <span class="info">共<b>{{page.total}}</b>条</span>
+                        <span>当前在第<b>{{page.cur}}</b>页</span>                        
+                        <span>每页<b>{{page.size}}</b>条</span>
+                        <span>共<b>{{page.max}}</b>页</span>
+                        <span>共<b>{{page.total}}</b>条</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 选中标签删除确认窗口 -->
-        <div id="deleteWnd" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title font-weight-bold font-italic">文件删除确认</h5>
-                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                        该操作将删除文件，如果仍有文档引用该文件，将无效。确认删除吗？
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger px-4" data-dismiss="modal" ng-click="delete();">删除</button>
-                        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">取消</button>                
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
 </body>

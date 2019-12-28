@@ -1,8 +1,8 @@
-var app = angular.module('pictureApp', ['angular-clipboard'])
+var app = angular.module('pictureApp', [])
 
 loadResource(app).controller('pictureCtrl', pictureCtrl);
 
-function pictureCtrl($scope, $http, clipboard) 
+function pictureCtrl($scope, $http) 
 {
     $scope.opts = opts = {'str':'', 'ext':'png jpg gif', 'order':'4', 'page':1, 'pageSize':45};
     $scope.page = pageSet(0, opts.pageSize, 10, 0);
@@ -48,5 +48,15 @@ function pictureCtrl($scope, $http, clipboard)
                 
             });
         })
+    }
+
+    $scope.pageGoto = '';
+    $scope.pageJump = () => {
+        var num = parseInt($scope.pageGoto);
+        if (!num || (num <= 0) || (num > $scope.page.max))
+            return toastr.warning('请输入有效页码！');
+        
+        $scope.pageGoto = '';
+        opts.page = num;
     }
 }
