@@ -3,7 +3,5 @@
 .uploadblock>div>.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }
 .uploadblock>div>.list>div>i { float: right; margin: 5px; cursor: pointer; }
 
-.itemsel { background-color: #eeeeee; }
-
 .piclist>div { display: inline; float: left; border: 1px solid rgb(128, 42, 13); border-radius: 3px; margin: 15px 10px 0px 0px; }
 .piclist>div>a>img { height: 100px; border-radius: 3px; }

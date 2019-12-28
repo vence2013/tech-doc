@@ -31,16 +31,16 @@
 <body ng-app="editApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper container-fluid mt-2" ng-controller="editCtrl" docid="<%=id%>">
+    <div class="layout2 container-fluid mt-2" ng-controller="editCtrl" docid="<%=id%>">
         <div class="row">
             <!--- 侧栏开始 --->
             <div class="col-md-4 ml-2 rounded border border-secondary">  
                 <div class="row mt-3">
                     <div class="col-md-2 pr-0">
-                        <button type="button" class="btn btn-block btn-warning" ng-click="submit()">{{(docid=='0') ? "创建" : "编辑"}}</button>
+                        <button type="button" class="btn btn-block btn-warning" ng-click="submit()">{{isEdit ? "编辑" : "创建"}}</button>
                     </div>
                     <div class="col-md-2 pr-0">
-                        <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#deleteWnd" ng-show="docid!='0'">删除</button>
+                        <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#deleteWnd" ng-show="isEdit">删除</button>
                     </div>
                     <div class="col-md"></div>
                     <div class="col-md-4">
@@ -59,12 +59,12 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-md card card-body bg-light mx-3 py-2 px-1">
-                        <div class="taglist tagrelate">
-                            <span class="badge badge-success" ng-repeat="x in taglink" ng-click="tagUnselect(x);">{{x}}</span>
+                        <div class="tagrelate">
+                            <span class="badge badge-success tagitem" ng-repeat="x in taglink" ng-click="tagUnselect(x);">{{x}}</span>
                         </div>
                         <hr />
-                        <div class="taglist tagunrelate">
-                            <span class="badge badge-secondary" ng-repeat="x in taglist" ng-click="tagSelect(x);">{{x}}</span>
+                        <div class="tagunrelate">
+                            <span class="badge badge-secondary tagitem" ng-repeat="x in taglist" ng-click="tagSelect(x);">{{x}}</span>
                         </div>
                     </div>
                 </div>

@@ -28,7 +28,7 @@
 <body ng-app="indexApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper container-fluid mt-2" ng-controller="indexCtrl">
+    <div class="layout2 container-fluid mt-2" ng-controller="indexCtrl">
         <div class="row">
             <!--- 侧栏开始 --->
             <div class="col-md-4 ml-2 rounded border border-secondary">  
@@ -56,12 +56,12 @@
                 </div>
                 <div class="row mt-3 uploadblock" nv-file-drop="" uploader="uploader">
                     <div class="col-md card card-body bg-light mx-3 py-2 px-1">
-                        <div class="taglist tagrelate">
-                            <span class="badge badge-success" ng-repeat="x in taglink" ng-click="tagUnselect(x.name);">{{x}}</span>
+                        <div class="tagrelate">
+                            <span class="badge badge-success tagitem" ng-repeat="x in taglink" ng-click="tagUnselect(x);">{{x}}</span>
                         </div>
                         <hr />
-                        <div class="taglist tagunrelate">
-                            <span class="badge badge-secondary" ng-repeat="x in taglist" ng-click="tagSelect(x.name);">{{x.name}}</span>
+                        <div class="tagunrelate">
+                            <span class="badge badge-secondary tagitem" ng-repeat="x in taglist" ng-click="tagSelect(x);">{{x}}</span>
                         </div>
                     </div>
                 </div>
@@ -69,12 +69,12 @@
             <!--- 侧栏结束 --->
             <div class="col-md">
                 <div class="list">
-                    <div ng-repeat="x in doclist">
+                    <div ng-repeat="x in doclist" ng-mouseenter='fsel=x;' ng-mouseleave='fsel=null' ng-class="{selitem:(fsel==x)}">
                         <span>
-                            <b><a href="/document/display/{{x.id}}" target="_blank">{{x.content|limitTo:60}} </a></b>
+                            <b><a href="/document/display/{{x.id}}" target="_blank">{{x.title|limitTo:100}} </a></b>
                             {{x.createdAt|limitTo:10}}
                         </span>
-                        <a href="/document/edit/{{x.id}}"><i class="fa fa-edit"></i></a>
+                        <a ng-show="fsel==x" href="/document/edit/{{x.id}}"><i class="fa fa-edit"></i></a>
                     </div>
                 </div>
                 <!--- 分页信息开始 --->
@@ -88,7 +88,8 @@
                                         <a class="page-link" href="#">{{x.name}}</a>
                                 </li>
                                 <li class="page-item">
-                                    <input class="page-link" type="text" placeholder="输入后回车" ng-model="pagejump" ng-keydown="$event.keyCode == 13 && jump();" />
+                                    <input class="page-link" type="text" placeholder="跳转页码" title="回车跳转" 
+                                        ng-model="pageGoto" ng-keydown="$event.keyCode == 13 && pageJump();" />
                                 </li>
                             </ul>
                         </nav>

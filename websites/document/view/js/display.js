@@ -4,9 +4,9 @@ loadResource(app).controller('displayCtrl', displayCtrl);
 
 function displayCtrl($scope, $http) 
 {
-    $scope.detail = null;
+    $scope.docinfo = null;
 
-    var docid   = $('.wrapper').attr('docid');
+    var docid = $('.layout2').attr('docid');
 
     var editor = editormd("editormd", { 
         path : '/node_modules/editor.md/lib/',
@@ -22,13 +22,12 @@ function displayCtrl($scope, $http)
     }); 
 
     function detail() {
-        $http
-        .get('/document/detail/'+docid)
-        .then((res)=>{
+        $http.get('/document/detail/'+docid).then((res)=>{
             if (errorCheck(res)) return ;
             
-            $scope.detail = res.data.message;
-            editor.setMarkdown($scope.detail.content); 
+            var ret = res.data.message;
+            $scope.docinfo = ret;
+            editor.setMarkdown($scope.docinfo.content); 
         })
     }
 }

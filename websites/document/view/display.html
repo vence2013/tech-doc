@@ -36,22 +36,22 @@
 <body ng-app="displayApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper container-fluid mt-2" ng-controller="displayCtrl" docid="<%=id%>">
+    <div class="layout2 container-fluid mt-2" ng-controller="displayCtrl" docid="<%=id%>">
         <div class="row">
             <div class="col-md border border-success rounded my-2 mx-1">
                 <div class="row my-1" style="line-height: 30px;">
                     <div class="col-md">
-                        <span class="info">ID：<b>{{detail.id}}</b></span>
-                        <span class="info">创建时间：<b>{{detail.createdAt|limitTo:10}}</b></span>
-                        <span class="info">更新时间：<b>{{detail.updatedAt|limitTo:10}}</b></span>
+                        <span class="info">ID：<b>{{docinfo.id}}</b></span>
+                        <span class="info">创建时间：<b>{{docinfo.createdAt|limitTo:10}}</b></span>
+                        <span class="info">更新时间：<b>{{docinfo.updatedAt|limitTo:10}}</b></span>
                     </div>
                     <div class="col-md-1">
-                        <a href="/document/edit/{{detail.id}}" class="ml-2"><i class="fa fa-edit"></i></a>
+                        <a href="/document/edit/{{docinfo.id}}" class="ml-2"><i class="fa fa-edit"></i></a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md taglist">
-                        <span class="badge badge-secondary" ng-repeat="x in detail.tagnames">{{x}}</span>
+                    <div class="col-md">
+                        <span class="badge badge-secondary tagitem" ng-repeat="x in docinfo.tagnames">{{x}}</span>
                     </div>
                 </div>
                 <hr />
