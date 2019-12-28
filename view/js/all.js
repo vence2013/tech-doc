@@ -82,7 +82,7 @@ function pageSet(total, size, view, cur)
     list.push({'disable':(cur==next),  'active':false, 'page':next, 'name':'下一页'});
     list.push({'disable':(cur==max),  'active':false, 'page':max, 'name':'最后一页'});
 
-    return {'total':total, 'size':size, 'cur':cur, 'max':max, 'list':list};
+    return {'list':list, 'total':total, 'size':size, 'cur':cur, 'max':max};
 }
 
 

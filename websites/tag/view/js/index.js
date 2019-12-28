@@ -6,6 +6,7 @@ function indexCtrl($scope, $http)
 {
     $scope.opts = opts = {'str':'', 'page':1, 'pageSize':100};
     $scope.page = pageSet(0, opts.pageSize, 10, 0);
+    $scope.pageGoto = '';
     $scope.taginfo = null;
     $scope.tagdocs = [];
     $scope.taglist = [];
@@ -46,23 +47,41 @@ function indexCtrl($scope, $http)
         $http.post('/tag', {
             'name': name
         }).then((res)=>{
-            if (errorCheck(res)) 
-                return ;  
+            if (errorCheck(res)) return ;  
 
             $scope.opts['str'] = ''; 
+            toastr.success('创建成功！');
+
             update();
         })      
     }
 
     $scope.delete = () => {
         $http.delete('/tag/'+$scope.opts.str).then((res)=>{ 
+            opts.str = '';
             $scope.taginfo = null;
+            toastr.success('删除成功！');
+
             update();             
         })
     }
 
-    $scope.select = (tagname) => {
-        opts.str = tagname;
+    /* 再次点击已选中的标签，则取消选中 */
+    $scope.select = (name) => {
+        if (name == opts.str)
+            opts.str = '';
+        else
+            opts.str = name;
+        
+        update();
+    }
+
+    $scope.pageJump = () => {
+        var num = parseInt($scope.pageGoto);
+        if (!num || (num <= 0) || (num > $scope.page.max))
+            return toastr.warning('请输入有效页码！');
+        
+        opts.page = num;
         update();
     }
 }

@@ -1,5 +1,12 @@
 html, body { margin: 0px; padding: 0px; font-size: 14px; }
 
+/* 页面总高度为800px，分为2行，第2行用于显示分页 */
+.layout1>.row:first-child { height: 768px; }
+
+.tag { min-width: 80px; line-height: 16px; margin: 0px 5px 2px 0px; font-size: 14px; cursor: pointer; }
+
+/*------------------------------*/
+
 a { text-decoration: none; font-style: italic; color: #000000; }
 a:hover { color: #ff0000; }
 
@@ -7,12 +14,14 @@ a:hover { color: #ff0000; }
 .wrapper>div>div>.list { height: 768px; }
 .wrapper2>div:first-child { height: 760px; }
 
+
+
 /* 文档/文件列表显示 */
 .info { color: #aaaaaa; font-style: italic; }
 .info>b { margin: 0px 5px; color: #000000; }
 
 /* 标签显示 */
-.taglist>span { min-width: 80px; line-height: 20px; margin: 5px 0px 0px 5px; font-size: 16px; cursor: pointer; }
+.taglist>span { min-width: 80px; line-height: 20px; font-size: 14px; cursor: pointer; }
 
 /* 文档/文件列表 */
 .list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }

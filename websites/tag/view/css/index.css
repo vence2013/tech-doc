@@ -1,1 +1,2 @@
-.rel_doc_list>div { line-height: 25px; border-bottom: 1px dashed #eeeeee; margin-bottom: 5px; }
+.tag-view>div { display: inline; float: left; }
+.tag-view>div:first-child { width: 300px; }

@@ -28,67 +28,58 @@
 <body ng-app="indexApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="wrapper container-fluid mt-2" ng-controller="indexCtrl">
+    <div class="layout1 container-fluid mt-2" ng-controller="indexCtrl">
         <div class="row">
-            <!--- 侧栏开始 --->
-            <div class="col-md-2 ml-2 rounded border border-secondary">  
-                <div class="row my-4">
-                    <div class="col-md-8 pr-0">
-                        <input type="text" class="form-control form-control-lg" ng-model="opts.str" placeholder="添加或搜索">
-                    </div>
-                    <div class="col-md" ng-show="!taginfo">
-                        <button type="button" class="btn btn-secondary btn-lg btn-block" ng-click="add();">添加</button>        
-                    </div>
-                    <div class="col-md" ng-show="taginfo">
-                        <button type="button" data-toggle="modal" data-target="#deleteWnd" class="btn btn-danger btn-lg btn-block">删除</button>                
-                    </div>
-                </div>                
-                <div class="row">
-                    <div class="col">
-                        <span class="info" ng-show="taginfo">创建日期：<b>{{taginfo.createdAt|limitTo:10}}</b>，</span>
-                        <span class="info" ng-show="taginfo">关联文章：<b>{{tagdocs.total}}</b></span>
-                        <span class="info" ng-show="!taginfo">显示标签信息</span>
-                    </div>                    
-                </div>
-                <hr />
-                <div class="row">
-                    <div class="col rel_doc_list">
-                        <div ng-repeat="x in tagdocs.list">
-                            <a href="#" title="fullname, create date">link doc list, order by link date desc</a>
+            <div class="col-md tag-view">
+                <!--- 标签编辑 --->
+                <div class="container rounded border border-secondary mr-1 mb-1">
+                    <div class="row mt-2">
+                        <div class="col-md-9 pl-2 pr-0">
+                            <input type="text" class="form-control" ng-model="opts.str" placeholder="添加或搜索">
                         </div>
-                    </div>                    
-                </div>
-            </div>
-            <!--- 侧栏结束 --->
-            <div class="col-md">
-                <div class="list taglist">
-                    <span class="badge badge-secondary" ng-repeat="x in taglist" ng-click="select(x.name)">{{x.name}}</span>
-                </div>
-                <!--- 分页信息开始 --->
-                <div class="page">
-                    <div class="pagelist">
-                        <nav>
-                            <ul class="pagination">
-                                <li ng-repeat="x in page.list" class="page-item"
-                                    ng-class="{'disabled': x.disable, 'active':x.active}" 
-                                    ng-click="opts.page=x.page">
-                                        <a class="page-link" href="#">{{x.name}}</a>
-                                </li>
-                                <li class="page-item">
-                                    <input class="page-link" type="text" placeholder="输入后回车" />
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                    <div class="pageinfo">
-                        <span class="info">当前在第<b>{{page.cur}}</b>页</span>                        
-                        <span class="info">每页<b>{{page.size}}</b>条</span>
-                        <span class="info">共<b>{{page.max}}</b>页</span>
-                        <span class="info">共<b>{{page.total}}</b>条</span>
+                        <div class="col-md px-2" ng-show="!taginfo">
+                            <button type="button" class="btn btn-secondary btn-block" ng-click="add();">创建</button>        
+                        </div>
+                        <div class="col-md px-2" ng-show="taginfo">
+                            <button type="button" data-toggle="modal" data-target="#deleteWnd" class="btn btn-danger btn-block">删除</button>                
+                        </div>
+                    </div>                
+                    <div class="row my-1">
+                        <div class="col text-center">
+                            <span class="info" ng-show="taginfo">创建日期：<b>{{taginfo.createdAt|limitTo:10}}</b>，</span>
+                            <span class="info" ng-show="!taginfo">选中标签的信息</span>
+                        </div>                    
                     </div>
                 </div>
-                <!--- 分页信息结束 --->
+                <!-- 标签列表 -->
+                <span ng-repeat="x in taglist" class="badge badge-secondary tag" ng-click="select(x.name)">{{x.name}}</span>
             </div>
+        </div>
+        <div class="row">
+            <!--- 分页信息开始 --->
+            <div class="col-md page">
+                <div class="pagelist">
+                    <nav>
+                        <ul class="pagination">
+                            <li ng-repeat="x in page.list" class="page-item"
+                                ng-class="{'disabled': x.disable, 'active':x.active}" 
+                                ng-click="opts.page=x.page">
+                                    <a class="page-link" href="#">{{x.name}}</a>
+                            </li>
+                            <li class="page-item">
+                                <input class="page-link" type="text" placeholder="跳转页码" title="回车跳转" ng-model="pageGoto" ng-keydown="$event.keyCode == 13 && pageJump()" />
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="pageinfo">
+                    <span class="info">当前在第<b>{{page.cur}}</b>页</span>                        
+                    <span class="info">每页<b>{{page.size}}</b>条</span>
+                    <span class="info">共<b>{{page.max}}</b>页</span>
+                    <span class="info">共<b>{{page.total}}</b>条</span>
+                </div>
+            </div>
+            <!--- 分页信息结束 --->
         </div>
 
         <!-- 选中标签删除确认窗口 -->
