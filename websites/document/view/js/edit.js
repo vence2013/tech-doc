@@ -12,7 +12,6 @@ function editCtrl($scope, $http, $interval)
     $scope.docid = docid = $('.wrapper').attr('docid');
     $scope.doc   = null;
 
-    console.log(docid, $scope.docid);
     var content = '';
     var editor = editormd("editormd", {
         path : '/node_modules/editor.md/lib/',
@@ -82,7 +81,8 @@ function editCtrl($scope, $http, $interval)
             if (errorCheck(res)) 
                 return ;
 
-            $scope.taglist = res.data.message; 
+            var ret = res.data.message;
+            $scope.taglist = ret.map((x)=>{ return x.name; });
         })        
     }
 

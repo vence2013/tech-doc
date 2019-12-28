@@ -12,7 +12,7 @@ function mapCtrl($scope, $http, locals)
      * 数据格式： {registerinfo, 'bitslist':[{bitsinfo}]} 
      */
     $scope.reglist  = [];
-    $scope.menu_show = false;
+    $scope.menu_show = true;
     var reglist_all = [];
 
     $scope.bitslist_str = '';

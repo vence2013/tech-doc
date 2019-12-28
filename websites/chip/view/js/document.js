@@ -1,13 +1,15 @@
-var app = angular.module('functionApp', [])
+var app = angular.module('documentApp', [])
 
-loadResource(app).controller('functionCtrl', functionCtrl);
+loadResource(app).controller('documentCtrl', documentCtrl);
 
-function functionCtrl($scope, $http, $interval) 
+function documentCtrl($scope, $http, $interval) 
 {
     // 标签数据    
     $scope.tagopts = tagopts = {'str':'', 'limit':50};    
-    $scope.taglink = []; // 关联标签
+    $scope.taglink = ['芯片技术', '功能控制']; // 关联标签
     $scope.taglist = []; // 搜索结果列表
+    // 位组数据
+    $scope.bitslink = '';
     // 文档数据
     $scope.docid = docid = $('.wrapper').attr('docid');
     $scope.doc   = null;
@@ -38,26 +40,27 @@ function functionCtrl($scope, $http, $interval)
 
 
     $scope.submit = ()=>{
-        $http.post('/document/'+docid, {
-            'content':content, 'taglist':$scope.taglink
+        $http.post('/chip/document/'+docid, {
+            'content':content, 'taglist':$scope.taglink, 'bitslist':$scope.bitslink
         }).then((res)=>{
             if (errorCheck(res)) return ;
 
             // 显示更新成功后，刷新该页面
             toastr.info("提交成功，即将跳转到首页！", '', {"positionClass": "toast-bottom-right"});
-            window.setTimeout(()=>{ window.location.href = '/document'; }, 1000);
+            window.setTimeout(()=>{ window.location.href = '/chip'; }, 1000);
         });
     }
 
     // 详细信息，包括文件属性， 关联标签
     function detail() {
-        $http.get('/document/detail/'+docid).then((res)=>{
+        $http.get('/chip/document/detail/'+docid).then((res)=>{
             if (errorCheck(res)) return ;
             
             var ret = res.data.message;
             editor.setMarkdown(ret.content); 
             $scope.doc  = ret;
             $scope.taglink = ret.tagnames;
+            $scope.bitslink = ret.bitsids.join(',');
         });
     }
 
@@ -66,7 +69,7 @@ function functionCtrl($scope, $http, $interval)
             if (errorCheck(res)) return ;
 
             toastr.info("删除成功，即将跳转到首页！", '', {"positionClass": "toast-bottom-right"});
-            window.setTimeout(()=>{ window.location.href = '/document'; }, 1000);
+            window.setTimeout(()=>{ window.location.href = '/chip'; }, 1000);
         });
     }
 
@@ -81,7 +84,8 @@ function functionCtrl($scope, $http, $interval)
             if (errorCheck(res)) 
                 return ;
 
-            $scope.taglist = res.data.message; 
+            var ret = res.data.message;
+            $scope.taglist = ret.map((x)=>{ return x.name; });
         })        
     }
 
@@ -90,7 +94,11 @@ function functionCtrl($scope, $http, $interval)
     }
 
     $scope.tagUnselect = (name) => {
-        var idx = $scope.taglink.indexOf(name);
-        $scope.taglink.splice(idx, 1);
+        if ((name == '芯片技术') || (name == '功能控制')) {
+            alert("该页面只添加'芯片技术'/'功能控制'类别的文档！");
+        } else {
+            var idx = $scope.taglink.indexOf(name);
+            $scope.taglink.splice(idx, 1);
+        }
     }
 }
