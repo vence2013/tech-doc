@@ -5,8 +5,7 @@ loadResource(app).controller('indexCtrl', indexCtrl);
 function indexCtrl($scope, $http) 
 {
     $scope.opts = opts = {'str':'', 'page':1, 'pageSize':100};
-    $scope.page = pageSet(0, opts.pageSize, 10, 0);
-    $scope.pageGoto = '';
+    $scope.page = pageSet(0, opts.pageSize, 10, 0);    
     $scope.taginfo = null;
     $scope.tagdocs = [];
     $scope.taglist = [];
@@ -76,11 +75,13 @@ function indexCtrl($scope, $http)
         update();
     }
 
+    $scope.pageGoto = '';
     $scope.pageJump = () => {
         var num = parseInt($scope.pageGoto);
         if (!num || (num <= 0) || (num > $scope.page.max))
             return toastr.warning('请输入有效页码！');
         
+        $scope.pageGoto = '';
         opts.page = num;
         update();
     }

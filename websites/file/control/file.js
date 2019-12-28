@@ -41,7 +41,7 @@ exports.delete = async (ctx, id)=>{
         if (err) {
             console.log("ERROR["+__filename+"|delete()] - l1, error:%o.", err);
         } else {
-            console.log("INFO["+__filename+"|delete()] - l1, file(%s/%s) was delete.", fileObj.name, fileObj.location);
+            console.log("INFO["+__filename+"|delete()] - l1, file(%s) was delete.", fileObj.location);
         }
     });
     // 删除数据库记录

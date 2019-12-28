@@ -4,20 +4,21 @@ loadResource(app).controller('indexCtrl', indexCtrl);
 
 function indexCtrl($scope, $http, FileUploader) 
 {
-    $scope.opts = opts = {'str':'', 'ext':'', 'createget':'', 'createlet':'', 
-        'sizeget':'', 'sizelet':'', 'order':'4', 'page':1, 'pageSize':23};
-    $scope.page = pageSet(0, opts.pageSize, 10, 0);
-    $scope.filelist = [];
+    /* 文件上传 -------------------------------------------------------------*/
+    var queue_max_length = 17;
 
     var uploader = $scope.uploader = new FileUploader({
-        url: '/file/upload', 'queueLimit': 30, removeAfterUpload: true
-    })
-    // 取消已存在(文件名/大小相同)的文件
+        url: '/file/upload', 'queueLimit': queue_max_length, removeAfterUpload: true
+    })    
     uploader.filters.push({ name: 'syncFilter',
         fn: function(item, options) { 
-            if (this.queue.length >= 17) return false; // 限制上传的数量
+            // 限制上传的数量
+            if (this.queue.length >= queue_max_length) return false; 
+            // 取消已存在(文件名/大小相同)的文件
             for (var i=0; i<this.queue.length; i++) {
-                if ((this.queue[i]._file.name === item.name) && (this.queue[i]._file.size===item.size)) return false;
+                if ((this.queue[i]._file.name === item.name) && 
+                    (this.queue[i]._file.size===item.size)) 
+                    return false;
             }
             return true;
         }
@@ -26,9 +27,10 @@ function indexCtrl($scope, $http, FileUploader)
     uploader.onSuccessItem = function(fileItem, response, status, headers) {
         if (/^[\-0-9]+$/.test(response.error)) {
             $scope.itemSel = null;
-            if (response.error != 0) 
-                toastr.info(response.message+'('+fileItem.file.name+')', '', {"positionClass": "toast-bottom-right", "timeOut": 5000}); 
-            else
+            if (response.error != 0) {
+                toastr.info(response.message+'('+fileItem.file.name+')', '', 
+                    {"positionClass": "toast-bottom-right", "timeOut": 5000}); 
+            } else
                 update();
         } else {
             console.log(response);
@@ -36,6 +38,12 @@ function indexCtrl($scope, $http, FileUploader)
         }
     };
 
+    /* 文件搜索，删除 -------------------------------------------------------*/
+
+    $scope.opts = opts = {'str':'', 'ext':'', 'createget':'', 'createlet':'', 
+        'sizeget':'', 'sizelet':'', 'order':'4', 'page':1, 'pageSize':23};
+    $scope.page = pageSet(0, opts.pageSize, 10, 0);
+    $scope.filelist = [];
 
     var updateTimer = null;
     /* 以下条件更新视图：opts更新； page改变 */
@@ -46,6 +54,7 @@ function indexCtrl($scope, $http, FileUploader)
         updateTimer = window.setTimeout(update, 500);            
     }, true);
 
+    /* 文件搜索，参数有：文件名称，扩展名，上传时间范围，文件大小范围，排序方式 */
     function update() {
         var query = angular.copy($scope.opts);
 
@@ -64,29 +73,37 @@ function indexCtrl($scope, $http, FileUploader)
         })
     }
 
-
-    var delid = 0;
+    /* 文件删除分为2步：
+     * 1. 在点击删除后，记住文件ID，弹出确认窗口
+     * 2. 确认删除后，请求服务器执行删除
+     */
+    $scope.delid = 0;
     $scope.selectDel = (id) => {
-        delid = id;
+        $scope.delid = id;
     }
 
     $scope.delete = () => {
-        $http.delete('/file/'+delid).then((res)=>{
+        $http.delete('/file/'+$scope.delid).then((res)=>{
             if (errorCheck(res)) return ;
 
-            delid = 0;
+            $scope.delid = 0;
+            toastr.success('文件删除成功！');
             update();
         }); 
     }
 
-
-    $scope.jump = () => {        
-        $scope.opts.page = $scope.pagejump;
-        $scope.pagejump = '';
+    $scope.pageGoto = '';
+    $scope.pageJump = () => {
+        var num = parseInt($scope.pageGoto);
+        if (!num || (num <= 0) || (num > $scope.page.max))
+            return toastr.warning('请输入有效页码！');
+        
+        $scope.pageGoto = '';
+        opts.page = num;
+        update();
     }
 
-
     $scope.copySuccess = ()=>{
-        toastr.info('Success! Copyed file location.');
+        toastr.success('已复制文件路径！');
     }
 }

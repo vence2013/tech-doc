@@ -100,13 +100,14 @@
             <!--- 侧栏结束 --->
             <div class="col-md">
                 <div class="list">
-                    <div ng-repeat="x in filelist" ng-mouseenter='fsel=x; copyText=x.location' ng-mouseleave='fsel=null' ng-class="{itemsel:fsel==x}">                        
+                    <div ng-repeat="x in filelist" ng-mouseenter='fsel=x; copyText=x.location' ng-mouseleave='fsel=null' 
+                        ng-class="{itemsel:(fsel==x) || (delid==x.id)}">                        
                         <span>
                             <b><a href="{{x.location}}" target="_blank">{{x.name|limitTo:200}}</a></b>
                             {{x.createdAt|limitTo:10}}, {{x.size/1024/1024|number:2 }}MB
                         </span>
-                        <i clipboard class="fa fa-copy ml-2" text="copyText" on-copied="copySuccess()"></i>
-                        <i class="fa fa-close mr-1" data-toggle="modal" data-target="#deleteWnd" ng-click="selectDel(x.id);"></i>
+                        <i ng-show="fsel==x" clipboard class="fa fa-copy ml-2" text="copyText" on-copied="copySuccess()"></i>
+                        <i ng-show="fsel==x" class="fa fa-close mr-1" data-toggle="modal" data-target="#deleteWnd" ng-click="selectDel(x.id);"></i>
                     </div>
                 </div>
                 <!--- 分页信息开始 --->
@@ -120,7 +121,8 @@
                                         <a class="page-link" href="#">{{x.name}}</a>
                                 </li>
                                 <li class="page-item">
-                                    <input class="page-link" type="text" placeholder="输入后回车" ng-model="pagejump" ng-keydown="$event.keyCode == 13 && jump();" />
+                                    <input class="page-link" type="text" placeholder="跳转页码" title="回车跳转" 
+                                        ng-model="pageGoto" ng-keydown="$event.keyCode == 13 && pageJump()" />
                                 </li>
                             </ul>
                         </nav>
