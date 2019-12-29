@@ -4,6 +4,9 @@ loadResource(app).controller('mapCtrl', mapCtrl);
 
 function mapCtrl($scope, $http, locals) 
 {
+    var emptyChip = {'id':0, 'name':'', 'width':''},
+        emptyModule = {'id':0, 'name':'', 'fullname':''};
+
     $scope.chip   = null;
     $scope.module = null;
     $scope.chiplist   = [];
@@ -12,13 +15,13 @@ function mapCtrl($scope, $http, locals)
      * 数据格式： {registerinfo, 'bitslist':[{bitsinfo}]} 
      */
     $scope.reglist  = [];
-    $scope.menu_show = true;
+    $scope.menu_select = 'one';
     var reglist_all = [];
 
     $scope.bitslist_str = '';
 
     $scope.copySuccess = ()=>{
-        toastr.info('Success! Copyed bits list.');
+        toastr.info('已复制选中的位组ID！');
     }
 
     /* 选择位组 **************************************************************/
@@ -309,16 +312,23 @@ function mapCtrl($scope, $http, locals)
         })
     }
 
-    /* 模块 ******************************************************************/
 
-    $scope.moduleSelect = moduleSelect;
+    /* 模块 -----------------------------------------------------------------*/
 
-    function moduleSelect(module)
+    function module_reset() 
     {
-        var spath = '/chip/map/'+$scope.chip.id;
+        register_reset();
+        $scope.registerlist = [];
+        $scope.module = angular.copy(emptyModule);  
+        $(".moduleContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary');        
+    }
 
+    $scope.module_select = module_select;
+
+    function module_select(module)
+    {
         $scope.module = angular.copy(module);
-        locals.set(spath, module.id);
+        locals.set(local_path_get('module'), module.id);
         
         $(".moduleContainer>.badge-success").removeClass('badge-success').addClass('badge-secondary');
         window.setTimeout(()=>{
@@ -329,49 +339,33 @@ function mapCtrl($scope, $http, locals)
         regMap();
     }
 
-    function modulesGet(namePreselect)
+    function module_list_get(select_name)
     {
-        var spath = '/chip/map/'+$scope.chip.id;
-
         $http.get('/chip/module/chip/'+$scope.chip.id).then((res)=>{
             if (errorCheck(res)) return ;
 
-            var ret = res.data.message;
-            $scope.modulelist = ret;            
-            if (ret.length) {
-                if (namePreselect) {
-                    for (var i=0; (i<ret.length) && (ret[i].name!=namePreselect); i++) ;
-                    if (i<ret.length) {
-                        moduleSelect(ret[i]);
-                    }
-                } else {                    
-                    var moduleidPrevious = locals.get(spath);
-                    if (moduleidPrevious) {
-                        for (var i = 0; (i < ret.length) && (ret[i].id != moduleidPrevious); i++) ;
-                        if (i < ret.length) {
-                            moduleSelect(ret[i]);
-                        }
-                    } else { // 默认选择第一个
-                        moduleSelect(ret[0]);
-                    }
-                }
-            } else {
-                // 没有任何模块时，需要清除所有后续元素：模块编辑， 寄存器列表，编辑， 位组列表， 编辑
-                moduleReset();
-                $scope.registerlist = [];
-                $scope.bitslist     = [];
-            }
+            $scope.modulelist = res.data.message;          
+            element_select('module', select_name);
         })
     }
 
-    /* 芯片 ******************************************************************/
 
-    $scope.chipSelect = chipSelect;
+    /* 芯片 -----------------------------------------------------------------*/
 
-    function chipSelect(chip)
+    function chip_reset() 
+    {
+        module_reset();
+        $scope.modulelist   = [];
+        $scope.chip = angular.copy(emptyChip);   
+        $(".chipContainer>.badge-success").removeClass('badge-success').addClass('badge-dark');
+    }
+
+    $scope.chip_select = chip_select;
+
+    function chip_select(chip)
     {
         $scope.chip = angular.copy(chip);
-        locals.set('/chip/map', chip.id);
+        locals.set(local_path_get('chip'), chip.id);
         
         $(".chipContainer>.badge-success").removeClass('badge-success').addClass('badge-dark');
         window.setTimeout(()=>{
@@ -379,36 +373,116 @@ function mapCtrl($scope, $http, locals)
             $(".chipContainer>span:eq("+idx+")").removeClass('badge-dark').addClass('badge-success');
         }, 0);
 
-        modulesGet();
+        module_list_get();
     }
 
-    function chipsGet(namePreselect) {
+    function chip_list_get(select_name) {
         $http.get('/chip/chip').then((res)=>{
             if (errorCheck(res)) return ;
 
-            var ret = res.data.message;
-            $scope.chiplist = ret;  
-            
-            if (ret.length) {
-                if (namePreselect) {
-                    for (var i=0; (i<ret.length) && (ret[i].name!==namePreselect); i++) ;
-                    if (i<ret.length) {
-                        chipSelect(ret[i]);
-                    }
-                } else { 
-                    var chipidPrevious = locals.get('/chip/map');
-                    if (chipidPrevious) {  // 恢复上次的选择
-                        for (var i = 0; (i < ret.length) && (ret[i].id != chipidPrevious); i++) ;
-                        if (i < ret.length) 
-                            chipSelect(ret[i]);
-                    } 
-                    else
-                        chipSelect(ret[0]); // 默认选择第一个
-                }
-            } else {
-                // 清除映射
-            }
+            $scope.chiplist = res.data.message;  
+            element_select('chip', select_name);
         })
     }
-    chipsGet();
+    chip_list_get();
+
+
+    /* 公共 -----------------------------------------------------------------*/
+
+    function local_path_get(type)
+    {
+        switch (type) {
+            case 'chip':     return '/chip/map';
+            case 'module':   return '/chip/map/'+$scope.chip.id;
+        } 
+    }
+
+    /* 元素的默认选择。选择规则描述如下：
+     * 1. 如果元素列表为空，则清除所有已选参数（包括子参数）
+     * 2. 如果指定了选择参数，则选择该参数
+     * 3. 如果存储了上一次的选择，则选择该参数
+     * 4. 选择列表中的第1个参数
+     * 
+     * 说明
+     * 1. 元素包括：芯片/ 模块/ 寄存器
+     * 
+     * 返回参数：元素选择的类型
+     */
+    function element_select(type, select_name)
+    {
+        var ret;
+
+        function check_reset() 
+        {            
+            switch (type) {
+                case 'chip':
+                    if ($scope.chiplist.length == 0) {
+                        chip_reset();
+                        return 1;
+                    }                        
+                    break;
+                case 'module':
+                    if ($scope.modulelist.length == 0) {
+                        module_reset();
+                        return 1;
+                    }                        
+                    break;
+                default: return -1;
+            }
+            return 0;
+        }
+
+        // (1)
+        ret = check_reset();
+        if (ret)
+            return ret;
+
+        function select_element(element) {
+            switch (type) {
+                case 'chip':     chip_select(element);     break;
+                case 'module':   module_select(element);   break;
+            }  
+        }
+
+        function select_by_name_or_id(name, id)
+        {
+            var list, i;
+
+            switch (type) {
+                case 'chip':     list = $scope.chiplist;     break;
+                case 'module':   list = $scope.modulelist;   break;
+                default: return -1;
+            }
+
+            if (name)
+                for (i = 0; (i < list.length) && (list[i].name !== name); i++) ;
+            else if (id)
+                for (i = 0; (i < list.length) && (list[i].id != id); i++) ;
+            // 是否有查找结果
+            if (i < list.length) {
+                select_element(list[i]);
+                return 1;
+            }                
+            return 0;
+        }
+
+        ret = select_by_name_or_id(select_name, 0);
+        if (ret) { // (2)
+            return (ret > 0) ? 2 : ret;
+        } else {            
+            var lpath = local_path_get(type);
+            var previous_select_id = locals.get(lpath);
+            ret = select_by_name_or_id('', previous_select_id);
+            if (ret) { // (3)
+                return (ret > 0) ? 3 : ret;
+            }
+        }
+
+        // (4)
+        switch (type) {
+            case 'chip':     select_element($scope.chiplist[0]);     break;
+            case 'module':   select_element($scope.modulelist[0]);   break;
+        }
+        return 4;
+    }
 }

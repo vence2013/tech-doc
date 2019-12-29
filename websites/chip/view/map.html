@@ -45,35 +45,38 @@
             </div>
         </div>
 
-        <!--- 模块选择菜单 --->
-        <div class="map_menu" ng-show="menu_show" ng-mouseleave="menu_show=false">
-            <a href="#" style="float: right; font-size: 16px; margin: 0px 5px;" ng-click="menu_show=false"><i class="fa fa-close"></i></a>
-            <div class="ititle">芯片</div>
-            <div class="ilist chipContainer" style="min-height: 50px;">
-                <span class="badge badge-dark" ng-repeat="x in chiplist"
-                    ng-click="chipSelect(x);" >{{x.name}}<i>({{x.width}})</i></span>
+        <!-- 菜单 -->
+        <div class="map_menu" ng-mouseleave="menu_select='none'">
+            <!-- 芯片/模块选择 -->
+            <div class="menu_extend" ng-show="menu_select=='one'">
+                <div class="ititle">芯片</div>
+                <div class="ilist chipContainer" style="min-height: 50px;">
+                    <span class="badge badge-dark" ng-repeat="x in chiplist"
+                        ng-click="chip_select(x);" >{{x.name}}<i>({{x.width}})</i></span>
+                </div>
+                <div class="ititle">模块</div>
+                <div class="ilist moduleContainer" style="min-height: 50px;">
+                    <span class="badge badge-secondary" ng-repeat="x in modulelist"
+                        ng-click="module_select(x);" title="{{x.fullname}}">{{x.name}}</span>
+                </div>
             </div>
-            <div class="ititle">模块</div>
-            <div class="ilist moduleContainer" style="min-height: 50px;">
-                <span class="badge badge-secondary" ng-repeat="x in modulelist"
-                    ng-click="moduleSelect(x);" title="{{x.fullname}}">{{x.name}}</span>
+            <!-- 选中位组设置 -->
+            <div class="menu_extend" ng-show="menu_select=='two'">            
+                <div><textarea class="form-control mt-2 mr-1" rows="30" ng-model="bitslist_str"></textarea></div>
+                <div style="position:inherit; bottom: 10px;">                    
+                    <a href="#" ng-click="bitsUpdate();">更新选择位组</a>
+                </div>
             </div>
-        </div>
-        <div class="map_menu" ng-show="select_show" ng-mouseleave="select_show=false">            
-            <div><textarea class="form-control mt-2 mr-1" rows="30" ng-model="bitslist_str"></textarea></div>
-            <div style="position:inherit; bottom: 10px;">
-                <a href="#" clipboard text="copyText" on-copied="copySuccess()">复制已选位组</a>
-                <a href="#" ng-click="bitsUpdate();">更新选择位组</a>
-            </div>
-        </div>
-        <!--- 开始菜单 ---->
-        <div class="map_starter" ng-show="!menu_show">
-            <div>
-                <input type="text" class="form-control mx-2 my-1" ng-model="str" placeholder="搜索寄存器或位组" />
-            </div>
-            <div>
-                <a href="#" ng-click="select_show=true">已选位组</a>
-                <a href="#" ng-click="menu_show=true">模块选择</a>
+            <!-- 菜单导航 -->
+            <div class="menu_nav">
+                <div>
+                    <input type="text" class="form-control mx-2 my-1" ng-model="str" placeholder="搜索寄存器或位组" />
+                </div>
+                <div>
+                    <a href="#" ng-click="menu_select='one'">模块选择</a>
+                    <a href="#" ng-click="menu_select='two'">已选位组</a>
+                    <a href="#" clipboard text="copyText" on-copied="copySuccess()">复制已选位组</a>                    
+                </div>
             </div>
         </div>
 

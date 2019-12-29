@@ -12,9 +12,9 @@ exports.link = async (models)=>{
     // 芯片/模块/寄存器/位组的关系
     models['ChipModule'].belongsTo(models['Chip'], {onDelete: 'CASCADE'});
     models['ChipRegister'].belongsTo(models['ChipModule'], {onDelete: 'CASCADE'});    
-    models['ChipBit'].belongsTo(models['ChipRegister'], {onDelete: 'CASCADE'}); 
+    models['ChipBitgroup'].belongsTo(models['ChipRegister'], {onDelete: 'CASCADE'}); 
 
     // 文档 - 位组
-    models['Document'].belongsToMany(models['ChipBit'], {through: 'DocumentChipBit'});
-    models['ChipBit'].belongsToMany(models['Document'], {through: 'DocumentChipBit'});
+    models['Document'].belongsToMany(models['ChipBitgroup'], {through: 'DocumentChipBitgroup'});
+    models['ChipBitgroup'].belongsToMany(models['Document'], {through: 'DocumentChipBitgroup'});
 }

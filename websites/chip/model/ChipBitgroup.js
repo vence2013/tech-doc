@@ -1,5 +1,5 @@
 /****************************************************************************** 
- * 文件名称 ： ChipBit.js
+ * 文件名称 ： ChipBits.js
  * 功能说明 ： 
  *     位组以列表的形式表现，在前端进行后续处理。
  * 
@@ -10,7 +10,7 @@
  *****************************************************************************/ 
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define('ChipBit', {
+    return sequelize.define('ChipBitgroup', {
         name: {
             type: DataTypes.STRING,  
             allowNull: false,

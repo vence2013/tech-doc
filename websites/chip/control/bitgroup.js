@@ -1,9 +1,9 @@
 exports.edit = async (ctx, registerid, bitsid, name, fullname, rw, desc, bitlist, valuelist)=>{
     const ChipRegister = ctx.models['ChipRegister'];
-    const ChipBit = ctx.models['ChipBit'];
+    const ChipBitgroup = ctx.models['ChipBitgroup'];
     
     if (bitsid) {
-        var bitsIns = await ChipBit.findOne({logging:false, where:{'id':bitsid}});
+        var bitsIns = await ChipBitgroup.findOne({logging:false, where:{'id':bitsid}});
         if (!bitsIns) return -1;
 
         await bitsIns.update({'name':name, 'fullname':fullname, 'rw':rw, 'desc':desc, 
@@ -13,7 +13,7 @@ exports.edit = async (ctx, registerid, bitsid, name, fullname, rw, desc, bitlist
         var registerIns = await ChipRegister.findOne({logging:false, where:{'id':registerid}});
         if (!registerIns) return -2;
 
-        var [bitIns, created] = await ChipBit.findOrCreate({logging:false, 
+        var [bitIns, created] = await ChipBitgroup.findOrCreate({logging:false, 
             where:{'name':name, 'ChipRegisterId':registerid}, 
             defaults:{'rw':rw, 'bitlist':bitlist, 'valuelist':valuelist, 'fullname':fullname, 'desc':desc}
         });
@@ -23,16 +23,16 @@ exports.edit = async (ctx, registerid, bitsid, name, fullname, rw, desc, bitlist
 
 
 exports.delete = async (ctx, bitsid)=>{
-    const ChipBit = ctx.models['ChipBit'];
+    const ChipBitgroup = ctx.models['ChipBitgroup'];
 
-    await ChipBit.destroy({logging: false, where: {'id': bitsid}});
+    await ChipBitgroup.destroy({logging: false, where: {'id': bitsid}});
 }
 
 
 exports.list = async (ctx, registerid)=>{
-    const ChipBit = ctx.models['ChipBit'];
+    const ChipBitgroup = ctx.models['ChipBitgroup'];
 
-    var ret = await ChipBit.findAll({logging: false, raw: true, where: {'ChipRegisterId': registerid}});
+    var ret = await ChipBitgroup.findAll({logging: false, raw: true, where: {'ChipRegisterId': registerid}});
     var bitslist = ret.map((x)=>{
         if (x['desc'])
             x['desc'] = x['desc'].toString();
@@ -43,9 +43,9 @@ exports.list = async (ctx, registerid)=>{
 
 
 exports.detail = async (ctx, bitsid)=>{
-    const ChipBit = ctx.models['ChipBit'];
+    const ChipBitgroup = ctx.models['ChipBitgroup'];
 
-    var ret = await ChipBit.findOne({logging: false, raw: true, where: {'id': bitsid}});
+    var ret = await ChipBitgroup.findOne({logging: false, raw: true, where: {'id': bitsid}});
     ret['desc'] = ret['desc'].toString();
     return ret;
 }

@@ -35,23 +35,3 @@ a:hover { color: #ff0000; }
 .list>div>i, .list>div>a { cursor: pointer; margin-left: 10px; }
 
 .selitem { background-color: #eeeeee; }
-
-/*------------------------------*/
-/*
-
-
-.wrapper>div>div { height: 800px; }
-.wrapper>div>div>.list { height: 768px; }
-.wrapper2>div:first-child { height: 760px; }
-*/
-
-
-/* 文档/文件列表显示 
-.info { color: #aaaaaa; font-style: italic; }
-.info>b { margin: 0px 5px; color: #000000; }
-*/
-/* 标签显示 
-.taglist>span { min-width: 80px; line-height: 20px; font-size: 14px; cursor: pointer; }
-*/
-
-

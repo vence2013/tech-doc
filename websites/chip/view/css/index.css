@@ -1,18 +1,19 @@
-.ititle { line-height: 30px; margin: 20px 0px 5px; text-indent: 10px; 
+.ititle { line-height: 30px; margin: 10px 0px 5px; text-indent: 10px; 
     font-style: italic; font-weight: bold; border-bottom: 2px solid #888888; }
 .ilist>span { line-height: 16px; margin: 3px 5px 0px 0px; font-size: 12px; cursor: pointer; }
 .ilist>span>i { margin: 0px 5px; }
 
 a { line-height: 40px; font-style: italic; margin: 0px 10px; }
+
+
 /* 寄存器映射 ****************************************************************/
 
-.map_menu { position: fixed; bottom: 0px; left: 0px; width: 800px; height: calc(100% - 50px); 
-    padding: 0px 5px; border-top-right-radius: 5px; background-color: #eeeeee; z-index: 9; 
-    opacity: 0.9; }
-.map_starter { position: fixed; bottom: 0px; left: 0px; display: table; border-top: 1px solid #888888; 
-    border-right: 1px solid #888888; border-top-right-radius: 20px; background-color: #cccccc; }
-.map_starter>div { display: inline; float: left; }
-.map_starter>div>input { width: 300px; }
+.map_menu { position: fixed; bottom: 0px; left: 0px; width: 800px; background-color: #eeeeee; 
+    border-top-right-radius: 5px; z-index: 9; }
+.map_menu>.menu_nav { height: 40px; }
+.map_menu>.menu_nav>div { display: inline; float: left; }
+.map_menu>.menu_nav>div>input { width: 300px; }
+.map_menu>.menu_extend { height: 700px; padding: 0px 5px; opacity: 0.9; }
 
 .map { text-align: center; }
 .map>div { display: inline; float: left; width: 100px; overflow: hidden; margin-left: 1px; background-color: #cccccc; }
