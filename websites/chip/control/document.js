@@ -1,7 +1,7 @@
  
 exports.edit = async (ctx, docid, content, taglist, bitslist)=>{
     const Document = ctx.models['Document'];
-    const ChipBit = ctx.models['ChipBit'];    
+    const ChipBitgroup = ctx.models['ChipBitgroup'];    
     const Tag = ctx.models['Tag'];
 
     if (docid) {
@@ -24,8 +24,8 @@ exports.edit = async (ctx, docid, content, taglist, bitslist)=>{
 
     // 关联位组
     var bitsArray = bitslist.split(',');
-    var chipBitsInss = await ChipBit.findAll({logging:false, where:{'id':bitsArray}});
-    await docIns.setChipBits(chipBitsInss, {logging:false});
+    var chipBitgroupInss = await ChipBitgroup.findAll({logging:false, where:{'id':bitsArray}});
+    await docIns.setChipBitgroups(chipBitgroupInss, {logging:false});
 
     return 0;
 }
@@ -44,7 +44,7 @@ exports.detail = async (ctx, docid)=>{
     var tagObjs = await docIns.getTags({raw:true, logging:false});
     docObj['tagnames'] = tagObjs.map((x)=>{ return x.name; });
     // 关联位组ID列表
-    var bitsObjs = await docIns.getChipBits({raw:true, logging:false});    
+    var bitsObjs = await docIns.getChipBitgroups({raw:true, logging:false});    
     docObj['bitsids'] = bitsObjs.map((x)=>{ return x.id; });
 
     return docObj;
