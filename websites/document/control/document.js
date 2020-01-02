@@ -47,10 +47,8 @@ exports.detail = async (ctx, docid)=>{
     return docObj;
 }
 
-exports.search = search;
-
-async function search(ctx, query) 
-{
+/* 搜索，返回当前页的数据 */
+exports.search = async (ctx, query) => {
     const Tag  = ctx.models['Tag']; 
     var sql, sqlCond = '';
 
@@ -95,4 +93,40 @@ async function search(ctx, query)
     });
 
     return {'total':total, 'page':page, 'list':doclist};
+}
+
+/* 搜索，返回所有结果 */
+exports.searchall = async (ctx, query) => {
+    const Tag  = ctx.models['Tag']; 
+    var sql, sqlCond = '';
+
+    // 根据搜索条件构建SQL条件
+    if (query.str && query.str.length) {
+        query.str.map((x)=>{ sqlCond += " AND `content` LIKE '%"+x+"%' " });
+    }
+    if (query.createget)  { sqlCond += " AND `createdAt`>='"+query.createget+"' "; }
+    if (query.createlet)  { sqlCond += " AND `createdAt`<='"+query.createlet+"' "; }
+    // 查找同时关联多个标签的文档。
+    if (query.tag && query.tag.length) {
+        var tagObjs = await Tag.findAll({raw: true, logging: false, where: {'name': query.tag}});
+        // 只搜索有效的标签。
+        if (tagObjs && tagObjs.length) {
+            var idstr = '';
+            tagObjs.map((x)=>{ idstr += ', '+x.id; });        
+            var sql2 = "SELECT `DocumentId` FROM `DocumentTag` WHERE `TagId` IN ("+idstr.substr(1)+
+                       ") GROUP BY `DocumentId` HAVING COUNT(*)>="+tagObjs.length;
+            sqlCond += " AND `id` IN ("+sql2+") "; 
+        }
+    }
+    sqlCond = sqlCond ? " WHERE "+sqlCond.substr(4) : "";
+
+    sql = "SELECT * FROM `Documents` "+sqlCond+" ;";
+    var [res, meta] = await ctx.sequelize.query(sql, {logging: false});
+    var doclist = res.map((x)=>{
+        // 将buffer转换为字符串
+        x['content'] = x.content ? x.content.toString() : '';
+        return x;
+    });
+
+    return doclist;
 }

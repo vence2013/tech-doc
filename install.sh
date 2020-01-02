@@ -41,7 +41,7 @@ while true; do
             shift
             VAR_mode="uninstall"
             docker-compose -p ${VAR_project} down
-            rm -fv .env docker-compose.yml
+            rm -fv docker-compose.yml
             echo "卸载完成!"
             exit
             ;;
@@ -95,8 +95,11 @@ fi
 # 系统安装过程
 # #############################################################################
 
-# 使用默认env更新/.env， docker-compose需要使用.env
-cp -fv config/env .env
+# 如果当前目录没有.env，则使用默认文件
+if [ ! -f '.env' ]; then
+    cp -fv config/env .env
+fi
+
 datadir_cfgitem=$(cat .env | grep "ROOTFS_DATA=" | sed 's/\xd//')
 datadir=${datadir_cfgitem:12}
 if [ ! -d "${datadir}" ]; then 

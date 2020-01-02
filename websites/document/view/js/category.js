@@ -96,13 +96,17 @@ function categoryCtrl($scope, $http, locals)
     }
 
     $scope.export = () => {
-        // str & category
+        var categoryid = $scope.nodeSel.id;
+        if (!categoryid) 
+            return toastr.warning('请选择需要导出文档的目录！');
 
-        $http.get('/document/export', {params: {}}).then((res)=>{
+        $http.get('/document/export', {params: {
+            'categoryid':categoryid, 'str':$scope.docOpts.str
+        }}).then((res)=>{
             if (errorCheck(res)) return ;
             
-            console.log(res.data.message);
-            window.open('/export/file/path?t='+Math.random());
+            var ret = res.data.message;
+            window.open(ret+'?t='+Math.random());
         })
     }
 }

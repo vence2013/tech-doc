@@ -123,3 +123,47 @@ exports.out = async (ctx, categoryid, query) => {
     return doclist;
 }
 
+
+/* 搜索在指定子目录的所有文档 */
+exports.inall = async (ctx, categoryid, query) => {
+    const Category = ctx.models['Category'];
+    var sql, sqlCond = '';
+
+    /* 1. 搜索当前目录的关联的文档
+     * 2. 搜索在关联文档中，但包含str的文档
+     */
+    var categroyIns = await Category.findOne({logging: false, 
+        where: { 'id': categoryid}
+    });
+
+    var docids;
+    if (categroyIns)
+    {
+        var docInss = await categroyIns.getDocuments({logging:false});         
+        docids = docInss.map((x)=>{ return x.get({plain:true})['id']; });
+    }
+
+    // 已关联当前目录的文档
+    if (docids && docids.length) {
+        var idstr = '';
+        docids.map((x)=>{ idstr += ', '+x; });
+        sqlCond += " AND `id` IN ("+idstr.substr(1)+") "; 
+    } else {
+        return {'total':0, 'page':1, 'list':[]}; // 没有文档
+    }
+    if (query.str && query.str.length) {
+        query.str.map((x)=>{ sqlCond += " AND `content` LIKE '%"+x+"%' " });
+    }
+    sqlCond = sqlCond ? " WHERE "+sqlCond.substr(4) : "";
+
+    // 查询当前分页的列表数据
+    sql = "SELECT * FROM `Documents` "+sqlCond+" ;";
+    var [res, meta] = await ctx.sequelize.query(sql, {logging: true});
+    var doclist = res.map((x)=>{
+        // 将buffer转换为字符串
+        x['content'] = x.content ? x.content.toString() : '';
+        return x;
+    });
+
+    return doclist;
+}

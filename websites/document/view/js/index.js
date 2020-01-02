@@ -111,8 +111,8 @@ function indexCtrl($scope, $http)
         $http.get('/document/export', {params: query}).then((res)=>{
             if (errorCheck(res)) return ;
             
-            console.log(res.data.message);
-            window.open('/export/file/path?t='+Math.random());
+            var ret = res.data.message;
+            window.open(ret+'?t='+Math.random());
         })
     }
 }

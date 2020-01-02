@@ -32,7 +32,7 @@ app
 }, app))
 .use(StaticServer({ rootDir: 'node_modules', rootPath: '/node_modules' }))
 .use(StaticServer({ rootDir: 'view', rootPath: '/view' }))
-.use(StaticServer({ rootDir: '/data/upload',      rootPath: '/data/upload' }))
+.use(StaticServer({ rootDir: '/data',      rootPath: '/data' }))
 .use(Body({ multipart: true, formidable: { maxFileSize: 1024*1024*1024 } /* 单个文件小于1GB */ }))
 .use(Views(__dirname, { map: {html: 'underscore'} }))
 .use(Errors({ engine: 'underscore', template: 'view/errors.html' }))

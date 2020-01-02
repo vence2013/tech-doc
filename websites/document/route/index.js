@@ -1,4 +1,9 @@
 const Router = require('koa-router');
+const fs = require("fs");
+const path = require('path');
+const shell = require('shelljs');
+const moment = require('moment');
+const fssync = require('fs-sync');
 
 var router = new Router();
 
@@ -111,16 +116,102 @@ router.get('/search', async (ctx)=>{
     ctx.body = {'error': 0, 'message': res};
 })
 
-
 router.get('/export', async (ctx)=>{
     const DocumentCtrl = ctx.controls['document/document'];
+    const CategoryCtrl = ctx.controls['document/category'];
     
     /* 提取有效参数 */
     var req2  = ctx.query;
     var query = reqCheck(req2);
+    var categoryid = parseInt(req2.categoryid);
 
-    //var res = await DocumentCtrl.search(ctx, query);
-    ctx.body = {'error': 0, 'message': 'filepath'};
+    // 搜索符合条件的文档
+    var doclist = [];
+    if (categoryid) 
+        doclist = await CategoryCtrl.inall(ctx, categoryid, query);
+    else 
+        doclist = await DocumentCtrl.searchall(ctx, query);
+
+    /* 提取文档中的文件，并更新文档中的文件路径 */
+    var filelist = [];
+    for (var i=0; i<doclist.length; i++) {
+        var content = doclist[i]['content'];
+        var arr = content.match(/\[[^\]]*\]\(\/data\/upload\/[^\)]+\)/g);
+        for (var j=0; arr && j<arr.length; j++) {     
+            // 取出 ![](filepath)格式中的filepath       
+            var url = arr[j].replace(/\[[^\]]*\]\(([^\)]+)\)/, "$1");
+            filelist.push(url);
+            // 替换content中的路径
+            content = content.replace(url, url.substr(6));
+        }
+        doclist[i]['content'] = content;
+    }
+
+    function deleteall(path) {
+        var files = [];
+        if(fs.existsSync(path)) {
+            files = fs.readdirSync(path);
+            files.forEach(function(file, index) {
+                var curPath = path + "/" + file;
+                if(fs.statSync(curPath).isDirectory()) { // recurse
+                    deleteall(curPath);
+                } else { // delete file
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(path);
+        }
+    }
+
+    var datadir = '/data/';
+    var exportdir = datadir+'export/';
+    
+    /* 清除上一次的导出文件， export/, export*.tgz */
+    var list = fs.readdirSync(datadir);
+    list.forEach(function(file) {
+        var filepath = datadir + file;
+        var stat = fs.statSync(filepath)
+        if (stat && stat.isDirectory()) {
+            // 删除 export/ 目录
+            if (file == 'export') 
+                deleteall(filepath);
+        } else if (/^export.*\.tgz$/.test(file)) {
+            fs.unlinkSync(filepath);
+        }
+    })
+    // 重建 export/ 目录
+    if (!fs.existsSync(exportdir))
+        fssync.mkdir(exportdir);
+    
+    // 复制文件
+    for (var i=0; i<filelist.length; i++) {
+        var dst = exportdir+filelist[i].substr(6);
+        var obj = path.parse(dst);
+        // 如果目录不存在，则创建目录
+        if (!fs.existsSync(obj.dir)) 
+            fssync.mkdir(obj.dir);
+
+        fssync.copy(filelist[i], dst);
+    }
+
+    // 输出文档
+    for (var i=0; i<doclist.length; i++) {
+        var content = doclist[i]['content'];
+        /* 提取文章标题 
+        * 1. 去除开头的#和换行符(\n)
+        * 2. 查找下一个换行符前的字符串
+        */
+        var title   = content.replace(/^[\\n#\ \t]*/, '').match(/[^\n]+/)[0];
+        var filename = exportdir+title+'.md';
+        fs.writeFileSync(filename, content);
+    }
+
+    var datestr =  moment().format("YYYYMMDD");
+    var tarfile = datadir+'export-'+datestr+'.tgz';
+    shell.exec('tar -zvcf '+tarfile+' -C '+exportdir+' . ');
+    
+    // 生成打包文件
+    ctx.body = {'error': 0, 'message': tarfile};
 })
 
 module.exports = router;
