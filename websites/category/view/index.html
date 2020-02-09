@@ -62,7 +62,7 @@
                     <div class="col list doc_list">
                         <div ng-repeat="x in doclist">
                             <span>
-                                <b><a href="/document/display/{{x.id}}" title="{{x.content|limitTo:300}}" target="_blank">{{x.content|limitTo:50}} </a></b>
+                                <b><a href="/document/display/{{x.id}}" title="{{x.content|limitTo:300}}" target="_blank">{{x.content|limitTo:45}} </a></b>
                                 {{x.createdAt|limitTo:10}}
                             </span>
                             <a href="#" ng-show="categoryinfo.id" ng-click="link(x.id);"><i class="fa fa-check"></i></a>

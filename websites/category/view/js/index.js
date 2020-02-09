@@ -128,7 +128,7 @@ function indexCtrl($scope, $http, locals)
 
     /* 文档 -----------------------------------------------------------------*/
 
-    $scope.docOpts = {'page':1, 'pageSize':24, 'str':''};
+    $scope.docOpts = {'page':1, 'pageSize':18, 'str':''};
     $scope.doclist = [];
     $scope.docrel  = false; 
     
