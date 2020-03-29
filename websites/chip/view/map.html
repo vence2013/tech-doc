@@ -31,20 +31,29 @@
 
     <div ng-include="'/view/header.html'"></div>
     <div ng-controller="mapCtrl" class="mt-2 mx-1" style="overflow-x: auto;">
-        <div class="map">
-            <div ng-repeat="x in reglist">
-                <!--- 寄存器 --->
-                <div title="{{x.name}}" idx="r{{x.id}}"
-                    ng-mouseenter="reg_info_display(x);" ng-mouseleave="info_close();" 
-                    ng-click="bitsSelect('r'+x.id, x)">{{x.name|limitTo:10}}</div>
-                <!-- 位组 --->
-                <div ng-repeat="y in x.bitslist2" title="{{y.name}}" idx="b{{y.id}}"
-                    ng-class="{'map_bits_valid':y.id}" style="height: {{21 * y.cnt}}px; line-height:{{21 * y.cnt}}px" 
-                    ng-mouseenter="y.id && bits_info_display(y);" ng-mouseleave="info_close();" 
-                    ng-click="bitsSelect('b'+y.id)">{{y.name|limitTo:10}}</div>
+        <div style="display: inline; float: left; width: calc(100% - 100px); overflow: auto;">
+            <div class="map">
+                <div ng-repeat="x in reglist">
+                    <!--- 寄存器 --->
+                    <div title="{{x.name}}" idx="r{{x.id}}"
+                        ng-mouseenter="reg_info_display(x);" ng-mouseleave="info_close();" 
+                        ng-click="bitsSelect('r'+x.id, x)">{{x.name|limitTo:10}}</div>
+                    <!-- 位组 --->
+                    <div ng-repeat="y in x.bitslist2" title="{{y.name}}" idx="b{{y.id}}"
+                        ng-class="{'map_bits_valid':y.id}" style="height: {{21 * y.cnt}}px; line-height:{{21 * y.cnt}}px" 
+                        ng-mouseenter="y.id && bits_info_display(y);" ng-mouseleave="info_close();" 
+                        ng-click="bitsSelect('b'+y.id)">{{y.name|limitTo:10}}</div>
+                </div>
             </div>
         </div>
+        <div style="display: inline; float: left; ">
+            side bar
+        </div>
 
+        <!-- 搜索框-->
+        <div style="position: fixed; top: 3px; right: 10px;">
+            <input type="text" class="form-control form-control-sm my-1 text-center" ng-model="str" placeholder="搜索寄存器或位组" />
+        </div>
         <!-- 菜单 -->
         <div class="map_menu" ng-mouseleave="menu_select='none'">
             <!-- 芯片/模块选择 -->
@@ -69,9 +78,6 @@
             </div>
             <!-- 菜单导航 -->
             <div class="menu_nav">
-                <div>
-                    <input type="text" class="form-control mx-2 my-1" ng-model="str" placeholder="搜索寄存器或位组" />
-                </div>
                 <div>
                     <a href="#" ng-click="menu_select='one'">模块选择</a>
                     <a href="#" ng-click="menu_select='two'">已选位组</a>
