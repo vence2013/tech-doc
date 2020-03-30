@@ -8,11 +8,29 @@ a { line-height: 40px; font-style: italic; margin: 0px 10px; }
 
 /* 寄存器映射 ****************************************************************/
 
-.map_menu { position: fixed; bottom: 0px; left: 0px; width: 800px; background-color: #eeeeee; 
-    border-top-right-radius: 5px; z-index: 9; }
-.map_menu>.menu_nav { height: 40px; }
-.map_menu>.menu_nav>div { display: inline; float: left; }
-.map_menu>.menu_extend { height: 700px; padding: 0px 5px; opacity: 0.9; }
+.map_menu { position: fixed; top: 42px; right: 55px; background-color: #ffffff; z-index: 999; opacity: 0.9; }
+.map_menu>.menu_extend {  width: 800px; height: 730px; border-radius: 5px; border: 1px dashed #000000; padding: 0px 5px; opacity: 0.9; }
+
+.map_sidebar {
+    position: fixed; top: 0px; right: -58px;
+}
+.map_sidebar > div {
+    margin: 120px auto;
+    width: 169px;
+	font-size: 20px; 
+    line-height: 50px;
+    text-align: center;
+	transform:rotate(90deg);
+	-ms-transform:rotate(90deg); 	/* IE 9 */
+	-moz-transform:rotate(90deg); 	/* Firefox */
+    -webkit-transform:rotate(90deg); /* Safari 和 Chrome */
+    
+    background: #cccccc;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    cursor: pointer;
+    z-index: 999;
+}
 
 .map { text-align: center; }
 .map>div { display: inline; float: left; width: 100px; overflow: hidden; margin-left: 1px; background-color: #cccccc; }
@@ -25,7 +43,7 @@ a { line-height: 40px; font-style: italic; margin: 0px 10px; }
 .map_bits_valid { background-color: #81BEF7; }
 .map_bits_select { background-color: #FE642E; }
 
-.map_info { display: none; background-color: #ffffff; border-radius: 5px; padding: 5px 10px; 
+.map_info { display: none; background-color: #ffffff; border-top-right-radius: 5px; padding: 5px 10px; 
     line-height: 25px; font-size: 14px; font-style: italic; }
 .map_info>div>span { margin-right: 20px; }
 .map_info>div:nth-child(1)>span:nth-child(1)>b { font-weight: bold; color: #FF0000; }

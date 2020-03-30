@@ -15,13 +15,24 @@ function mapCtrl($scope, $http, locals)
      * 数据格式： {registerinfo, 'bitslist':[{bitsinfo}]} 
      */
     $scope.reglist  = [];
-    $scope.menu_select = 'one';
+    $scope.menu_select = '';
     var reglist_all = [];
 
     $scope.bitslist_str = '';
 
     $scope.copySuccess = ()=>{
         toastr.info('已复制选中的位组ID！');
+    }
+
+    $scope.sidebar_menu = (sel) => {
+        if (sel == $scope.menu_select)
+        {
+            $scope.menu_select = '';
+        }
+        else
+        {
+            $scope.menu_select = sel;
+        }
     }
 
     /* 选择位组 **************************************************************/
@@ -136,16 +147,10 @@ function mapCtrl($scope, $http, locals)
     }
 
     /* 信息显示 **************************************************************/
-
-    var mouse_pos_x = 0;
-    $(document).mousemove(function(e){ mouse_pos_x = e.pageX; }); 
-
+    
     var info_close_timer = null;
     $scope.reg_info_display = (reg) => {
-        if (info_close_timer) {
-            window.clearTimeout(info_close_timer);
-            info_close_timer = null;
-        }
+        window.clearTimeout(info_close_timer);
 
         $(".map_info")
         .html('')
@@ -155,23 +160,13 @@ function mapCtrl($scope, $http, locals)
             "</b></span><span>更新时间：<b>"+reg.updatedAt.substring(0, 10)+"</b></span></div>")
         .append("<div>"+reg.desc.replace(/\n/g, '<br />')+"</div>");
         
-        var win_width  = $(window).width();
-        if (mouse_pos_x < win_width/2) {
-            $(".map_info")
-            .removeAttr('style')
-            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'right':'0px'});
-        } else {
-            $(".map_info")
-            .removeAttr('style')
-            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'left':'0px'});
-        }
+        $(".map_info")
+        .removeAttr('style')
+        .css({'display':'block', 'position':'absolute', 'bottom':'2px', 'left':'2px'});
     }
 
     $scope.bits_info_display = (bits) => {
-        if (info_close_timer) {
-            window.clearTimeout(info_close_timer);
-            info_close_timer = null;
-        }
+        window.clearTimeout(info_close_timer);
 
         /* 将连续的位组组合 
          * 1. 位组解析为位序数字数组， 排序
@@ -201,22 +196,16 @@ function mapCtrl($scope, $http, locals)
             "</b></span><span>更新时间：<b>"+bits.updatedAt.substring(0, 10)+"</b></span></div>")
         .append("<div>"+bits.desc.replace(/\n/g, '<br />')+"</div>");
         
-        var win_width  = $(window).width();
-        if (mouse_pos_x < win_width/2) {
-            $(".map_info")
-            .removeAttr('style')
-            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'right':'0px'});
-        } else {
-            $(".map_info")
-            .removeAttr('style')
-            .css({'display':'block', 'width':win_width/2.03+'px', 'position':'absolute', 'top':'0px', 'left':'0px'});
-        }
+        $(".map_info")
+        .removeAttr('style')
+        .css({'display':'block', 'position':'absolute', 'bottom':'2px', 'left':'2px'});
     }
 
     $scope.info_close = (bits) => {
+        window.clearTimeout(info_close_timer);
         info_close_timer = window.setTimeout(()=>{
             $('.map_info').css('display', 'none');
-        }, 3000);        
+        }, 1000);        
     }
 
     /* 1. 获取芯片列表，选择一个芯片（/chip/map/chipid或第1个芯片）

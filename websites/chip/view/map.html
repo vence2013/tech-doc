@@ -31,7 +31,7 @@
 
     <div ng-include="'/view/header.html'"></div>
     <div ng-controller="mapCtrl" class="mt-2 mx-1" style="overflow-x: auto;">
-        <div style="display: inline; float: left; width: calc(100% - 100px); overflow: auto;">
+        <div style="width: calc(100% - 60px); overflow: auto;">
             <div class="map">
                 <div ng-repeat="x in reglist">
                     <!--- 寄存器 --->
@@ -46,8 +46,10 @@
                 </div>
             </div>
         </div>
-        <div style="display: inline; float: left; ">
-            side bar
+        <div class="map_sidebar">
+            <div ng-click="sidebar_menu('one')">模块选择</div>
+            <div ng-click="sidebar_menu('two')">功能选择</div>
+            <div clipboard text="copyText" on-copied="copySuccess()">复制已选位组</div>
         </div>
 
         <!-- 搜索框-->
@@ -55,7 +57,7 @@
             <input type="text" class="form-control form-control-sm my-1 text-center" ng-model="str" placeholder="搜索寄存器或位组" />
         </div>
         <!-- 菜单 -->
-        <div class="map_menu" ng-mouseleave="menu_select='none'">
+        <div class="map_menu" ng-mouseleave="menu_select=''">
             <!-- 芯片/模块选择 -->
             <div class="menu_extend" ng-show="menu_select=='one'">
                 <div class="ititle">芯片</div>
@@ -71,18 +73,7 @@
             </div>
             <!-- 选中位组设置 -->
             <div class="menu_extend" ng-show="menu_select=='two'">            
-                <div><textarea class="form-control mt-2 mr-1" rows="30" ng-model="bitslist_str"></textarea></div>
-                <div style="position:inherit; bottom: 10px;">                    
-                    <a href="#" ng-click="bitsUpdate();">更新选择位组</a>
-                </div>
-            </div>
-            <!-- 菜单导航 -->
-            <div class="menu_nav">
-                <div>
-                    <a href="#" ng-click="menu_select='one'">模块选择</a>
-                    <a href="#" ng-click="menu_select='two'">已选位组</a>
-                    <a href="#" clipboard text="copyText" on-copied="copySuccess()">复制已选位组</a>                    
-                </div>
+                功能列表，暂未实现
             </div>
         </div>
 
