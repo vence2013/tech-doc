@@ -46,6 +46,7 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
     "mysql2": "^2.0.1",
+    "mysqldump": "^3.1.0",
     "popper.js": "^1.16.0",
     "sequelize": "^5.21.2",
     "shelljs": "^0.8.3",

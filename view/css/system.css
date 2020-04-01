@@ -1,0 +1,6 @@
+.info_warning, .info_tip, .info_key, .info_log { line-height: 30px; }
+.info_warning { color: #ff0000; font-style: italic; }
+.info_tip { color: #888888; }
+.info_key { margin-right: 20px; }
+
+.info_log { border-bottom: 1px dashed #cccccc; font-style: italic; color: #4B610B; }
