@@ -7,6 +7,30 @@ router.get('/', async (ctx)=>{
     await ctx.redirect('/document'); 
 })
 
+router.post('/restore/upload', async (ctx, next) => {
+    const indexCtrl = ctx.controls['index'];
+
+    /* 新版本的koa-body通过ctx.request.files获取上传的文件，旧版本的koa-body通过ctx.request.body.files获取上传的文件 
+     * https://blog.csdn.net/simple__dream/article/details/80890696
+     */
+    var file = ctx.request.files.file;
+
+    await indexCtrl.restore_upload(ctx, file);
+    ctx.body = {'error':  0, 'message': 'SUCCESS'};
+})
+
+router.get('/restore', async(ctx, next) => {
+    const indexCtrl = ctx.controls['index'];
+    var status = indexCtrl.restore_status();
+
+    if (status && (status.length == 1))
+    {
+        indexCtrl.restore(ctx);
+    }
+    
+    ctx.body = {'error':  0, 'message': indexCtrl.restore_status()};
+})
+
 
 router.get('/backup', async (ctx)=>{
     const indexCtrl = ctx.controls['index'];

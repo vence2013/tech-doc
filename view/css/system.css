@@ -4,3 +4,13 @@
 .info_key { margin-right: 20px; }
 
 .info_log { border-bottom: 1px dashed #cccccc; font-style: italic; color: #4B610B; }
+
+.card-title { color: #000000; }
+.card-title>b { font-size: 16px; margin-right: 10px; }
+.card-title>i { font-size: 12px; }
+
+.fileinfo { line-height: 30px; }
+.fileinfo>div>i { color: #888888; }
+.fileinfo>div>span { font-size: 16px; font-weight: bold; margin-left: 10px; margin-right: 20px; }
+
+.data-log>div { line-height: 30px; border-bottom: 1px dashed #888888; text-indent: 10px; }
