@@ -3,7 +3,7 @@ const child_process = require('child_process');
 
 var Backup_runtime = {
     restore: {file:'', status:null},
-    backup : {}
+    backup : {file:'', status:null},
 };
 
 exports.restore_upload = async (ctx, file) => {
@@ -33,22 +33,11 @@ exports.restore_status = (ctx) => {
     return Backup_runtime.restore.status;
 }
 
-var system_backup_message = '';
-
-
-exports.get_backup_status = () => {
-    return system_backup_message;
+exports.backup_status = () => {
+    return Backup_runtime.backup.status;
 }
 
-exports.backup = async (filename)=>{
-    const cfg = require('dotenv').config({ path: '/web/.env' }).parsed;
-
-    child_process.execFileSync('tools/backup.sh', [cfg.MYSQL_HOST, cfg.MYSQL_ROOT_PASSWORD, cfg.SYSNAME, filename]);
-
-    system_backup_message = 'success';
-}
-
-exports.backup_file_info = async () => {
+exports.backup_file = async () => {
     var ret = null;
     var path = '/data';
 
@@ -65,6 +54,14 @@ exports.backup_file_info = async () => {
     return ret;
 }
 
+exports.backup = async (filename)=>{
+    const cfg = require('dotenv').config({ path: '/web/.env' }).parsed;
+
+    Backup_runtime.backup.status = ['1/2. backuping!'];
+    child_process.execFileSync('tools/backup.sh', 
+    ['backup', filename, cfg.MYSQL_HOST, cfg.MYSQL_ROOT_PASSWORD, cfg.SYSNAME]);
+    Backup_runtime.backup.status.push('2/2. backup success!');
+}
+
 exports.dummy = async()=>{
-    
 }

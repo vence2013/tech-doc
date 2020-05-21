@@ -9,7 +9,8 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
     $scope.backup_file = null;
 
     var timer_query = null;
-    var previous_message = '';
+
+    backup_file();
 
     $('.data-content').height($(document).height() - 250);
     var uploader = $scope.uploader = new FileUploader({
@@ -56,6 +57,14 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
         }
     };
 
+    $('#collapseOne').on('hidden.bs.collapse', function () {
+        $('.data-log').html('');
+    })
+    $('#collapseTwo').on('hidden.bs.collapse', function () {
+        backup_file();
+        $('.data-log').html('');        
+    })
+
     function restore_request()
     {
         $http.get('/restore').then((res)=>{
@@ -68,7 +77,7 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
                 $interval.cancel(timer_query);
                 $('#restore_wait').addClass('d-none');
             }
-            console.log(msgs);
+
             $('.data-log').html('');
             msgs.forEach(msg => {
                 $('.data-log').append("<div>"+msg+"</div>");
@@ -76,13 +85,33 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
         });
     }
 
-    $http.get('/backup/file').then((res)=>{
-        if (!res.data.error)
-        {
-            // console.log(ret);
-            $scope.backup_file = res.data.message;            
-        }
-    });
+    function backup_file()
+    {
+        $http.get('/backup/file').then((res)=>{
+            if (errorCheck(res)) 
+                return ;
+
+            var file = res.data.message;
+            var fmtsize = '';
+    
+            if (file.size < 1024)
+            {
+                fmtsize = file.size + 'Byte'
+            }
+            else if ((file.size/1024) < 1024)
+            {
+                fmtsize = Math.ceil(file.size/1024) + 'KB'
+            }
+            else if ((file.size/1024/1024) < 1024)
+            {
+                fmtsize = Math.ceil(file.size/1024/1024) + 'MB'
+            }
+    
+            $('#backup_file_name').html("<a href='"+file.path+"'>"+file.name+"</a>");
+            $('#backup_file_size').text(fmtsize);
+            $('#backup_file_last_modify').text((new Date(file.mtime)).format("yyyy-MM-dd hh:mm:ss"));
+        });
+    }
 
     function backup_message()
     {
@@ -90,29 +119,29 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
             if (errorCheck(res)) 
                 return ;
             
-            var ret = res.data.message;
-            if (ret != previous_message)
+            var msgs = res.data.message;
+
+            if (msgs.length == 2) 
             {
-                previous_message = ret;
-                $('.backup_message').append("<div class='info_log'>"+ret+"</div>");
-            }
-            
-            if ('success' == ret)
-            {
+                backup_file();
                 $interval.cancel(timer_query);
+                $('#backup_wait').addClass('d-none');
             }
+
+            $('.data-log').html('');
+            msgs.forEach(msg => {
+                $('.data-log').append("<div>"+msg+"</div>");
+            });
         });
     }
 
     $scope.backup = () =>{
+        $('#backup_wait').removeClass('d-none');
         $http.get('/backup?filename='+$scope.backup_filename).then((res)=>{
             if (errorCheck(res)) 
                 return ;
             
-            $('.backup_message').html("<div class='info_log'>"+res.data.message+"</div>");
-        });
-
-        /* timer query backup status */
-        timer_query = $interval(backup_message, 1000);
+            timer_query = $interval(backup_message, 2000);
+        });        
     }
 }

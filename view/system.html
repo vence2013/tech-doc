@@ -41,20 +41,34 @@
                                 <b>数据备份</b><i>删除以前的备份数据；备份配置文件，上传文件、数据库</i>
                             </button>
                         </h2></div>
-                        <div id="collapseOne" class="collapse" data-parent="#data-manage">
+                        <div id="collapseOne" class="collapse show" data-parent="#data-manage">
                             <div class="card-body data-content">
-                                Anim pariatur cliche reprehenderit, 
+                                <!-- data backup -->
+                                <div class="fileinfo">
+                                    <div>
+                                        <div class="spinner-border float-right d-none" role="status" id="backup_wait"><span class="sr-only">Loading...</span></div>
+                                    </div>
+                                    <div><i>当前备份</i><span id="backup_file_name"></span></div>
+                                    <div><i>文件大小</i><span id="backup_file_size"></span><i>最近修改时间</i><span id="backup_file_last_modify"></span></div>
+                                </div>
+                                <div class="input-group my-3">
+                                    <input type="text" class="form-control" placeholder="backup file name"  ng-model="backup_filename">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" ng-click="backup()">开始备份</button>
+                                    </div>
+                                </div>
+                                <div class="data-log"></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card">
                         <div class="card-header" id="headingTwo"><h2 class="mb-0">
-                            <button class="btn btn-block text-left  card-title" type="button" data-toggle="collapse" data-target="#collapseTwo">
+                            <button class="btn btn-block text-left card-title" type="button" data-toggle="collapse" data-target="#collapseTwo">
                                 <b>数据恢复</b><i>删除现有的上传文件、清空数据库；解压并使用数据文件，导入数据库</i>
                             </button>
                         </h2></div>
-                        <div id="collapseTwo" class="collapse show" data-parent="#data-manage">
+                        <div id="collapseTwo" class="collapse" data-parent="#data-manage">
                             <div class="card-body data-content">
                                 <!-- data restore --->
                                 <div class="fileinfo">

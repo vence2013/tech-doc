@@ -39,19 +39,19 @@ router.get('/backup', async (ctx)=>{
     var filename = req2.filename;
 
     indexCtrl.backup(filename);
-    ctx.body = {'error':0, 'message':indexCtrl.get_backup_status()};
+    ctx.body = {'error':0, 'message': 'SUCCESS'};
 })
 
 router.get('/backup/status', async (ctx)=>{
     const indexCtrl = ctx.controls['index'];
 
-    ctx.body = {'error':0, 'message':indexCtrl.get_backup_status()};
+    ctx.body = {'error':0, 'message':indexCtrl.backup_status()};
 })
 
 router.get('/backup/file', async (ctx)=>{
     const indexCtrl = ctx.controls['index'];
 
-    var ret = await indexCtrl.backup_file_info();
+    var ret = await indexCtrl.backup_file();
     ctx.body = {'error':ret ? 0 : -1, 'message':ret};
 })
 
