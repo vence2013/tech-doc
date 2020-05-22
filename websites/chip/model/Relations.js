@@ -15,6 +15,6 @@ exports.link = async (models)=>{
     models['ChipBitgroup'].belongsTo(models['ChipRegister'], {onDelete: 'CASCADE'}); 
 
     // 文档 - 位组
-    models['Document'].belongsToMany(models['ChipBitgroup'], {through: 'DocumentChipBitgroup'});
-    models['ChipBitgroup'].belongsToMany(models['Document'], {through: 'DocumentChipBitgroup'});
+    models['Document'].belongsToMany(models['ChipBitgroup'], {through: 'ChipBitgroupDocument'});
+    models['ChipBitgroup'].belongsToMany(models['Document'], {through: 'ChipBitgroupDocument'});
 }

@@ -1,0 +1,8 @@
+.category-view { min-height: 100px; overflow: auto; }
+.category-edit { 
+    position: fixed; right: 20px; top: 60px; 
+    width: 800px; background-color: #dddddd; 
+    z-index: 999; opacity: 0.0; transition: all linear 0.3s; 
+}
+.category-edit-result { overflow-y: auto; }
+.category-edit-result>div { height: 25px; margin-top: 5px; border-bottom: 1px dashed #eeeeee; }

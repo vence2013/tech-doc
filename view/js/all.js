@@ -2,13 +2,15 @@ function navCtrl($scope) {
     $scope.navlist = [
         {'name':'Tech-doc', 'url':'/document', 'children':[
             {'name':'category', 'url':'/document/view/category.html'}, 
-            {'name':'edit', 'url':'/document/edit/0'},                       
+            {'name':'edit', 'url':'/document/edit/0'},
+        ]},
+        {'name':'Category', 'url':'/category', 'children':[
+            {'name':'edit', 'url':'/category/edit'},
         ]},
         {'name':'File', 'url':'/file', 'children':[
             {'name':'Pictures', 'url':'/file/view/picture.html'}
         ]},
         {'name':'Tag', 'url':'/tag'},
-        {'name':'Category', 'url':'/category'},
         {'name':'Chip', 'url':'/chip', 'children':[            
             {'name':'edit', 'url':'/chip/view/edit.html'},
             {'name':'function', 'url':'/chip/document/edit/0'},

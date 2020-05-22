@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="data:;base64,=">  <!-- 禁止加载facon.ico -->
-    <title>专题目录</title>
+    <title>目录专题</title>
 
     <!-- 软件包导入(jquery放在anguarjs前， bootstrap放在jquery-ui前) -->
     <script src="/node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script> 
@@ -85,7 +85,7 @@
                 </div>
             </div>
             <!--- 侧栏结束 --->
-            <div class="col-md border rounded mx-3" style="overflow: auto;">
+            <div class="col-md mx-3" style="overflow: auto;">
                 <treecontrol class="tree-classic" options="treeOptions" filter-expression="predicate" filter-comparator="comparator" 
                     tree-model="treeView" expanded-nodes="listExpand" selected-node="nodeSelected"
                     on-selection="select(node, selected)" on-node-toggle="toggle(node, expanded);">
