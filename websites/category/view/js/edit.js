@@ -22,10 +22,10 @@ function editCtrl($scope, $http, locals)
     $('.category-edit-result').height($(document).height() - 300);
     $('.category-edit').bind({
         'mouseenter': ()=>{ $('.category-edit').css({'opacity':1.0}); },
-        'mouseleave': ()=>{ $('.category-edit').css({'opacity':0.0}); }
+        'mouseleave': ()=>{ $('.category-edit').css({'opacity':0.5}); }
     });
 
-    treeRefresh();
+    tree_refresh();
 
     /* event ----------------------------------------------------------------*/
 
@@ -40,7 +40,7 @@ function editCtrl($scope, $http, locals)
         }
     }
 
-    function treeRefresh() {
+    function tree_refresh() {
         
         $http.get('/category/tree/0', {}).then((res)=>{
             if (errorCheck(res)) return ;
@@ -72,10 +72,27 @@ function editCtrl($scope, $http, locals)
         });
     }
 
+
+    $scope.resource = {'size':100, 'search':'', 'categoryid':0, 'belong':false};
+    $scope.$watch('resource', resource_refresh, true);
+
+    function resource_refresh()
+    {
+        $http.get('/category/resource', { 'params': $scope.resource })
+        .then((res)=>{
+            if (errorCheck(res)) return ;
+
+            var ret = res.data.message;
+            $scope.reslist = ret;
+        })
+    }
+
     function reset()
     {
         $scope.name = '';
         $scope.subname = '';
+        $scope.resource.belong = false;
+        $scope.resource.categoryid = 0;
     }
 
     function detail(node_id)
@@ -91,6 +108,12 @@ function editCtrl($scope, $http, locals)
                 if (ret)
                 {
                     $scope.name = ret.name;
+                    $scope.resource.belong = true;
+                    $scope.resource.categoryid = ret.id;
+                }
+                else
+                {
+                    reset();
                 }
             });
         }
@@ -117,6 +140,23 @@ function editCtrl($scope, $http, locals)
         /* 更新展开的节点列表 */
         var ids = $scope.listExpand.map(node => { return node.id; });
         locals.setObject('/category/edit/exp', ids);
+    }
+
+    /* relation -------------------------------------------------------------*/
+
+    $scope.relation_update = ()=>{
+        var resource = [];
+        $('.category-edit-result>div>div>input:checkbox:checked').each((i, e)=>{
+            resource.push($(e).attr('id'));
+        });
+
+        $http.post('/category/resource', {
+            'categoryid':$scope.resource.categoryid, 'belong':$scope.resource.belong, 'resources':resource
+        }).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            resource_refresh();
+        })
     }
 
     /* edit -----------------------------------------------------------------*/
@@ -146,7 +186,7 @@ function editCtrl($scope, $http, locals)
                     expandids.push(father_id);
                     locals.setObject('/category/edit/exp', expandids);
                 }
-                treeRefresh();
+                tree_refresh();
             }
         });
     }
@@ -170,7 +210,7 @@ function editCtrl($scope, $http, locals)
             {
                 toastr.success('success');
             }
-            treeRefresh();
+            tree_refresh();
         });
     }
 
@@ -187,7 +227,7 @@ function editCtrl($scope, $http, locals)
             {
                 toastr.success('success');
             }
-            treeRefresh();            
+            tree_refresh();            
         });
     }
 }

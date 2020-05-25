@@ -2,6 +2,11 @@ const Router = require('koa-router');
 
 var router = new Router();
 
+/* 编辑页 */
+router.get('/', async (ctx)=>{
+    await ctx.render('websites/category/view/edit.html'); 
+});
+
 router.post('/', async (ctx)=>{
     const editCtrl = ctx.controls['category/edit'];
 
@@ -48,7 +53,7 @@ router.delete('/:id', async (ctx)=>{
     ctx.body = {'error': 0, 'message': "SUCCESS"};
 })
 
-/* 获取节点的详细信息：节点信息，关联文档，关联文件 */
+/* 获取节点的详细信息：节点信息 */
 router.get('/info/:id', async (ctx)=>{
     const editCtrl = ctx.controls['category/edit'];
 
