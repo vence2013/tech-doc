@@ -27,7 +27,6 @@ exports.resource = async (ctx, size, search, categoryid, belong) => {
 }
 
 exports.relate = async(ctx, categoryid, belong, fileids) => {
-    const File = ctx.models['File'];
     const Category = ctx.models['Category'];
 
     var categoryIns = await Category.findOne({logging:false, where:{'id':categoryid}});

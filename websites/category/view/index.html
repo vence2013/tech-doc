@@ -36,9 +36,20 @@
     <div class="container-fluid mt-3 px-0 category-view">
         <treecontrol class="tree-classic" options="treeOptions" filter-expression="predicate" filter-comparator="comparator" 
             tree-model="treeView" expanded-nodes="listExpand" selected-node="nodeSelected"
-            on-selection="select(node, selected)" on-node-toggle="toggle(node, expanded);">
-                <span>{{node.name}} /{{node.id}}</span>
+            on-node-toggle="toggle(node, expanded);">
+                <span>{{node.name}}</span>
+                <a ng-if="node.type=='file'" class="mt-1" href="{{node.location}}" target="_blank"><i class="fa fa-file-o"></i></a>
+                <a ng-if="node.type=='doc'" class="mt-1" href="/document/display/{{node.id}}" target="_blank"><i class="fa fa-file-word-o"></i></a>
         </treecontrol>
+    </div>
+
+    <!-- sidebar -->
+    <div class="container category-edit rounded">
+        <div class="row my-3">
+            <div class="col">
+                <input type="text" class="form-control" ng-model="predicate" placeholder="当前选中的目录名称">
+            </div>
+        </div>
     </div>
 
 </body>
