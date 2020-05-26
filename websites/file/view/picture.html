@@ -28,11 +28,11 @@
     <link  href="/file/view/css/index.css" rel="stylesheet" />
     <script src="/file/view/js/picture.js" type="text/javascript"></script>    
 </head>
-<body ng-app="pictureApp">
+<body ng-app="pictureApp" ng-controller="pictureCtrl">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="layout1 container-fluid mt-2" ng-controller="pictureCtrl">
-        <div class="row">
+    <div class="container-fluid mt-2">
+        <div class="row pic-view">
             <div class="col-md piclist"></div>
         </div>
         <div class="row">

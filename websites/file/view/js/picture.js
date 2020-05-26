@@ -7,6 +7,8 @@ function pictureCtrl($scope, $http)
     $scope.opts = opts = {'str':'', 'ext':'png jpg gif', 'order':'4', 'page':1, 'pageSize':45};
     $scope.page = pageSet(0, opts.pageSize, 10, 0);
 
+    $('.pic-view').height($(document).height() - 100);
+
     var updateTimer = null;
     /* 以下条件更新视图：opts更新； page改变 */
     $scope.$watch('opts', ()=>{
