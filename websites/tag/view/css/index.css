@@ -1,2 +1,5 @@
-.tag-view>div { display: inline; float: left; }
-.tag-view>div:first-child { width: 300px; }
+.tag-edit { 
+    position: fixed; right: 20px; bottom: 20px; 
+    width: 300px; background-color: #dddddd; 
+    z-index: 999; opacity: 0.5; transition: all linear 0.3s; 
+}

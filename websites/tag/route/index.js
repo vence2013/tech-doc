@@ -24,17 +24,29 @@ router.post('/', async (ctx) => {
 });
 
 
+router.delete('/:tagname', async (ctx) => {
+    const TagCtrl = ctx.controls['tag/tag'];
+
+    /* 提取有效的参数 */
+    var req2 = ctx.params;
+    var tagname = req2.tagname;
+
+    await TagCtrl.delete(ctx, tagname);
+    ctx.body = {'error':  0, 'message': 'success'}
+})
+
+
 /* 搜索标签，参数为：{str, page, pageSize } */
 router.get('/search', async (ctx) => {
     const TagCtrl = ctx.controls['tag/tag'];
 
     /* 提取有效的参数 */
     var req = ctx.query;
-    var str = req.str.replace(/^\s*(.*?)\s*$/, "$1"); // 去除首尾空格
+    var search = req.search.replace(/^\s*(.*?)\s*$/, "$1"); // 去除首尾空格
     var page = /^\d+$/.test(req.page) ? req.page : 1;  // 当前的页面
     var pageSize = /^\d+$/.test(req.pageSize) ? req.pageSize : 100; // 每页的记录条数
 
-    var ret = await TagCtrl.search(ctx, str, page, pageSize);
+    var ret = await TagCtrl.search(ctx, search, page, pageSize);
     ctx.body = {'error': 0, 'message': ret};
 })
 
@@ -51,18 +63,6 @@ router.get('/except', async (ctx) => {
 
     var ret = await TagCtrl.searchWithExcept(ctx, str, limit, except);
     ctx.body = {'error': 0, 'message': ret};
-})
-
-
-router.delete('/:tagname', async (ctx) => {
-    const TagCtrl = ctx.controls['tag/tag'];
-
-    /* 提取有效的参数 */
-    var req2 = ctx.params;
-    var tagname = req2.tagname;
-
-    await TagCtrl.delete(ctx, tagname);
-    ctx.body = {'error':  0, 'message': 'success'}
 })
 
 
