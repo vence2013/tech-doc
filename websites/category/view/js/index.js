@@ -10,11 +10,12 @@ function indexCtrl($scope, $http, locals)
     $scope.treeView = [];
     $scope.listView = [];
     $scope.listExpand = [];
-    $scope.treeOptions = {dirSelectable: true};
+    $scope.treeOptions = {dirSelectable: false};
     $scope.predicate = "";
     $scope.comparator = false;
 
     tree_refresh();
+    $('.category-view').height($(document).height() - 80);
 
     function tree_refresh() {
         var expanddirs = locals.getObject('/category/view/exp');

@@ -6,3 +6,7 @@
 }
 .category-edit-result { overflow-y: auto; }
 .category-edit-result>div { height: 25px; margin-top: 5px; border-bottom: 1px dashed #eeeeee; }
+
+.category-node { font-size: 14px; font-style: italic; color: #084B8A; font-weight: bold; }
+.category-file { color: #2E2E2E; }
+.category-doc { color: #DF3A01; }

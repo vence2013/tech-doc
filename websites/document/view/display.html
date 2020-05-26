@@ -36,9 +36,9 @@
 <body ng-app="displayApp">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="layout2 container-fluid mt-2" ng-controller="displayCtrl" docid="<%=id%>">
-        <div class="row">
-            <div class="col-md border border-success rounded my-2 mx-1">
+    <div class="container-fluid mt-2 doc-display" ng-controller="displayCtrl" docid="<%=id%>">
+        <div class="row mt-2">
+            <div class="col-md border border-success rounded mx-2">
                 <div class="row my-1" style="line-height: 30px;">
                     <div class="col-md">
                         <span class="info">ID：<b>{{docinfo.id}}</b></span>
@@ -59,7 +59,7 @@
                     <div class="col-md TOC" style="height: 640px; overflow: auto"></div>
                 </div>
             </div>
-            <div class="col-md-8 border border-secondary rounded my-2 mr-1 p-1">
+            <div class="col-md-8 border border-secondary rounded mr-2">
                 <div id="editormd" style="border:0px;"><textarea style="display:none;"></textarea></div>
             </div>
         </div>

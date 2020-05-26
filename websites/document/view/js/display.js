@@ -6,7 +6,7 @@ function displayCtrl($scope, $http)
 {
     $scope.docinfo = null;
 
-    var docid = $('.layout2').attr('docid');
+    var docid = $('.doc-display').attr('docid');
 
     var editor = editormd("editormd", { 
         path : '/node_modules/editor.md/lib/',
@@ -20,6 +20,8 @@ function displayCtrl($scope, $http)
             detail();
         }    
     }); 
+
+    $('.doc-display>.row>div').height($(document).height() - 70);
 
     function detail() {
         $http.get('/document/detail/'+docid).then((res)=>{

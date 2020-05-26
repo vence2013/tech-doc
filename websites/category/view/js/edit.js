@@ -108,6 +108,7 @@ function editCtrl($scope, $http, locals)
                 if (ret)
                 {
                     $scope.name = ret.name;
+                    $scope.resource.search = '';
                     $scope.resource.belong = true;
                     $scope.resource.categoryid = ret.id;
                 }

@@ -52,6 +52,7 @@ async function get_tree_with_resource(ctx, categoryid)
         var reslist = [];
         var id = brothers[i]['id'];
 
+        brothers[i]['type'] = 'node';
         brothers[i]['children'] = [];
         /* 查找当前节点的资源 */
         var docres = await Document.findAll({raw:true, logging:false, 
