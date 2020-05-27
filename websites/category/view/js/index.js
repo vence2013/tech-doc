@@ -43,7 +43,17 @@ function indexCtrl($scope, $http, locals)
 
     $scope.toggle = (node, expanded) => {
         /* 更新展开的节点列表 */
-        var ids = $scope.listExpand.map(node => { return node.id; });
+        var ids = [];
+
+        for (var i=0; i<$scope.listExpand.length; i++)
+        {
+            var e = $scope.listExpand[i];
+            if (expanded || (node.id != e.id))
+            {
+                ids.push(e.id);
+            }
+        }
+
         locals.setObject('/category/view/exp', ids);
     }
 }
