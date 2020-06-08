@@ -4,7 +4,7 @@
 .uploadblock>div>.list>div>i { float: right; margin: 5px; cursor: pointer; }
 
 .piclist>div { 
-    display: inline; float: left; width: 200px; height: 160px;
+    display: inline; float: left; width: 200px; height: 140px;
     margin: 5px 2px 0px; padding: 2px; background-color: #eeeeee;
 }
 .piclist>div>a>img { 
