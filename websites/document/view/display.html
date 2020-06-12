@@ -39,24 +39,24 @@
     <div class="container-fluid mt-2 doc-display" ng-controller="displayCtrl" docid="<%=id%>">
         <div class="row mt-2">
             <div class="col-md border border-success rounded mx-2">
-                <div class="row my-1" style="line-height: 30px;">
+                <div class="row my-1" style="line-height: 40px;">
                     <div class="col-md">
-                        <span class="info">ID：<b>{{docinfo.id}}</b></span>
                         <span class="info">创建时间：<b>{{docinfo.createdAt|limitTo:10}}</b></span>
+                    </div>
+                    <div class="col">
                         <span class="info">更新时间：<b>{{docinfo.updatedAt|limitTo:10}}</b></span>
                     </div>
                     <div class="col-md-1">
-                        <a href="/document/edit/{{docinfo.id}}" class="ml-2"><i class="fa fa-edit"></i></a>
+                        <a href="/document/edit/{{docinfo.id}}" class="ml-2" title="edit"><i class="fa fa-edit"></i></a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md">
-                        <span class="badge badge-secondary tagitem" ng-repeat="x in docinfo.tagnames">{{x}}</span>
+                    <div class="col-md display_tags">
+                        <a href="#" ng-repeat="x in docinfo.tagnames">{{x}}</a>
                     </div>
                 </div>
-                <hr />
                 <div class="row">
-                    <div class="col-md TOC" style="height: 640px; overflow: auto"></div>
+                    <div class="col-md TOC"></div>
                 </div>
             </div>
             <div class="col-md-8 border border-secondary rounded mr-2">

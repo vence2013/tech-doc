@@ -21,7 +21,9 @@ function displayCtrl($scope, $http)
         }    
     }); 
 
-    $('.doc-display>.row>div').height($(document).height() - 70);
+    var wnd_height = $(document).height();
+    $('.doc-display>.row>div').height(wnd_height - 70);
+    $('.TOC').height(wnd_height - 160);
 
     function detail() {
         $http.get('/document/detail/'+docid).then((res)=>{
