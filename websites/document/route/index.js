@@ -10,7 +10,16 @@ var router = new Router();
 
 /* 首页 */
 router.get('/', async (ctx) => {
-    await ctx.render('websites/document/view/index.html'); 
+    /* 提取有效参数 */
+    var req2  = ctx.query;
+    var tag = req2.tag;
+
+    var preset = '';
+    if (tag)
+    {
+        preset += 'tag:'+tag;
+    }
+    await ctx.render('websites/document/view/index.html', {'preset':preset}); 
 })
 
 /* 编辑页 */

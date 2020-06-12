@@ -115,4 +115,27 @@ function indexCtrl($scope, $http)
             window.open(ret+'?t='+Math.random());
         })
     }
+
+
+    /* pre-set data ---------------------------------------------------------*/
+
+    var str = $(".data_preset").text();
+    if (str)
+    {
+        var arr = str.replace(/(^\s*)|(\s*$)/g, "").replace(/;*$/, "").split(';');
+        var presets = {};
+        for (var i=0; i<arr.length; i++)
+        {
+            var pair = arr[i].split(':');
+            var val = pair[1].replace(/,*$/, "").split(',');
+    
+            //console.log('a', pair, val);
+            switch (pair[0])
+            {
+                case 'tag':
+                    $scope.taglink = val;
+                    break;
+            }        
+        }
+    }
 }
