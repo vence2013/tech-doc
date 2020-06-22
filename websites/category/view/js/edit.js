@@ -72,7 +72,6 @@ function editCtrl($scope, $http, locals)
         });
     }
 
-
     $scope.resource = {'size':100, 'search':'', 'categoryid':0, 'belong':false};
     $scope.$watch('resource', resource_refresh, true);
 
@@ -83,6 +82,17 @@ function editCtrl($scope, $http, locals)
             if (errorCheck(res)) return ;
 
             var ret = res.data.message;
+            /* 如果是目录所属的资源，则按名称和类型排序 */
+            if ($scope.resource.belong)
+            {
+                ret = ret.sort((a,b)=> { 
+                    if (a.type != b.type)
+                    {
+                        return (b.type > a.type) ? -1 : 0;
+                    }
+                    return  (b.name > a.name) ? -1 : 0; 
+                })
+            }
             $scope.reslist = ret;
         })
     }
