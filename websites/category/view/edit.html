@@ -74,7 +74,7 @@
             <div class="pl-1" ng-repeat="x in reslist">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="{{x.type+x.id}}">
-                    <label class="custom-control-label" for="{{x.type+x.id}}">
+                    <label class="custom-control-label" for="{{x.type+x.id}}" title="{{x.name}}">
                         {{x.name|limitTo:80}} 
                         <a href="{{x.type=='doc' ? '/document/display/'+x.id : x.location}}" target="_blank">
                             <i class="fa {{x.type=='doc' ? 'fa-file-word-o' : 'fa-file-o'}} mx-2"></i>

@@ -33,17 +33,17 @@
             <!--- 侧栏开始 --->
             <div class="col-md-4 ml-2 rounded border border-secondary">  
                 <div class="ititle">芯片</div>
-                <div class="ilist chipContainer" style="min-height: 50px;">
+                <div class="ilist chipContainer" style="min-height: 100px;">
                     <span class="badge badge-dark" ng-repeat="x in chiplist"
                         ng-click="chip_select(x);" >{{x.name}}<i>({{x.width}})</i></span>
                 </div>
                 <div class="ititle">模块</div>
-                <div class="ilist moduleContainer" style="min-height: 50px;">
+                <div class="ilist moduleContainer" style="min-height: 100px;">
                     <span class="badge badge-secondary" ng-repeat="x in modulelist"
                         ng-click="module_select(x);" title="{{x.fullname}}">{{x.name}}</span>
                 </div>
                 <div class="ititle">寄存器</div>
-                <div class="ilist registerContainer" style="min-height: 50px;">
+                <div class="ilist registerContainer" style="min-height: 250px;">
                     <span class="badge badge-secondary" ng-repeat="x in registerlist"
                         ng-click="register_select(x);"  title="{{x.name}}, {{x.fullname}}, {{x.address}}">{{x.name}}</span>
                 </div>
@@ -66,11 +66,11 @@
                         </div>
                         <div class="col-md-1 pl-0">
                             <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#chipDeleteConfirmWnd" 
-                                ng-disabled="!chip.id">删除</button>
+                                ng-show="chip.id">删除</button>
                         </div>
                         <div class="col-md-1 pl-0">
                             <button type="button" class="btn btn-block btn-secondary" ng-click="chip_edit(false);"
-                                ng-disabled="!chip.id">编辑</button>
+                                ng-show="chip.id">编辑</button>
                         </div>
                         <div class="col-md-1 pl-0">
                             <button type="button" class="btn btn-block btn-secondary" ng-click="chip_edit(true);">创建</button>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
                 <!--- 模块编辑 --->
-                <div class="card mt-4" style="background-color: #cccccc;">
+                <div class="card mt-4" style="background-color: #cccccc;" >
                     <div class="card-body row">
                         <div class="col-md-6">
                             <input type="text" class="form-control" ng-model="module.fullname" placeholder="模块名称">
@@ -88,11 +88,11 @@
                         </div>
                         <div class="col-md-1 pl-0">
                             <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#moduleDeleteConfirmWnd" 
-                                ng-disabled="!module.id">删除</button>
+                                ng-show="module.id">删除</button>
                         </div>
                         <div class="col-md-1 pl-0">
                             <button type="button" class="btn btn-block btn-secondary" ng-click="module_edit(false);"
-                                ng-disabled="!module.id">编辑</button>
+                                ng-show="module.id">编辑</button>
                         </div>
                         <div class="col-md-1 pl-0">
                             <button type="button" class="btn btn-block btn-secondary" ng-click="module_edit(true);">创建</button>
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <!--- 寄存器编辑 --->
-                <div class="card bg-light mt-3">
+                <div class="card bg-light mt-3" ng-show="module.id">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -111,15 +111,17 @@
                             </div>
                             <div class="col-md-1 pl-0">
                                 <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#registerDeleteConfirmWnd" 
-                                    ng-disabled="!register.id">删除</button>
+                                    ng-show="register.id">删除</button>
                             </div>
                             <div class="col-md-1 pl-0">
                                 <button type="button" class="btn btn-block btn-secondary" ng-click="register_edit(false);"
-                                    ng-disabled="!register.id">编辑</button>
+                                    ng-show="register.id">编辑</button>
                             </div>
                             <div class="col-md-1 pl-0">
+                                <button type="button" class="btn btn-block btn-dark" ng-click="register_reset();"
+                                    ng-if="register.id">重置</button>
                                 <button type="button" class="btn btn-block btn-secondary" ng-click="register_edit(true);"
-                                    ng-disabled="register.id">创建</button>
+                                    ng-if="!register.id">创建</button>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -128,9 +130,6 @@
                             </div>
                             <div class="col-md" style="line-height: 30px;">
                                 输入寄存器地址的规则
-                            </div>
-                            <div class="col-md-1 pl-0">
-                                <button type="button" class="btn btn-block btn-dark" ng-click="register_reset();">重置</button>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -141,7 +140,7 @@
                     </div>
                 </div>
                 <!--- 位组编辑 --->
-                <div class="card mt-3" style="background-color: #cccccc;">
+                <div class="card mt-3" style="background-color: #cccccc;" ng-show="register.id">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -152,15 +151,17 @@
                             </div>
                             <div class="col-md-1 pl-0">
                                 <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#bitsDeleteConfirmWnd" 
-                                    ng-disabled="!bitgroup.id">删除</button>
+                                    ng-if="bitgroup.id">删除</button>
                             </div>
                             <div class="col-md-1 pl-0">
                                 <button type="button" class="btn btn-block btn-secondary" ng-click="bitgroup_edit(false);"
-                                    ng-disabled="!bitgroup.id">编辑</button>
+                                    ng-if="bitgroup.id">编辑</button>
                             </div>
                             <div class="col-md-1 pl-0">
+                                <button type="button" class="btn btn-block btn-dark" ng-click="bitgroup_reset();"
+                                    ng-if="bitgroup.id">重置</button>
                                 <button type="button" class="btn btn-block btn-secondary" ng-click="bitgroup_edit(true);"
-                                    ng-disabled="bitgroup.id">创建</button>
+                                    ng-if="!bitgroup.id">创建</button>
                             </div>
                         </div>
                         <div class="row mt-4">
@@ -172,9 +173,6 @@
                             </div>
                             <div class="col-md-2 pl-0">
                                 <input type="text" class="form-control" ng-model="bitgroup.rw" placeholder="读写权限">
-                            </div>
-                            <div class="col-md-1 pl-0">
-                                <button type="button" class="btn btn-block btn-dark" ng-click="bitgroup_reset();">重置</button>
                             </div>
                         </div>
                         <div class="row mt-3">
