@@ -8,5 +8,5 @@
 
 /* display */
 .display_tags { margin-bottom: 10px; border-bottom: 1px dashed #cccccc; }
-.display_tags>a { text-decoration: none; line-height: 30px; margin-left: 10px; color: #086A87; }
+.display_tags>a { line-height: 30px; margin-left: 10px; color: #086A87; }
 .TOC { overflow: auto; }
