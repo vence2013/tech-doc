@@ -77,6 +77,23 @@ async function get_tree_with_resource(ctx, categoryid)
             reslist.push({'id': e.id, 'father':id, 'name':e.name, 'location':e.location, 'type':'file'});
         });
 
+        reslist = reslist.sort((a, b)=>{
+            let len = (a.name.length <= b.name.length) ? a.name.length : b.name.length;
+
+            for (var j = 0; j < len; j++)
+            {
+                var cha, chb;
+
+                cha = a.name.charCodeAt(j);
+                chb = b.name.charCodeAt(j);
+                if (cha == chb) 
+                {
+                    continue;
+                }
+                return (cha > chb);             
+            }
+        });
+
         var sub = await get_tree_with_resource(ctx, id);
         brothers[i]['children'] = reslist.concat(sub);
     }
