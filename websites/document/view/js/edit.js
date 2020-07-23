@@ -74,8 +74,8 @@ function editCtrl($scope, $http, $interval)
             if (errorCheck(res)) return ;
 
             // 显示更新成功后，刷新该页面
-            toastr.success("操作成功，即将返回首页！");
-            window.setTimeout(()=>{ window.location.href = '/document'; }, 1000);
+            toastr.success("操作成功！");
+            window.setTimeout(()=>{ window.location.href = '/document/display/'+docid; }, 1000);
         });
     }
 
