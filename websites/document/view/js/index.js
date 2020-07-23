@@ -80,8 +80,18 @@ function indexCtrl($scope, $http)
              * 2. 查找下一个换行符前的字符串
              */
             for (var i = 0; i < ret.list.length; i++) {
+                var title = '';
+
                 var content = ret.list[i].content;
-                var title   = content.replace(/^[\\n#\ \t]*/, '').match(/[^\n]+/)[0];
+                var str = content.replace(/^[\\n#\ \t]*/, '');
+                if (/[^\n]+/.test(str))
+                {
+                    title = str.match(/[^\n]+/)[0];
+                }
+                else
+                {
+                    ttile = str.substr(0, 100);
+                }                
                 ret.list[i]['title'] = title;
             }
             $scope.doclist = ret.list;

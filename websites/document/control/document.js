@@ -10,18 +10,19 @@ exports.edit = async (ctx, docid, content, taglist)=>{
         if (!docIns) 
             return -1; // 无效文档
         
-        await docIns.update({'content':content});
+        await docIns.update({'content':content}, {logging:false});
     } else {
         var [docIns, created] = await Document.findOrCreate({logging: false,
             where: {'content':content}
         });
+        docid = docIns.get({plain: true}).id;
     }
 
     // 关联标签
     var tagInss = await Tag.findAll({logging:false, where:{'name':taglist}});
     await docIns.setTags(tagInss, {logging:false});
 
-    return 0;
+    return docid;
 }
 
 exports.delete = async(ctx, docid)=>{

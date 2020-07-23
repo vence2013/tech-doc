@@ -50,8 +50,8 @@ router.post('/:docid', async (ctx)=>{
     var docid= parseInt(req2.docid);
     
     var ret = await DocumentCtrl.edit(ctx, docid, content, taglist);
-    if (!ret)
-        ctx.body = {'error':  0, 'message': 'SUCCESS'};
+    if (ret > 0)
+        ctx.body = {'error':  0, 'message': ret};
     else
         ctx.body = {'error': -1, 'message': '文档编辑失败，请联系管理员！'};
 });

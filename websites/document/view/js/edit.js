@@ -73,9 +73,10 @@ function editCtrl($scope, $http, $interval)
         }).then((res)=>{
             if (errorCheck(res)) return ;
 
+            ret = res.data.message;
             // 显示更新成功后，刷新该页面
             toastr.success("操作成功！");
-            window.setTimeout(()=>{ window.location.href = '/document/display/'+docid; }, 1000);
+            window.setTimeout(()=>{ window.location.href = '/document/display/'+ret; }, 1000);
         });
     }
 
