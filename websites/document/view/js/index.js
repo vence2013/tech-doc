@@ -90,7 +90,7 @@ function indexCtrl($scope, $http)
                 }
                 else
                 {
-                    ttile = str.substr(0, 100);
+                    title = str.substr(0, 100);
                 }                
                 ret.list[i]['title'] = title;
             }

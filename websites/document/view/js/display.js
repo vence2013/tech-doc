@@ -32,6 +32,20 @@ function displayCtrl($scope, $http)
             var ret = res.data.message;
             $scope.docinfo = ret;
             editor.setMarkdown($scope.docinfo.content); 
+            {
+                var title = '';                
+                var str = ret.content.replace(/^[\\n#\ \t]*/, '');
+                
+                if (/[^\n]+/.test(str))
+                {
+                    title = str.match(/[^\n]+/)[0];
+                }
+                else
+                {
+                    title = str.substr(0, 100);
+                }
+                $(document).attr("title", title);
+            }
         })
     }
 }
