@@ -4,46 +4,103 @@ loadResource(app).controller('editCtrl', editCtrl);
 
 function editCtrl($scope, $http, $interval) 
 {
+    /* 标签 ---------------------------------------------------------------------
+     * 
+     * 操作：
+     *     输入时，显示关联标签； 
+     *     输入空格后，标记已存在的标签
+     *
+     * 显示
+     *    1. 显示最新的部分标签
+     *    2. 搜索输入相关的标签 
+     */
+    var cfg_tag_list_max = 50;
 
-    /* 标签 -----------------------------------------------------------------*/
+    $scope.tag_input = '';
+    $scope.tag_input_valid = [];
+    $scope.tag_display = [];
 
-    $scope.tagopts = tagopts = {'str':'', 'limit':50};    
-    $scope.taglink = []; // 关联标签
-    $scope.taglist = []; // 搜索结果列表
+    $scope.$watch('tag_input', tag_parse);
 
-
-    var tagUpdateTimer = null;
-    $scope.$watch('tagopts', ()=>{
-        /* 避免在输入过程中频繁请求服务器 */
-        if (tagUpdateTimer)
-            window.clearTimeout(tagUpdateTimer);
-        tagUpdateTimer = window.setTimeout(tagUpdate, 500);            
-    }, true);
-    $scope.$watch('taglink', tagUpdate, true);
-
-    function tagUpdate()
+    /* 最后一个字符是空格，则查找输入字符中有效的标签，移入 tag_input_valid 
+     * 最后一个字符非空格，搜索最后一个字符串相关的标签
+     */
+    function tag_parse()
     {
-        tagUpdateTimer = null;
+        var str = $scope.tag_input;
+        /* 根据最后一个字符是否为空格，进行标签搜索或检查 */
+        (str && (str[str.length-1] == ' ')) ? tag_check() : tag_search();
+    }
 
-        var query = angular.copy(tagopts);
-        query['except'] = $scope.taglink;
+    /* 检查输入框中的有效标签
+     * 1. 更新选中的有效标签
+     * 2. 更新标签输入框的内容
+     */
+    function tag_check(tags)
+    {
+        var fmt = $scope.tag_input.replace(/\s+/g, ' ');
+        var trm = fmt.replace(/^\s*(.*?)\s*$/, "$1");
+        var tags = trm.split(' ');
 
-        $http.get('/tag/except', { params: query }).then((res)=>{
-            if (errorCheck(res)) 
-                return ;
+        $http.get('/tag/check/'+tags.join(','))
+        .then((res)=>{
+            if (errorCheck(res)) return ;
 
             var ret = res.data.message;
-            $scope.taglist = ret.map((x)=>{ return x.name; });
-        })        
+            ret.map(x=>{
+                var tag = x.name;
+                var idx = tags.indexOf(tag);
+                tags.splice(idx, 1);
+
+                if ($scope.tag_input_valid.indexOf(tag) == -1)
+                {
+                    $scope.tag_input_valid.push(tag);
+                }
+            })
+
+            tag_search('');
+            $scope.tag_input = tags.join(' ')+' ';
+        })
     }
 
-    $scope.tagSelect = (name) => {
-        $scope.taglink.push(name);
+    function tag_search()
+    {
+        var str   = $scope.tag_input ? $scope.tag_input.split(' ').pop() : '';
+        var size  = cfg_tag_list_max + $scope.tag_input_valid.length;
+        var query = {'str':str, 'size':50 + size };
+
+        $http.get('/tag/search', {params:query }).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            var ret = res.data.message;
+            /* 将结果中已选择的标签滤除 */
+            var list = [];
+            for (i=0; (i<cfg_tag_list_max) && (i<ret.list.length); i++)
+            {
+                var t = ret.list[i].name;
+                if ($scope.tag_input_valid.indexOf(t) == -1) list.push(t);
+            }
+            $scope.tag_display = list;
+        })  
     }
 
-    $scope.tagUnselect = (name) => {
-        var idx = $scope.taglink.indexOf(name);
-        $scope.taglink.splice(idx, 1);
+    $scope.tag_select = (name) => {
+        /* 搜索标签后，选择将清除搜索字符串 */
+        var str = $scope.tag_input;
+        if (str && (str[str.length-1] != ' '))
+        {
+            $scope.tag_input = (str.indexOf(' ') == -1) ? '' : str.replace(/(.*\s+)[^\s]+$/, "$1");
+        }
+
+        $scope.tag_input_valid.push(name);
+        tag_search(); /* 重新搜索，滤除已选择标签 */
+    }
+
+    $scope.tag_unselect = (name) => {
+        var idx = $scope.tag_input_valid.indexOf(name);
+        $scope.tag_input_valid.splice(idx, 1);
+
+        tag_search(); /* 重新搜索，滤除已选择标签 */
     }
 
     /* 文档  ----------------------------------------------------------------*/
@@ -67,10 +124,14 @@ function editCtrl($scope, $http, $interval)
     });  
     $interval(()=>{ content = editor.getMarkdown(); }, 1000);
 
-    $scope.submit = ()=>{
-        $http.post('/document/'+docid, {
-            'content':content, 'taglist':$scope.taglink
-        }).then((res)=>{
+    $scope.submit = () => 
+    {
+        var fmt = $scope.tag_input.replace(/\s+/g, ' ');
+        var tags = fmt.replace(/^\s*(.*?)\s*$/, "$1").split(' ');
+        tags = tags.concat($scope.tag_input_valid);
+
+        var params = {'content':content, 'tags':tags};
+        $http.post('/document/'+docid, params).then((res)=>{
             if (errorCheck(res)) return ;
 
             ret = res.data.message;

@@ -36,35 +36,30 @@
             <!--- 侧栏开始 --->
             <div class="col-md-4 ml-2 rounded border border-secondary">  
                 <div class="row mt-3">
-                    <div class="col-md-2 pr-0">
-                        <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#deleteWnd" ng-show="isEdit">删除</button>
+                    <div class="col-md-3 pr-0">
+                        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="isEdit" ng-click="submit()">编辑</button>
+                        <button type="button" class="btn btn-lg btn-block btn-success" ng-if="!isEdit" ng-click="submit()">创建</button>
                     </div>
-                    <div class="col-md"></div>
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" ng-model="tagopts.str" placeholder="标签搜索">
+                    <div class="col-md-3 pr-0">
+                        <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#deleteWnd" ng-show="isEdit">删除</button>
                     </div>
-                    <div class="col-md-3 pl-0">
-                        <button type="button" class="btn btn-block btn-success" ng-click="submit()">{{isEdit ? "编辑" : "创建"}}</button>
+                    <div class="col-md pt-3 text-right" ng-if="isEdit">
+                        {{docinfo.createdAt|limitTo:10}} / {{docinfo.updatedAt|limitTo:10}}
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-md" ng-show="docid!='0'">
-                        <span class="info">ID：<b>{{docinfo.id}}</b></span>
-                        <span class="info">创建时间：<b>{{docinfo.createdAt|limitTo:10}}</b></span>
-                        <span class="info">更新时间：<b>{{docinfo.updatedAt|limitTo:10}}</b></span>
+                    <div class="col">
+                        <input type="text" class="form-control form-control-lg" ng-model="tag_input" ng-trim="false" placeholder="tag">
                     </div>
-                    <div class="col-md" ng-show="docid=='0'">
-                        <span class="info">创建新文档</span>
-                    </div>    
                 </div>
                 <div class="row mt-3">
                     <div class="col-md card card-body bg-light mx-3 py-2 px-1">
-                        <div class="tagrelate">
-                            <span class="badge badge-success tagitem" ng-repeat="x in taglink" ng-click="tagUnselect(x);">{{x}}</span>
+                        <div class="tagrelate" title="已选择的有效标签">
+                            <div class="tag" ng-repeat="x in tag_input_valid" ng-click="tag_unselect(x);">{{x}}</div>
                         </div>
                         <hr />
                         <div class="tagunrelate">
-                            <span class="badge badge-secondary tagitem" ng-repeat="x in taglist" ng-click="tagSelect(x);">{{x}}</span>
+                            <div class="tag" ng-repeat="x in tag_display" ng-click="tag_select(x);">{{x}}</div>
                         </div>
                     </div>
                 </div>

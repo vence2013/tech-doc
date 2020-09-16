@@ -6,14 +6,14 @@ function navCtrl($scope) {
         {'name':'File', 'url':'/file', 'children':[
             {'name':'Pictures', 'url':'/file/view/picture.html'}
         ]},
-        {'name':'Category', 'url':'/category', 'children':[
-            {'name':'edit', 'url':'/category/edit'},
-        ]},
-        {'name':'Tag', 'url':'/tag'},
         {'name':'Chip', 'url':'/chip', 'children':[            
             {'name':'edit', 'url':'/chip/view/edit.html'},
             {'name':'function', 'url':'/chip/document/edit/0'},
         ]},
+        {'name':'Category', 'url':'/category', 'children':[
+            {'name':'edit', 'url':'/category/edit'},
+        ]},
+        {'name':'Tag', 'url':'/tag'},
         {'name':'System', 'url':'/view/system.html'}
     ];
     $scope.sub = null; 

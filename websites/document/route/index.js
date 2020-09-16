@@ -40,20 +40,24 @@ router.get('/display/:docid', async (ctx)=>{
 
 
 router.post('/:docid', async (ctx)=>{
+    const TagCtrl = ctx.controls['tag/tag'];
     const DocumentCtrl = ctx.controls['document/document'];
 
     /* 提取有效参数 */
-    var req = ctx.request.body;
-    var req2= ctx.params;
+    var req = ctx.request.body;    
+    var tags = req.tags;
     var content = req.content;
-    var taglist = req.taglist;
+
+    var req2= ctx.params;
     var docid= parseInt(req2.docid);
-    
-    var ret = await DocumentCtrl.edit(ctx, docid, content, taglist);
-    if (ret > 0)
-        ctx.body = {'error':  0, 'message': ret};
-    else
-        ctx.body = {'error': -1, 'message': '文档编辑失败，请联系管理员！'};
+
+    /* 查找&添加标签 */
+    console.log(tags, content, docid);
+    var tagInstances = await TagCtrl.create(ctx, tags);
+
+    var ret = await DocumentCtrl.edit(ctx, docid, content, tagInstances);
+    if (ret > 0)  ctx.body = {'error':  0, 'message': ret};
+    else          ctx.body = {'error': -1, 'message': '文档编辑失败，请联系管理员！'};
 });
 
 
