@@ -32,10 +32,13 @@
     <div class="container-fluid mt-2">
         <div class="row tag-view">
             <div class="col">
-                <span ng-repeat="x in taglist" class="badge badge-secondary tagitem" ng-click="select(x.name)" title='{{x.name}}'>{{x.name}}</span>
+                <div class="tag" ng-repeat="x in taglist">{{x.name}}</div>
             </div>            
         </div>
         <div class="row">
+            <div class="col-md-2">
+                <input type="text" class="form-control" ng-model="opts.str" placeholder="搜索">
+            </div>
             <!--- 分页信息开始 --->
             <div class="col-md page">
                 <div class="pagelist">
@@ -63,45 +66,6 @@
             <!--- 分页信息结束 --->
         </div>
 
-    </div>
-
-    <!-- sidebar -->
-    <div class="container tag-edit rounded">
-        <div class="row my-3">
-            <div class="col-8 pr-0">
-                <input type="text" class="form-control" ng-model="tagname" placeholder="添加">
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-primary btn-block" ng-click="add()">新增</button>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-8 pr-0">
-                <input type="text" class="form-control" ng-model="opts.search" placeholder="搜索">
-            </div>
-            <div class="col">
-                <button type="button" data-toggle="modal" class="btn btn-danger btn-block" ng-show='tagsel' >删除</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 选中标签删除确认窗口 -->
-    <div id="deleteWnd" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title font-weight-bold font-italic">标签删除确认</h5>
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    该操作将删除标签，同时取消该标签与文档的关联。确认删除吗？
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger px-4" data-dismiss="modal" ng-click="delete();">删除</button>
-                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">取消</button>                
-                </div>
-            </div>
-        </div>
     </div>
 
 </body>
