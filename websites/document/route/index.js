@@ -92,7 +92,7 @@ function reqCheck(req2) {
     var query = {};
 
     query['page']     = parseInt(req2.page);
-    query['pageSize'] = parseInt(req2.pageSize);
+    query['size'] = parseInt(req2.size);
     query['tag'] = req2.tag;
     // 以空格分开的字符串
     var fields = ['str'];

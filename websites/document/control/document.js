@@ -63,26 +63,26 @@ exports.search = async (ctx, query) => {
         if (tagObjs && tagObjs.length) {
             var idstr = '';
             tagObjs.map((x)=>{ idstr += ', '+x.id; });        
-            var sql2 = "SELECT `DocumentId` FROM `DocumentTag` WHERE `TagId` IN ("+idstr.substr(1)+
+            var sql2 = "SELECT `DocumentId` FROM `TagDocument` WHERE `TagId` IN ("+idstr.substr(1)+
                        ") GROUP BY `DocumentId` HAVING COUNT(*)>="+tagObjs.length;
             sqlCond += " AND `id` IN ("+sql2+") "; 
         }
     }
     sqlCond = sqlCond ? " WHERE "+sqlCond.substr(4) : "";
 
-    var page     = query.page;
-    var pageSize = query.pageSize;
+    var page = query.page;
+    var size = query.size;
     // 计算分页数据
     sql = "SELECT COUNT(*) AS num FROM `Documents` "+sqlCond;
     var [res, meta] = await ctx.sequelize.query(sql, {logging: false});
     var total = res[0]['num'];
-    var maxpage  = Math.ceil(total/pageSize);
+    var maxpage  = Math.ceil(total/size);
     maxpage = (maxpage<1) ? 1 : maxpage;
     page = (page>maxpage) ? maxpage : (page<1 ? 1 : page);
 
     // 查询当前分页的列表数据
-    var offset = (page - 1) * pageSize;
-    sql = "SELECT * FROM `Documents` "+sqlCond+" ORDER BY "+query.order.join(' ')+" LIMIT "+offset+", "+pageSize+" ;";
+    var offset = (page - 1) * size;
+    sql = "SELECT * FROM `Documents` "+sqlCond+" ORDER BY "+query.order.join(' ')+" LIMIT "+offset+", "+size+" ;";
     var [res, meta] = await ctx.sequelize.query(sql, {logging: false});
     var doclist = res.map((x)=>{
         // 将buffer转换为字符串
@@ -111,7 +111,7 @@ exports.searchall = async (ctx, query) => {
         if (tagObjs && tagObjs.length) {
             var idstr = '';
             tagObjs.map((x)=>{ idstr += ', '+x.id; });        
-            var sql2 = "SELECT `DocumentId` FROM `DocumentTag` WHERE `TagId` IN ("+idstr.substr(1)+
+            var sql2 = "SELECT `DocumentId` FROM `TagDocument` WHERE `TagId` IN ("+idstr.substr(1)+
                        ") GROUP BY `DocumentId` HAVING COUNT(*)>="+tagObjs.length;
             sqlCond += " AND `id` IN ("+sql2+") "; 
         }

@@ -4,72 +4,90 @@ loadResource(app).controller('indexCtrl', indexCtrl);
 
 function indexCtrl($scope, $http) 
 {
-    /* 标签 -----------------------------------------------------------------*/
+    /* 标签 -------------------------------------------------------------------*/
+    var cfg_tag_list_max = 50;
 
-    $scope.tagopts = tagopts = {'str':'', 'limit':50};    
-    $scope.taglink = []; // 关联标签
-    $scope.taglist = []; // 搜索结果列表
+    $scope.tag_input = '';
+    $scope.tag_input_valid = [];
+    $scope.tag_display = [];
 
-    var tagUpdateTimer = null;
-    $scope.$watch('tagopts', ()=>{
-        /* 避免在输入过程中频繁请求服务器 */
-        if (tagUpdateTimer)
-            window.clearTimeout(tagUpdateTimer);
-        tagUpdateTimer = window.setTimeout(tagUpdate, 500);            
-    }, true);
-    $scope.$watch('taglink', ()=>{
-        tagUpdate();
-        docUpdate();
-    }, true);
+    $scope.$watch('tag_input', tag_search);
 
-    function tagUpdate()
+    function tag_search()
     {
-        tagUpdateTimer = null;
+        var str   = $scope.tag_input ? $scope.tag_input.split(' ').pop() : '';
+        var size  = cfg_tag_list_max + $scope.tag_input_valid.length;
+        var query = {'str':str, 'size':size};
 
-        var query = angular.copy(tagopts);
-        query['except'] = $scope.taglink;
-
-        $http.get('/tag/except', { params: query }).then((res)=>{
+        $http.get('/tag/search', {params:query }).then((res)=>{
             if (errorCheck(res)) return ;
 
-            var ret = res.data.message; 
-            $scope.taglist = ret.map((x)=>{ return x.name; });
-        })        
+            var ret = res.data.message;
+            /* 将结果中已选择的标签滤除 */
+            var list = [];
+            for (i=0; (i<cfg_tag_list_max) && (i<ret.list.length); i++)
+            {
+                var t = ret.list[i].name;
+                if ($scope.tag_input_valid.indexOf(t) == -1) list.push(t);
+            }
+            $scope.tag_display = list;
+        })  
     }
 
-    $scope.tagSelect = (name) => {
-        $scope.taglink.push(name);
+    $scope.tag_select = (name) => {
+        $scope.tag_input_valid.push(name);
+        $scope.tag_input = '';
+        
+        tag_search(); /* 重新搜索，滤除已选择标签 */
+        doc_update();
     }
 
-    $scope.tagUnselect = (name) => {
-        var idx = $scope.taglink.indexOf(name);
-        $scope.taglink.splice(idx, 1);
+    $scope.tag_unselect = (name) => {
+        var idx = $scope.tag_input_valid.indexOf(name);
+        $scope.tag_input_valid.splice(idx, 1);
+        tag_search(); /* 重新搜索，滤除已选择标签 */
+        doc_update();
     }
+
+
+    /* pre-set data ---------------------------------------------------------*/
+
+    var str = $(".data_preset").text();
+    if (str)
+    {
+        var arr = str.replace(/(^\s*)|(\s*$)/g, "").replace(/;*$/, "").split(';');
+        for (var i=0; i<arr.length; i++)
+        {
+            var pair = arr[i].split(':');
+            var val = pair[1].replace(/,*$/, "").split(',');
+    
+            switch (pair[0])
+            {
+                case 'tag':
+                    $scope.tag_input_valid = val;
+                    doc_update();
+                    break;
+            }        
+        }
+    }
+
 
     /* 文档 -----------------------------------------------------------------*/
 
-    $scope.opts = opts = {'page':1, 'pageSize':24, 'str':'', 'tag':'', 'createget':'', 
+    $scope.opts = opts = {'page':1, 'size':24, 'str':'', 'tag':'', 'createget':'', 
         'createlet':'', 'order':'1'};
-    $scope.page = pageSet(0, opts.pageSize, 10, 0);
+    $scope.page = pageSet(0, opts.size, 10, 0);
 
-    var docUpdateTimer = null;
-    $scope.$watch('opts', ()=>{
-        /* 避免在输入过程中频繁请求服务器 */
-        if (docUpdateTimer)
-            window.clearTimeout(docUpdateTimer);
-        docUpdateTimer = window.setTimeout(docUpdate, 500);  
-    }, true);
+    $scope.$watch('opts', doc_update, true);
 
-    function docUpdate()
+    function doc_update()
     {
-        docUpdateTimer = null;
-
         var query = angular.copy($scope.opts);
         var createget = $scope.opts.createget;
         var createlet = $scope.opts.createlet;
         query['createget'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createget)) ? createget : '';
         query['createlet'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createlet)) ? createlet : '';
-        query['tag'] = $scope.taglink;
+        query['tag'] = $scope.tag_input_valid;
 
         $http.get('/document/search', {params: query}).then((res)=>{
             if (errorCheck(res)) return ;
@@ -95,7 +113,7 @@ function indexCtrl($scope, $http)
                 ret.list[i]['title'] = title;
             }
             $scope.doclist = ret.list;
-            $scope.page = pageSet(ret.total, opts.pageSize, 10, ret.page);        
+            $scope.page = pageSet(ret.total, opts.size, 10, ret.page);        
         })
     }
 
@@ -116,7 +134,7 @@ function indexCtrl($scope, $http)
         var createlet = $scope.opts.createlet;
         query['createget'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createget)) ? createget : '';
         query['createlet'] = (/^\d{4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/.test(createlet)) ? createlet : '';
-        query['tag'] = $scope.taglink;
+        query['tag'] = $scope.tag_input_valid;
 
         $http.get('/document/export', {params: query}).then((res)=>{
             if (errorCheck(res)) return ;
@@ -126,26 +144,4 @@ function indexCtrl($scope, $http)
         })
     }
 
-
-    /* pre-set data ---------------------------------------------------------*/
-
-    var str = $(".data_preset").text();
-    if (str)
-    {
-        var arr = str.replace(/(^\s*)|(\s*$)/g, "").replace(/;*$/, "").split(';');
-        var presets = {};
-        for (var i=0; i<arr.length; i++)
-        {
-            var pair = arr[i].split(':');
-            var val = pair[1].replace(/,*$/, "").split(',');
-    
-            //console.log('a', pair, val);
-            switch (pair[0])
-            {
-                case 'tag':
-                    $scope.taglink = val;
-                    break;
-            }        
-        }
-    }
 }

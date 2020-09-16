@@ -67,7 +67,7 @@ function editCtrl($scope, $http, $interval)
     {
         var str   = $scope.tag_input ? $scope.tag_input.split(' ').pop() : '';
         var size  = cfg_tag_list_max + $scope.tag_input_valid.length;
-        var query = {'str':str, 'size':50 + size };
+        var query = {'str':str, 'size':size};
 
         $http.get('/tag/search', {params:query }).then((res)=>{
             if (errorCheck(res)) return ;
