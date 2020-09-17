@@ -33,95 +33,66 @@
 <body ng-app="editApp" ng-controller="editCtrl">
 
     <div ng-include="'/view/header.html'"></div>
-    <div class="container-fluid mt-3 px-0 category-view">
-        <treecontrol class="tree-classic" options="treeOptions" filter-expression="predicate" filter-comparator="comparator" 
-            tree-model="treeView" expanded-nodes="listExpand" selected-node="nodeSelected"
-            on-selection="select(node, selected)" on-node-toggle="toggle(node, expanded);">
-                <span>{{node.name}}</span>
-        </treecontrol>
-    </div>
-
-    <!-- sidebar -->
-    <div class="container category-edit rounded">
-        <div class="row my-3">
-            <div class="col">
-                <input type="text" class="form-control" ng-model="name" placeholder="当前选中的目录名称">
-            </div>
-        </div>
+    <div class="layout2 container-fluid mt-2" ng-controller="editCtrl">
         <div class="row">
-            <div class="col">
-                <input type="text" class="form-control" ng-model="subname" placeholder="输入新增子目录名称">
-            </div>
-        </div>
-        <div class="row my-3">
-            <div class="col-6 pr-0">
-                <input type="text" class="form-control" ng-model="predicate" placeholder="目录搜索">
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-danger btn-block" ng-show="nodeSelected" 
-                    data-toggle="modal" data-target="#deleteWnd">删除</button>
-            </div>
-            <div class="col px-0">
-                <button type="button" data-toggle="modal" class="btn btn-secondary btn-block" ng-show="nodeSelected" 
-                    ng-click="edit();">编辑</button>
-            </div>
-            <div class="col">
-                <button type="button" data-toggle="modal" class="btn btn-secondary btn-block" ng-click="add();">新增</button>
-            </div>
-        </div>
-        <!-- 文档和文件搜索结果 -->
-        <div class="category-edit-result">
-            <div class="pl-1" ng-repeat="x in reslist">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="{{x.type+x.id}}">
-                    <label class="custom-control-label" for="{{x.type+x.id}}" title="{{x.name}}">
-                        {{x.name|limitTo:80}} 
-                        <a href="{{x.type=='doc' ? '/document/display/'+x.id : x.location}}" target="_blank">
-                            <i class="fa {{x.type=='doc' ? 'fa-file-word-o' : 'fa-file-o'}} mx-2"></i>
-                        </a>
-                    </label>
+            <!--- 侧栏开始 --->
+            <div class="col-md-4 ml-2 rounded border border-secondary">  
+                <div class="row mt-3">
+                    <div class="col-md">
+                        <input type="text" class="form-control" ng-model="category_father.name"  placeholder="父级目录"
+                            ng-blur="wait_father_select()" />
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md">
+                        <input type="text" class="form-control" ng-model="category_current.name" placeholder="当前目录">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md text-center pt-2">
+                        {{category_current.createdAt|limitTo:10}} / {{category_current.updatedAt|limitTo:10}}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-secondary" type="button">&nbsp;-&nbsp;</button>
+                            </div>
+                            <input type="text" class="form-control text-center" ng-model="category_current.order" placeholder="排序">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">&nbsp;+&nbsp;</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md">
+                        <input type="text" class="form-control" ng-model="category_sub_name" placeholder="添加子目录">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md"></div>
+                    <div class="col-md pr-0">
+                        <button type="button" class="btn btn-block btn-danger">删除当前目录</button>
+                    </div>
+                    <div class="col-md pr-0">
+                        <button type="button" class="btn btn-block btn-primary">修改当前目录</button>
+                    </div>
+                    <div class="col-md">
+                        <button type="button" class="btn btn-block btn-success" ng-click="add()">添加子目录</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- 文档和文件搜索输入 -->
-        <div class="mt-3 row category-edit-search">
-            <div class="col-6">
-                <input type="text" class="form-control" ng-model="resource.search" placeholder="文档和文件搜索， 多个字符串用空格分开" />
-            </div>
-            <div class="col text-center px-0 pt-2">
-                <a href="#">搜索说明</a>
-            </div>
-            <div class="col pt-2">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="resource_linked_id" ng-model="resource.belong" ng-disabled="!nodeSelected">
-                    <label class="custom-control-label" for="resource_linked_id">所属资源</label>
-                </div>
-            </div>
-            <div class="col pl-0">
-                <button type="button" data-toggle="modal" class="btn btn-secondary btn-block" ng-show="nodeSelected" ng-click="relation_update()">
-                    {{resource.belong ? '移除' : '加入'}}
-                </button>
+            <!--- 主栏结束 --->
+            <div class="col-md">
+                <treecontrol class="tree-classic" options="treeOptions" tree-model="treeView" 
+                    filter-expression="predicate" filter-comparator="comparator" 
+                    expanded-nodes="listExpand" selected-node="nodeSelected"
+                    on-selection="select(node, selected)" on-node-toggle="toggle(node, expanded)">
+                        <span>{{node.name}}</span>
+                </treecontrol>
             </div>
         </div>
     </div>
 
-    <!-- 选中目录删除确认窗口 -->
-    <div id="deleteWnd" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title font-weight-bold font-italic">子目录删除确认</h5>
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    该操作将删除当前子树（包含当前目录），同时取消相关节点的文档和文件组织，确认执行删除操作吗？
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger px-4" data-dismiss="modal" ng-click="delete();">删除</button>
-                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">取消</button>                
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>

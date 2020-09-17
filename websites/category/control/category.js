@@ -25,9 +25,8 @@ async function get_tree(ctx, categoryid) {
     const Category = ctx.models['Category'];
 
     /* 查找当前节点的子节点，然后递归查找子节点的字节点 */
-    var brothers = await Category.findAll({raw:true, logging:false, where: {
-        'father': categoryid
-    }});
+    var brothers = await Category.findAll({raw:true, logging:false, 
+        where: {'father': categoryid}, 'order':[['order', 'ASC']] });
     for (var i=0; i<brothers.length; i++) 
         brothers[i]['children'] = await get_tree(ctx, brothers[i]['id']);
 

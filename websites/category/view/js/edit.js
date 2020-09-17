@@ -2,7 +2,7 @@ var app = angular.module('editApp', ['treeControl', 'ngAnimate'])
 
 loadResource(app).controller('editCtrl', editCtrl);
 
-function editCtrl($scope, $http, locals) 
+function editCtrl($scope, $http, $timeout, locals) 
 {
     /* Angular Tree Control */
     $scope.treeRoot = [];
@@ -13,17 +13,6 @@ function editCtrl($scope, $http, locals)
     $scope.treeOptions = {dirSelectable: true};
     $scope.predicate = "";
     $scope.comparator = false;
-
-    /* edit info */
-    $scope.name = '';
-    $scope.subname = '';
-
-    $('.category-edit').height($(document).height() - 80);
-    $('.category-edit-result').height($(document).height() - 300);
-    $('.category-edit').bind({
-        'mouseenter': ()=>{ $('.category-edit').css({'opacity':1.0}); },
-        'mouseleave': ()=>{ $('.category-edit').css({'opacity':0.5}); }
-    });
 
     tree_refresh();
 
@@ -67,77 +56,39 @@ function editCtrl($scope, $http, locals)
             if (node)
             {
                 $scope.nodeSelected = node;
-                detail(id);
+                select(node, true);
             }
         });
     }
 
-    $scope.resource = {'size':100, 'search':'', 'categoryid':0, 'belong':false};
-    $scope.$watch('resource', resource_refresh, true);
 
-    function resource_refresh()
+    $scope.category_father  = null;
+    $scope.category_current = null;
+    $scope.category_sub_name = '';
+
+    $scope.wait_father_select = () =>
     {
-        $http.get('/category/resource', { 'params': $scope.resource })
-        .then((res)=>{
-            if (errorCheck(res)) return ;
-
-            var ret = res.data.message;
-            /* 如果是目录所属的资源，则按名称和类型排序 */
-            if ($scope.resource.belong)
-            {
-                ret = ret.sort((a,b)=> { 
-                    if (a.type != b.type)
-                    {
-                        return (b.type > a.type) ? -1 : 0;
-                    }
-                    return  (b.name > a.name) ? -1 : 0; 
-                })
-            }
-            $scope.reslist = ret;
-        })
+        $timeout(()=>{            
+            $scope.category_father = $scope.nodeSelected;
+        }, 500);
     }
 
     function reset()
     {
-        $scope.name = '';
-        $scope.subname = '';
-        $scope.resource.belong = false;
-        $scope.resource.categoryid = 0;
+        $scope.category_father  = null;
+        $scope.category_current = null;
+        $scope.category_sub_name = '';
     }
 
-    function detail(node_id)
+    $scope.select = select;
+    function select(node, sel)
     {
-        $scope.subname = '';
-
-        if (/^[0-9]*$/.test(node_id))
-        {
-            $http.get('/category/edit/info/'+node_id).then((res)=>{
-                if (errorCheck(res)) return ;
-
-                var ret = res.data.message;
-                if (ret)
-                {
-                    $scope.name = ret.name;
-                    $scope.resource.search = '';
-                    $scope.resource.belong = true;
-                    $scope.resource.categoryid = ret.id;
-                }
-                else
-                {
-                    reset();
-                }
-            });
-        }
-        else
-        {
-            reset();
-        }
-    }
-
-    $scope.select = (node, sel) => {
         if (sel)
         {
-            detail(node.id);
+            // 设置当前节点，查找父节点，清空子节点名称
+            $scope.category_sub_name = '';
+            $scope.category_current = node;
+            $scope.category_father = search_node_by_id(node.father);
             locals.set('/category/edit/sel', node.id);
         }
         else
@@ -147,98 +98,36 @@ function editCtrl($scope, $http, locals)
         }
     }
 
-    $scope.toggle = (node, expanded) => {
-        /* 更新展开的节点列表 */
-        var ids = $scope.listExpand.map(node => { return node.id; });
-        locals.setObject('/category/edit/exp', ids);
-    }
+    /* 目录编辑 -----------------------------------------------------------------*/
 
-    /* relation -------------------------------------------------------------*/
 
-    $scope.relation_update = ()=>{
-        var resource = [];
-        $('.category-edit-result>div>div>input:checkbox:checked').each((i, e)=>{
-            resource.push($(e).attr('id'));
-        });
-
-        $http.post('/category/resource', {
-            'categoryid':$scope.resource.categoryid, 'belong':$scope.resource.belong, 'resources':resource
-        }).then((res)=>{
-            if (errorCheck(res)) return ;
-
-            resource_refresh();
-        })
-    }
-
-    /* edit -----------------------------------------------------------------*/
-
-    $scope.add = ()=>{
-        var name = $scope.subname.replace(/^\s+|\s+$/g,'');
+    $scope.add = () =>
+    {
+        var name = $scope.category_sub_name.replace(/^\s+|\s+$/g,'');
         if (!name) { return toastr.warning('请输入有效的目录名称！'); }
 
-        var father_id = $scope.nodeSelected ? $scope.nodeSelected.id : 0;
-        $http.post('/category/edit', {
-            'father': father_id, 'name': name
-        }).then((res)=>{
+        var father_id = $scope.category_current ? $scope.category_current.id : 0;
+        $http.post('/category/edit', {'father': father_id, 'name': name})
+        .then((res)=>{
             if (errorCheck(res)) return ;
+            toastr.success('success');
 
-            var ret = res.data;
-            if (ret.error)
+            var ret = res.data.message;
+            locals.set('/category/edit/sel', ret.id);
+            var expandids = locals.getObject('/category/edit/exp');
+
+            if (!expandids.length)
             {
-                toastr.error(ret.message);
+                expandids = [ father_id ];
             }
-            else
+            else if (expandids.indexOf(ret.id) == -1)
             {
-                toastr.success('success');
-                locals.set('/category/edit/sel', ret.message.id);
-                var expandids = locals.getObject('/category/edit/exp');
-                if (expandids.indexOf(ret.message.id) == -1)
-                {
+                if (expandids.indexOf(father_id) == -1)
                     expandids.push(father_id);
-                    locals.setObject('/category/edit/exp', expandids);
-                }
-                tree_refresh();
             }
-        });
-    }
 
-
-    $scope.edit = ()=>{        
-        var name = $scope.name.replace(/^\s+|\s+$/g,'');
-        if (!name) { return toastr.warning('请先选择要编辑的节点！'); }
-        
-        $http.put('/category/edit/'+$scope.nodeSelected.id, {
-            'name': name
-        }).then((res)=>{
-            if (errorCheck(res)) return ;
-
-            var ret = res.data;
-            if (ret.error)
-            {
-                toastr.error(ret.message);
-            }
-            else
-            {
-                toastr.success('success');
-            }
+            locals.setObject('/category/edit/exp', expandids);
             tree_refresh();
-        });
-    }
-
-    $scope.delete = () => {
-        $http.delete('/category/edit/'+$scope.nodeSelected.id).then((res)=>{
-            if (errorCheck(res)) return ;
-
-            var ret = res.data;
-            if (ret.error)
-            {
-                toastr.error(ret.message);
-            }
-            else
-            {
-                toastr.success('success');
-            }
-            tree_refresh();            
         });
     }
 }

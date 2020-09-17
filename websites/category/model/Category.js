@@ -5,6 +5,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         name: {
             type: DataTypes.STRING(255)
+        },
+        order: {
+            type: DataTypes.INTEGER
         }
     }, {
         charset: 'utf8',

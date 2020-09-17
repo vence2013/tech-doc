@@ -16,14 +16,8 @@ router.post('/', async (ctx)=>{
     var father  = req.father;
 
     var ret = await editCtrl.create(ctx, father, name);
-    if (ret)
-    {
-        ctx.body = {'error':  0, 'message': ret};
-    }
-    else
-    {
-        ctx.body = {'error': -1, 'message': '添加失败！'};
-    }
+    if (ret) ctx.body = {'error':  0, 'message': ret};
+    else     ctx.body = {'error': -1, 'message': '添加失败！'};
 })
 
 router.put('/:id', async (ctx)=>{
