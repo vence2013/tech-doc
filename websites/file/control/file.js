@@ -52,8 +52,25 @@ exports.delete = async (ctx, id)=>{
     return 0;
 }
 
+exports.detail = async (ctx, fid) =>
+{
+    const File = ctx.models['File'];
 
-exports.search = async (ctx, query, page, pageSize)=>{
+    var fileIns = await File.findOne({logging: false, where: {'id': fid}});
+    if (!fileIns) return null;
+
+    var fileObj = fileIns.get({plain:true});
+    // 关联标签名称列表
+    var tagObjs = await fileIns.getTags({raw:true, logging:false});
+    fileObj['tags'] = tagObjs.map((x)=>{ return x.name; });
+
+    return fileObj;
+}
+
+
+exports.search = async (ctx, query, page, pageSize) =>
+{
+    const Tag  = ctx.models['Tag']; 
     var sql, sqlCond = '';
 
     // 根据搜索条件构建SQL条件
@@ -75,6 +92,20 @@ exports.search = async (ctx, query, page, pageSize)=>{
         sqlCond += " AND `createdAt`<='"+query.createlet+"' ";
     sqlCond = sqlCond ? " WHERE "+sqlCond.substr(4) : '';
 
+    if (query.tag)
+    {
+        var tagObjs = await Tag.findAll({raw: true, logging: false, where: {'name': query.tag}});
+        // 只搜索有效的标签。
+        if (tagObjs && tagObjs.length) {
+            var idstr = '';
+            tagObjs.map((x)=>{ idstr += ', '+x.id; });        
+            var sql2 = "SELECT `FileId` FROM `TagFile` WHERE `TagId` IN ("+idstr.substr(1)+
+                       ") GROUP BY `FileId` HAVING COUNT(*)>="+tagObjs.length;
+            var sql3 = " `id` IN ("+sql2+") "; 
+            sqlCond += sqlCond ? " AND "+sql3 : " WHERE "+sql3;
+        }
+    }
+
     // 计算分页数据
     sql = "SELECT COUNT(*) AS num FROM `Files` "+sqlCond;
     var [res, meta] = await ctx.sequelize.query(sql, {logging: false});
@@ -82,7 +113,6 @@ exports.search = async (ctx, query, page, pageSize)=>{
     var maxpage  = Math.ceil(total/pageSize);
     maxpage = (maxpage<1) ? 1 : maxpage;
     page = (page>maxpage) ? maxpage : (page<1 ? 1 : page);
-
 
     // 查询当前分页的列表数据
     var offset = (page - 1) * pageSize;

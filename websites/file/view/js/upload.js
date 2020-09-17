@@ -1,4 +1,4 @@
-var app = angular.module('uploadApp', ['angularFileUpload', 'angular-clipboard'])
+var app = angular.module('uploadApp', ['angularFileUpload'])
 
 loadResource(app).controller('uploadCtrl', uploadCtrl);
 
@@ -118,7 +118,7 @@ function uploadCtrl($scope, $http, FileUploader)
 
     /* 文件上传 -------------------------------------------------------------*/
 
-    var cfg_file_list_max = 20;
+    var cfg_file_list_max = 18;
 
     // 上传成功后删除记录
     var uploader = $scope.uploader = new FileUploader({

@@ -51,7 +51,9 @@ router.get('/search', async (ctx, next)=>{
     /* 提取有效参数 */
     var req2  = ctx.query;
     var page     = parseInt(req2.page);
-    var pageSize = parseInt(req2.pageSize);    
+    var pageSize = parseInt(req2.pageSize); 
+    
+    query['tag'] = req2.tag;
     ['str', 'ext'].map((x) => {
         var value = req2[ x ]; 
         // 分割多个由空格隔开的字符串
@@ -83,5 +85,16 @@ router.get('/search', async (ctx, next)=>{
     ctx.body = {'error': 0, 'message': res};
 })
 
+router.get('/detail/:fid', async (ctx, next)=>
+{
+    const FileCtrl = ctx.controls['file/file'];
+
+    /* 提取有效参数 */
+    var req2    = ctx.params;
+    var fid  = req2.fid;
+    
+    var ret = await FileCtrl.detail(ctx, fid);
+    ctx.body = {'error':0, 'message':ret};
+})
 
 module.exports = router;
