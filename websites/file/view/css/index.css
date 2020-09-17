@@ -1,3 +1,16 @@
+/* upload */
+.tagrelate { height: 140px; }
+.tagunrelate { height: 470px; }
+
+.file_list_container { height: 780px; }
+.file_list_ops { }
+
+.file_list_container>.item {  }
+.file_list_container>.item>div:first-child { color: #045FB4; font-weight: bold; border-bottom: 1px dashed #888888; }
+.file_list_container>.item>.info { text-indent: 20px; }
+.file_list_container>.item>.info>div { display: inline; float: right; }
+.file_list_container>.item>.info>div>span { margin: 0px 5px; font-style: italic; color: #B43104; }
+
 .uploadblock { height: 620px; }
 .uploadblock>div>.list { height: 570px; }
 .uploadblock>div>.list>div { line-height: 30px; border-bottom: 1px dashed #cccccc; }

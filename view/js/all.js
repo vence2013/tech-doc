@@ -4,10 +4,11 @@ function navCtrl($scope) {
             {'name':'edit', 'url':'/document/edit/0'},
         ]},
         {'name':'File', 'url':'/file', 'children':[
-            {'name':'Pictures', 'url':'/file/view/picture.html'}
+            {'name':'Pictures', 'url':'/file/view/picture.html'},
+            {'name':'Upload',   'url':'/file/view/upload.html'}
         ]},
         {'name':'Chip', 'url':'/chip', 'children':[            
-            {'name':'edit', 'url':'/chip/view/edit.html'},
+            {'name':'edit',     'url':'/chip/view/edit.html'},
             {'name':'function', 'url':'/chip/document/edit/0'},
         ]},
         {'name':'Category', 'url':'/category', 'children':[
