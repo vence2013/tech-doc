@@ -10,14 +10,20 @@ router.get('/', async (ctx) => {
 
 
 router.post('/upload', async (ctx, next) => {
+    const TagCtrl = ctx.controls['tag/tag'];
     const FileCtrl = ctx.controls['file/file'];
+
+    var req = ctx.request.body;
+    var tags = req.tags ? JSON.parse(req.tags) : [];
 
     /* 新版本的koa-body通过ctx.request.files获取上传的文件，旧版本的koa-body通过ctx.request.body.files获取上传的文件 
      * https://blog.csdn.net/simple__dream/article/details/80890696
      */
     var file = ctx.request.files.file;
 
-    var ret = await FileCtrl.create(ctx, file);
+    // 添加标签
+    var tagInstances = await TagCtrl.create(ctx, tags);
+    var ret = await FileCtrl.create(ctx, file, tagInstances);
     if (ret)
         ctx.body = {'error':  0, 'message': 'SUCCESS'};
     else

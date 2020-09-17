@@ -2,7 +2,7 @@ const fs = require('fs');
 const moment = require('moment');
 const mkdirp = require('mkdirp');
 
-exports.create = async (ctx, file) => {
+exports.create = async (ctx, file, tagInstances) => {
     const File = ctx.models['File'];
 
     var size = file.size;
@@ -15,10 +15,13 @@ exports.create = async (ctx, file) => {
     var location = directory+name;
     
     // 添加数据库信息， 默认权限为任何人可读
-    var [ins, created] = await File.findOrCreate({logging: false,
+    var [fileIns, created] = await File.findOrCreate({logging: false,
         where: {'name': name, 'size': size, 'ext': ext},
         defaults: {'location': location}
     });
+    // 关联标签
+    await fileIns.setTags(tagInstances, {logging:false});
+
     if (created) { // 移动上传的文件到指定路径
         const reader = fs.createReadStream(file.path);
         const upStream = fs.createWriteStream(location);

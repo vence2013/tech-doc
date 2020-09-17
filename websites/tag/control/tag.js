@@ -7,8 +7,9 @@ exports.create = async (ctx, tags) =>
 
     for (i=0; i<tags.length; i++)
         [instance, created] = await Tag.findOrCreate({where: {'name': tags[i]}, logging: false});
-    
-    return await Tag.findAll({logging:false, where:{'name':tags}});
+        
+    var ret = await Tag.findAll({logging:false, where:{'name':tags}});
+    return ret;
 }
 
 exports.delete = async (ctx, tagname) => {

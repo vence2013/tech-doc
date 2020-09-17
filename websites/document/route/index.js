@@ -52,7 +52,6 @@ router.post('/:docid', async (ctx)=>{
     var docid= parseInt(req2.docid);
 
     /* 查找&添加标签 */
-    console.log(tags, content, docid);
     var tagInstances = await TagCtrl.create(ctx, tags);
 
     var ret = await DocumentCtrl.edit(ctx, docid, content, tagInstances);

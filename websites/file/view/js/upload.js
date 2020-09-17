@@ -43,15 +43,9 @@ function uploadCtrl($scope, $http, FileUploader)
             if (errorCheck(res)) return ;
 
             var ret = res.data.message;
-            /* 将结果中已选择的标签滤除 */
-            var list = [];
-            for (i=0; (i<cfg_tag_list_max) && (i<ret.list.length); i++)
-            {
-                var t = ret.list[i].name;
-                if ($scope.tag_input_valid.indexOf(t) == -1) list.push(t);
-            }
-            $scope.tag_display = list;
-        })  
+            /* 不能滤除已选择的标签，因为有的文件可能没有选择已选的标签，需要再次选中 */
+            $scope.tag_display = ret.list.map((x)=>{ return x.name});
+        })
     }
 
     $scope.tag_select = tag_select;
@@ -65,29 +59,45 @@ function uploadCtrl($scope, $http, FileUploader)
         {
             if ($('.file_checkbox:eq('+i+')').prop('checked'))
             {
-                if (uploader.queue[i]['tags'])  
-                    uploader.queue[i]['tags'].push(name);
+                if (uploader.queue[i]['tags'])
+                {
+                    if (uploader.queue[i]['tags'].indexOf(name) == -1) uploader.queue[i]['tags'].push(name);
+                }                     
                 else
                     uploader.queue[i]['tags'] = [ name ];
             }
                 
         }
 
-        $scope.tag_input_valid.push(name);
+        if ($scope.tag_input_valid.indexOf(name) == -1) $scope.tag_input_valid.push(name);
         tag_search(); /* 重新搜索，滤除已选择标签 */
+    }
+
+    function tag_select_refresh()
+    {
+        var tags = [];        
+        for (i=0; i<uploader.queue.length; i++)
+        {
+            // 搜集所有文件的标签            
+            var tags_inner = uploader.queue[i]['tags'];
+            if (!tags_inner) continue;
+            
+            for (j=0; j<tags_inner.length; j++)
+            {
+                if (tags.indexOf(tags_inner[j]) == -1) tags.push(tags_inner[j]);
+            }
+        }
+
+        // 从新收集选中文件的关联标签，并更新到选中标签的数组
+        $scope.tag_input_valid = tags;
     }
 
     $scope.tag_unselect = (name) => {
         // 选中文件后，操作标签才有效
         if ($('.file_checkbox:checked').length == 0) return;
-    
-        var tags = [];        
+      
         for (i=0; i<uploader.queue.length; i++)
         {
-            // 搜集所有文件的标签
-            var tags_inner = uploader.queue[i]['tags'];
-            tags = tags.concat(tags_inner);
-
             // 取消标签到选中文件的关联
             if ($('.file_checkbox:eq('+i+')').prop('checked'))
             {
@@ -100,8 +110,7 @@ function uploadCtrl($scope, $http, FileUploader)
         }
 
         // 从新收集选中文件的关联标签，并更新到选中标签的数组
-        $.unique(tags.sort())
-        $scope.tag_input_valid = tags;
+        tag_select_refresh();
 
         tag_search(); /* 重新搜索，滤除已选择标签 */
     }
@@ -113,7 +122,9 @@ function uploadCtrl($scope, $http, FileUploader)
 
     // 上传成功后删除记录
     var uploader = $scope.uploader = new FileUploader({
-        url: '/file/upload', 'queueLimit': cfg_file_list_max, removeAfterUpload: true
+        'url'               : '/file/upload', 
+        'queueLimit'        : cfg_file_list_max, 
+        'removeAfterUpload' : true,
     })    
     uploader.filters.push({ name: 'syncFilter',
         fn: function(item, options) { 
@@ -129,7 +140,29 @@ function uploadCtrl($scope, $http, FileUploader)
             return true;
         }
     });
-    uploader.onSuccessItem = function(fileItem, response, status, headers) {
+    uploader.onAfterAddingAll = (addedItems) =>
+    {
+        // 选中所有新添加的文件
+        window.setTimeout(()=>{
+            tag_select_refresh();
+
+            for (i=0; i<addedItems.length; i++)
+            {
+                var idx = uploader.queue.indexOf(addedItems[i]);
+                if (idx != -1) $('.file_checkbox:eq('+idx+')').prop('checked', true);
+            }
+        }, 500);
+    }
+    uploader.onBeforeUploadItem = (item)=>
+    {
+        if (item['tags']) item['formData'] = [{'tags':JSON.stringify(item['tags'])}];
+    }
+    uploader.onCompleteItem = () =>
+    {
+        tag_select_refresh();
+    }
+    uploader.onSuccessItem = (fileItem, response, status, headers) =>
+    {
         // 显示错误信息
         if (/^[\-0-9]+$/.test(response.error)) {
             $scope.itemSel = null;
