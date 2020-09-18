@@ -29,11 +29,10 @@ function editCtrl($scope, $http, $timeout, locals)
         }
     }
 
-    function tree_refresh() {
-        
+    function tree_refresh() {        
         $http.get('/category/tree/0', {}).then((res)=>{
             if (errorCheck(res)) return ;
-
+            console.log('refesh');
             var ret = res.data.message;
             var {dir, list} = treeTravel(ret, 0, $scope.expand);
             $scope.treeRoot = $scope.treeView = ret;       
@@ -161,6 +160,20 @@ function editCtrl($scope, $http, $timeout, locals)
             if (errorCheck(res)) return ;
 
             toastr.success('success');
+            tree_refresh();
+        });
+    }
+
+    $scope.delete = () => 
+    {
+        var cid = $scope.category_current.id;
+        console.log('ss', cid);
+        $http.delete('/category/edit/'+cid).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            locals.set('/category/edit/sel', undefined);
+
+            reset();  
             tree_refresh();
         });
     }

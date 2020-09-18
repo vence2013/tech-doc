@@ -73,7 +73,8 @@
                 <div class="row mt-3">
                     <div class="col-md"></div>
                     <div class="col-md pr-0">
-                        <button type="button" class="btn btn-block btn-danger" ng-show="category_current">删除当前目录</button>
+                        <button type="button" class="btn btn-block btn-danger" ng-show="category_current"
+                            data-toggle="modal" data-target="#deleteWnd">删除当前目录</button>
                     </div>
                     <div class="col-md pr-0">
                         <button type="button" class="btn btn-block btn-primary" ng-show="category_current" ng-click="edit()">修改当前目录</button>
@@ -93,6 +94,26 @@
                 </treecontrol>
             </div>
         </div>
+
+        <!-- 选中目录删除确认窗口 -->
+        <div id="deleteWnd" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title font-weight-bold font-italic">子目录删除确认</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        该操作将删除当前子树（包含当前目录），同时取消相关节点的文档和文件组织，确认执行删除操作吗？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger px-4" data-dismiss="modal" ng-click="delete();">删除</button>
+                        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </body>
