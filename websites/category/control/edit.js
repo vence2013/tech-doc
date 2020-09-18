@@ -12,39 +12,39 @@ exports.create = async (ctx, fid, name) => {
         'where': {'father': fid}, 'order':[['order', 'ASC']]});
     if (catInstances.length)
     {
-        for (i=0; i<catInstances.length; i++)
-        {
-            var catobj = catInstances[i].get({plain: true});
-            console.log(catobj);
-            var count = await Category.count({'logging':true, 'where':{
-                'father':catobj.father, 'order':{[Op.lte]: catobj.order}} });
-            await catInstances[i].update({'order':count});
-        }
+        for (i=0; i<catInstances.length; i++)            
+            await catInstances[i].update({'order':i+1});
     }
 
-    // 统计同级目录的个数
-    var count = await Category.count({'logging':false, 'where': {'father': fid}});
     // 将新目录添加到末尾
     var [ins, created] = await Category.findOrCreate({logging:false, 
-        where: {'name': name, 'father': fid, 'order':count+1}
+        where: {'name': name, 'father': fid, 'order':catInstances.length+1}
     });
 
     return ins.get({plain: true});
 }
 
-exports.edit = async (ctx, id, name) => {
+exports.edit = async (ctx, id, fid, name, order) => {
     const Category = ctx.models['Category'];
     
-    var categoryIns = await Category.findOne({logging: false,
-        where: {'id': id}
-    });
-    if (categoryIns) {
-        await categoryIns.update({'name': name}, {logging: false}); 
+    // 整理统计目录的排序（>=order的节点+1）
+    var catInstances = await Category.findAll({'logging':false, 
+        'where': {'father': fid, 'id':{[Op.ne]:id}}, 'order':[['order', 'ASC']]});
+    if (catInstances.length)
+    {
+        for (i=0; i<catInstances.length; i++)
+        {
+            var catobj = catInstances[i].get({plain: true});
+            await catInstances[i].update({'order':(catobj.order >= order) ? (i+2) : (i+1)});            
+        }
     }
 
-    return await Category.findOne({logging:false, raw:true, 
-        where:{'id':id}
-    });
+    var categoryIns = await Category.findOne({logging: false, where: {'id': id} });
+    if (categoryIns) {
+        await categoryIns.update({'father':fid, 'name':name, 'order':order}, {logging: false}); 
+    }
+
+    return await Category.findOne({logging:false, raw:true, where:{'id':id} });
 }
 
 /* 查找并删除子树所有节点 */

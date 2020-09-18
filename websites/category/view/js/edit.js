@@ -51,6 +51,7 @@ function editCtrl($scope, $http, $timeout, locals)
             }
 
             // 恢复选中节点
+            /* 恢复选中节点（如果节点父级未展开，则展开） */
             var id = locals.get('/category/edit/sel');
             var node = search_node_by_id(id);
             if (node)
@@ -61,17 +62,10 @@ function editCtrl($scope, $http, $timeout, locals)
         });
     }
 
-
+    $scope.select_type = 'current';
     $scope.category_father  = null;
     $scope.category_current = null;
     $scope.category_sub_name = '';
-
-    $scope.wait_father_select = () =>
-    {
-        $timeout(()=>{            
-            $scope.category_father = $scope.nodeSelected;
-        }, 500);
-    }
 
     function reset()
     {
@@ -83,19 +77,42 @@ function editCtrl($scope, $http, $timeout, locals)
     $scope.select = select;
     function select(node, sel)
     {
-        if (sel)
+        if ('father' == $scope.select_type)
         {
-            // 设置当前节点，查找父节点，清空子节点名称
-            $scope.category_sub_name = '';
-            $scope.category_current = node;
-            $scope.category_father = search_node_by_id(node.father);
-            locals.set('/category/edit/sel', node.id);
+            $scope.category_father = (sel && (node.id != $scope.category_current.id)) ? node : null;
         }
         else
         {
-            reset();
-            locals.set('/category/edit/sel', undefined);
+            if (sel)
+            {
+                // 设置当前节点，查找父节点，清空子节点名称
+                $scope.category_sub_name = '';
+                $scope.category_current = node;
+                $scope.category_father = search_node_by_id(node.father);
+                locals.set('/category/edit/sel', node.id);
+            }
+            else
+            {
+                reset();
+                locals.set('/category/edit/sel', undefined);
+            }
         }
+    }
+
+    $scope.toggle = (node, expanded) => {
+        /* 更新展开的节点列表 */
+        var ids = $scope.listExpand.map(node => { return node.id; });
+        locals.setObject('/category/edit/exp', ids);
+    }
+
+    $scope.order_minus = () => 
+    {
+        if ($scope.category_current && ($scope.category_current.order > 1)) $scope.category_current.order--;
+    }
+
+    $scope.order_plus = () => 
+    {
+        if ($scope.category_current && ($scope.category_current.order < 999)) $scope.category_current.order++;
     }
 
     /* 目录编辑 -----------------------------------------------------------------*/
@@ -127,6 +144,23 @@ function editCtrl($scope, $http, $timeout, locals)
             }
 
             locals.setObject('/category/edit/exp', expandids);
+            tree_refresh();
+        });
+    }
+
+    $scope.edit = ()=>{
+        var fid = $scope.category_father ? $scope.category_father.id : 0;
+        var cid = $scope.category_current.id;
+        var name = $scope.category_current.name.replace(/^\s+|\s+$/g,'');
+        var order= $scope.category_current.order;
+        if (!cid || !name) { return toastr.warning('请先选择要编辑的节点，并输入有效的目录名称！'); }
+        
+        var params = {'father':fid, 'name':name, 'order':order};
+        $http.put('/category/edit/'+cid, params).then((res)=>
+        {
+            if (errorCheck(res)) return ;
+
+            toastr.success('success');
             tree_refresh();
         });
     }

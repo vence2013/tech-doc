@@ -40,12 +40,13 @@
                 <div class="row mt-3">
                     <div class="col-md">
                         <input type="text" class="form-control" ng-model="category_father.name"  placeholder="父级目录"
-                            ng-blur="wait_father_select()" />
+                            ng-class="(select_type=='father')?'is-valid':''" ng-focus="select_type='father'" />
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md">
-                        <input type="text" class="form-control" ng-model="category_current.name" placeholder="当前目录">
+                        <input type="text" class="form-control" ng-model="category_current.name" placeholder="当前目录"
+                            ng-class="(select_type=='current')?'is-valid':''" ng-focus="select_type='current'">
                     </div>
                 </div>
                 <div class="row mt-2">
@@ -55,11 +56,11 @@
                     <div class="col-md-4">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <button class="btn btn-outline-secondary" type="button">&nbsp;-&nbsp;</button>
+                                <button class="btn btn-outline-secondary" type="button" style="width: 50px;" ng-click="order_minus()">-</button>
                             </div>
                             <input type="text" class="form-control text-center" ng-model="category_current.order" placeholder="排序">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button">&nbsp;+&nbsp;</button>
+                                <button class="btn btn-outline-secondary" type="button" style="width: 50px;" ng-click="order_plus()">+</button>
                             </div>
                         </div>
                     </div>
@@ -72,10 +73,10 @@
                 <div class="row mt-3">
                     <div class="col-md"></div>
                     <div class="col-md pr-0">
-                        <button type="button" class="btn btn-block btn-danger">删除当前目录</button>
+                        <button type="button" class="btn btn-block btn-danger" ng-show="category_current">删除当前目录</button>
                     </div>
                     <div class="col-md pr-0">
-                        <button type="button" class="btn btn-block btn-primary">修改当前目录</button>
+                        <button type="button" class="btn btn-block btn-primary" ng-show="category_current" ng-click="edit()">修改当前目录</button>
                     </div>
                     <div class="col-md">
                         <button type="button" class="btn btn-block btn-success" ng-click="add()">添加子目录</button>
@@ -83,7 +84,7 @@
                 </div>
             </div>
             <!--- 主栏结束 --->
-            <div class="col-md">
+            <div class="col-md" style="overflow: auto;">
                 <treecontrol class="tree-classic" options="treeOptions" tree-model="treeView" 
                     filter-expression="predicate" filter-comparator="comparator" 
                     expanded-nodes="listExpand" selected-node="nodeSelected"
