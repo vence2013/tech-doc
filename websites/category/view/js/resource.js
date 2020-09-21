@@ -161,9 +161,9 @@ function resourceCtrl($scope, $http, $timeout, locals)
     {
         var img_type = resource.link ? 'folder_remove' : 'folder_add';
 
-        $(".resource_list>div>img").prop('src', 'images/folder.png');
+        $("#"+tab_display+">div>img").prop('src', 'images/folder.png');
         if ($scope.nodeSelected)
-            $(".resource_list>div:eq("+index+")>img").prop('src', 'images/'+img_type+'.png');
+            $("#"+tab_display+">div:eq("+index+")>img").prop('src', 'images/'+img_type+'.png');
     }
 
     $scope.resource_link_document = (rid) =>
