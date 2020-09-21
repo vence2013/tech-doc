@@ -40,7 +40,7 @@ function editCtrl($scope, $http, $interval)
     {
         var fmt = $scope.tag_input.replace(/\s+/g, ' ');
         var trm = fmt.replace(/^\s*(.*?)\s*$/, "$1");
-        var tags = trm.split(' ');
+        var tags = trm ? trm.split(' ') : [];
 
         $http.get('/tag/check/'+tags.join(','))
         .then((res)=>{
@@ -127,7 +127,8 @@ function editCtrl($scope, $http, $interval)
     $scope.submit = () => 
     {
         var fmt = $scope.tag_input.replace(/\s+/g, ' ');
-        var tags = fmt.replace(/^\s*(.*?)\s*$/, "$1").split(' ');
+        var trm = fmt.replace(/^\s*(.*?)\s*$/, "$1");
+        var tags = trm ? trm.split(' ') : [];
         tags = tags.concat($scope.tag_input_valid);
 
         var params = {'content':content, 'tags':tags};
@@ -143,12 +144,13 @@ function editCtrl($scope, $http, $interval)
 
     // 详细信息，包括文件属性， 关联标签
     function detail() {
+
         $http.get('/document/detail/'+docid).then((res)=>{
             if (errorCheck(res)) return ;
-            
+
             var ret = res.data.message;            
             $scope.docinfo = ret;
-            $scope.taglink = ret.tagnames;
+            $scope.tag_input_valid = ret.tagnames;         
             editor.setMarkdown(ret.content); 
         });
     }
