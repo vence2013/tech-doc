@@ -37,9 +37,9 @@
         <treecontrol class="tree-classic" options="treeOptions" filter-expression="predicate" filter-comparator="comparator" 
             tree-model="treeView" expanded-nodes="listExpand" selected-node="nodeSelected"
             on-node-toggle="toggle(node, expanded);">
-                <span ng-class="'category-'+node.type">{{node.name}}</span>
-                <a ng-if="node.type=='file'" class="mt-1" href="{{node.location}}" target="_blank"><i class="fa fa-file-o"></i></a>
-                <a ng-if="node.type=='doc'" class="mt-1" href="/document/display/{{node.id}}" target="_blank"><i class="fa fa-file-word-o"></i></a>
+                <span ng-if="node.type=='node'">{{node.name}}</span>
+                <a ng-if="node.type=='file'" class="{{node.type}} mt-1" href="{{node.location}}" target="_blank">{{node.name}}</a>
+                <a ng-if="node.type=='doc'" class="{{node.type}} mt-1" href="/document/display/{{node.id}}" target="_blank">{{node.name}}</a>
         </treecontrol>
     </div>
 

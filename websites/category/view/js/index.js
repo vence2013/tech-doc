@@ -10,7 +10,7 @@ function indexCtrl($scope, $http, locals)
     $scope.treeView = [];
     $scope.listView = [];
     $scope.listExpand = [];
-    $scope.treeOptions = {dirSelectable: false};
+    $scope.treeOptions = {dirSelectable: false, injectClasses: {label: "category_node"}};
     $scope.predicate = "";
     $scope.comparator = false;
 
