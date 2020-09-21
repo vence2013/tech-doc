@@ -10,3 +10,12 @@
 .category-node { font-size: 14px; font-style: italic; color: #084B8A; font-weight: bold; }
 .category-file { color: #2E2E2E; }
 .category-doc { color: #DF3A01; }
+
+/* resource */
+.resource_list>div { height: 32px; }
+.resource_list>div>img { float: left; cursor: pointer; }
+.resource_list>div>div { 
+    display: inline; float: left; 
+    height: 25px; line-height: 25px; width: calc(100% - 50px); margin-left: 10px; 
+    border-bottom: 1px dashed #cccccc; overflow: hidden; 
+}

@@ -36,8 +36,56 @@
     <div class="layout2 container-fluid mt-2" ng-controller="resourceCtrl">
         <div class="row">
             <!--- 侧栏开始 --->
-            <div class="col-md-4 ml-2 rounded border border-secondary" id="tabs">  
-                tabs,  resource(doc, file), linked checkbox, resource search input
+            <div class="col-md-4 ml-2 rounded border border-secondary">  
+                <div class="row" style="position:absolute; top: 10px; right: 15px; width: 450px;">
+                    <div class="col-md mt-2 pr-0">
+                        <div class="form-check float-right">
+                            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="" ng-model="resource.link"
+                                ng-click="resource.page=1;">
+                            <label class="form-check-label" for="inlineCheckbox1">关联资源</label>
+                        </div>
+                    </div>
+                    <div class="col-md-5 pr-0">
+                        <input class="form-control" type="text" ng-model="resource.str" placeholder="搜索字符串" />
+                    </div>
+                    <div class="col-md">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-secondary" type="button" ng-click="resource.page=(resource.page>1)?(resource.page-1):1;">&lt;</button>
+                            </div>
+                            <input type="text" class="form-control text-center" ng-disabled="true" placeholder="" ng-model="resource.page" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" ng-click="resource.page=resource.page+1;">&gt;</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 选项卡导航 -->
+                <ul class="nav nav-tabs mt-3" role="tablist" id="resourceTab">
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" role="tab" href="#document">Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" role="tab" href="#file">Files</a>
+                    </li>
+                </ul>
+
+                <!-- 选项卡内容 -->
+                <div class="tab-content pt-2">
+                    <div class="tab-pane active resource_list" role="tabpanel" id="document">
+                        <div ng-repeat="x in list_document" title="{{x.title}}" ng-mouseenter="resource_focus($index);">
+                            <img src="images/folder.png" ng-click="resource_link_document(x.id);" />
+                            <div><a href="/document/display/{{x.id}}" target="_blank">{{x.title}}</a></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade resource_list" role="tabpanel" id="file">
+                        <div ng-repeat="x in list_file" title="{{x.name}}" ng-mouseenter="resource_focus($index);">
+                            <img src="images/folder.png" ng-click="resource_link_file(x.id);" />
+                            <div><a href="{{x.location}}" target="_blank">{{x.name|limitTo:80}}</a></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!--- 主栏结束 --->
             <div class="col-md" style="overflow: auto;">
