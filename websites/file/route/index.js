@@ -31,14 +31,42 @@ router.post('/upload', async (ctx, next) => {
 });
 
 
-router.delete('/:id', async (ctx, next)=>{
+router.post('/tag/link', async (ctx, next)=>{
+    const TagCtrl = ctx.controls['tag/tag'];
     const FileCtrl = ctx.controls['file/file'];
 
     /* 提取有效参数 */
-    var req2    = ctx.params;
-    var id  = req2.id;
-    
-    await FileCtrl.delete(ctx, id);
+    var req = ctx.request.body;
+    var tag = req.tag;
+    var fileids = req.fileids;
+
+    var tagInstance = await TagCtrl.get(ctx, tag);
+    await FileCtrl.tag_link(ctx, fileids, tagInstance);
+    ctx.body = {'error':  0, 'message': 'SUCCESS'};
+});
+
+router.post('/tag/unlink', async (ctx, next)=>{
+    const TagCtrl = ctx.controls['tag/tag'];
+    const FileCtrl = ctx.controls['file/file'];
+
+    /* 提取有效参数 */
+    var req = ctx.request.body;
+    var tag = req.tag;
+    var fileids = req.fileids;
+
+    var tagInstance = await TagCtrl.get(ctx, tag);
+    await FileCtrl.tag_unlink(ctx, fileids, tagInstance);
+    ctx.body = {'error':  0, 'message': 'SUCCESS'};
+});
+
+router.delete('/', async (ctx, next)=>{
+    const FileCtrl = ctx.controls['file/file'];
+
+    /* 提取有效参数 */
+    var req = ctx.query;
+    var fileids = req.fileids;
+
+    await FileCtrl.delete(ctx, fileids);
     ctx.body = {'error': 0, 'message': 'SUCCESS'};
 })
 

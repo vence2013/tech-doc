@@ -31,25 +31,42 @@ exports.create = async (ctx, file, tagInstances) => {
     return created;
 }
 
-
-exports.delete = async (ctx, id)=>{
+exports.tag_link = async (ctx, fileids, tagInstance) =>
+{
     const File = ctx.models['File'];
 
-    var fileIns = await File.findOne({logging: false, where: {'id': id}});
-    if (!fileIns) return -1;
+    var fileInstances = await File.findAll({logging: false, where: {'id':fileids}});
+    // 关联标签
+    await tagInstance.setFiles(fileInstances, {logging:false});
+}
 
-    var fileObj = fileIns.get({plain: true});
-    // 删除文件本身
-    fs.unlink(fileObj.location, (err) => {
-        if (err) {
-            console.log("ERROR["+__filename+"|delete()] - l1, error:%o.", err);
-        } else {
-            console.log("INFO["+__filename+"|delete()] - l1, file(%s) was delete.", fileObj.location);
-        }
-    });
+exports.tag_unlink = async (ctx, fileids, tagInstance) =>
+{
+    const File = ctx.models['File'];
+
+    var fileInstances = await File.findAll({logging: false, where: {'id':fileids}});
+    // 关联标签
+    await tagInstance.removeFiles(fileInstances, {logging:false});
+}
+
+exports.delete = async (ctx, ids) =>
+{
+    const File = ctx.models['File'];
+
+    var fileObjs = await File.findAll({'logging':false, 'raw':true, 'where': {'id': ids}});
+
+    // 删除文件系统中的实体
+    for (i=0; i<fileObjs.length; i++)
+    {
+        // 文件不存在，则不处理
+        if (!fs.existsSync(fileObjs[i].location)) continue;
+
+        fs.unlinkSync(fileObjs[i].location);
+        console.log("  [Notice] File(location: %s ) was deleted.", fileObjs[i].location);
+    }
+
     // 删除数据库记录
-    await File.destroy({logging: false, 'where': {'id': id}});
-    return 0;
+    await File.destroy({'logging':false, 'where': {'id': ids}});
 }
 
 exports.detail = async (ctx, fid) =>

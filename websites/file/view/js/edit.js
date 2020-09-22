@@ -1,8 +1,8 @@
-var app = angular.module('indexApp', ['angular-clipboard'])
+var app = angular.module('editApp', [])
 
-loadResource(app).controller('indexCtrl', indexCtrl);
+loadResource(app).controller('editCtrl', editCtrl);
 
-function indexCtrl($scope, $http) 
+function editCtrl($scope, $http, $timeout) 
 {
     /* 标签 ---------------------------------------------------------------------
      * 实现参考document/edit，不同点：
@@ -55,16 +55,61 @@ function indexCtrl($scope, $http)
         })
     }
     
-    $scope.tag_select = (name) => {
-        /* 搜索标签后，选择将清除搜索字符串 */
-        var str = $scope.tag_input;
-        if (str && (str[str.length-1] != ' '))
+    $scope.tag_unlink = (tag) =>
+    {
+        var fileids = [];
+
+        var filelist = $scope.filelist;
+        for (i=0; i<filelist.length; i++)
         {
-            $scope.tag_input = (str.indexOf(' ') == -1) ? '' : str.replace(/(.*\s+)[^\s]+$/, "$1");
+            if ($('.file_checkbox:eq('+i+')').prop('checked')) fileids.push(filelist[i].id);
         }
 
-        $scope.tag_input_valid.push(name);
-        tag_search(); /* 重新搜索，滤除已选择标签 */
+        var params = {'tag':tag, 'fileids':fileids}
+        $http.post('/file/tag/unlink', params).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            update();
+        });
+    }
+
+    function tag_link(tag)
+    {
+        var fileids = [];
+
+        var filelist = $scope.filelist;
+        for (i=0; i<filelist.length; i++)
+        {
+            if ($('.file_checkbox:eq('+i+')').prop('checked')) fileids.push(filelist[i].id);
+        }
+
+        var params = {'tag':tag, 'fileids':fileids}
+        $http.post('/file/tag/link', params).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            update();
+        });
+    }
+
+    /* 标签关联的取消：点击文件关联的标签，将取消该标签与所有选中文件的关联 */
+    $scope.tag_select = (name) => {
+        /* 如果没有选中任何文件，则为使用标签筛选文件，否则为将标签关联到选中的文件 */
+        if ($('.file_checkbox:checked').length > 0)
+        {
+            tag_link(name);
+        }
+        else
+        {
+            /* 搜索标签后，选择将清除搜索字符串 */
+            var str = $scope.tag_input;
+            if (str && (str[str.length-1] != ' '))
+            {
+                $scope.tag_input = (str.indexOf(' ') == -1) ? '' : str.replace(/(.*\s+)[^\s]+$/, "$1");
+            }
+
+            $scope.tag_input_valid.push(name);
+            tag_search(); /* 重新搜索，滤除已选择标签 */
+        }        
     }
 
     $scope.tag_unselect = (name) => {
@@ -122,6 +167,8 @@ function indexCtrl($scope, $http)
             {
                 ret.list.map((x) => { detail(x); })
             }   
+
+            $timeout(check_all_click, 200);
         })
     }
 
@@ -134,6 +181,22 @@ function indexCtrl($scope, $http)
         $scope.delid = id;
     }
 
+    $scope.delete = () => {
+        var fileids = [];
+
+        var filelist = $scope.filelist;
+        for (i=0; i<filelist.length; i++)
+        {
+            if ($('.file_checkbox:eq('+i+')').prop('checked')) fileids.push(filelist[i].id);
+        }
+
+        $http.delete('/file', {params:{'fileids':fileids}}).then((res)=>{
+            if (errorCheck(res)) return ;
+
+            update();
+        });
+    }
+
     $scope.pageGoto = '';
     $scope.pageJump = () => {
         var num = parseInt($scope.pageGoto);
@@ -144,7 +207,12 @@ function indexCtrl($scope, $http)
         opts.page = num;
     }
 
-    $scope.copySuccess = ()=>{
-        toastr.success('已复制文件路径！');
+    $scope.check_all = false;
+    $scope.check_all_click = check_all_click;
+    function check_all_click()
+    {
+        var current_check = !$scope.check_all;
+
+        $(".file_checkbox").prop("checked", current_check);
     }
 }

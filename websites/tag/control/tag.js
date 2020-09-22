@@ -18,6 +18,13 @@ exports.delete = async (ctx, tagname) => {
     await Tag.destroy({logging: false, 'where': {'name': tagname}});
 }
 
+exports.get = async (ctx, tag) => 
+{
+    const Tag = ctx.models['Tag'];
+
+    return await Tag.findOne({'where': {'name':tag}, 'logging': false});
+}
+
 exports.search = async (ctx, str, page, size) => 
 {
     const Tag = ctx.models['Tag'];
