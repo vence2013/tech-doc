@@ -37,7 +37,7 @@ exports.tag_link = async (ctx, fileids, tagInstance) =>
 
     var fileInstances = await File.findAll({logging: false, where: {'id':fileids}});
     // 关联标签
-    await tagInstance.setFiles(fileInstances, {logging:false});
+    await tagInstance.addFiles(fileInstances, {logging:false});
 }
 
 exports.tag_unlink = async (ctx, fileids, tagInstance) =>

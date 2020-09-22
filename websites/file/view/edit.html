@@ -116,15 +116,15 @@
                                         <a class="page-link" href="#">{{x.name}}</a>
                                 </li>
                                 <li class="page-item">
-                                    <input class="page-link" type="text" placeholder="跳转页码" title="回车跳转" 
+                                    <input class="page-link" type="text" placeholder="跳转" title="回车跳转" 
                                         ng-model="pageGoto" ng-keydown="$event.keyCode == 13 && pageJump()" />
                                 </li>
                             </ul>
                         </nav>
                     </div>
                     <div class="pageinfo">
-                        <span>当前在第<b>{{page.cur}}</b>页</span>                        
-                        <span>每页<b>{{page.size}}</b>条</span>
+                        <span>第<b>{{page.cur}}</b>页</span>                        
+                        <span><b>{{page.size}}</b>条/页</span>
                         <span>共<b>{{page.max}}</b>页</span>
                         <span>共<b>{{page.total}}</b>条</span>
                     </div>

@@ -168,7 +168,13 @@ function editCtrl($scope, $http, $timeout)
                 ret.list.map((x) => { detail(x); })
             }   
 
-            $timeout(check_all_click, 200);
+            /*
+            $timeout(()=>{
+                $scope.check_all = false;
+                check_all_click();
+                $scope.check_all = true;
+            }, 200);
+            */
         })
     }
 
