@@ -14,14 +14,14 @@ database=$5
 
 if [ 'restore' = ${operate} ]; then
 # Restore Process -------------------------------------------------------------
-
+echo "Starting Restore"
 cd ${datadir}
 
 # remove file in data directory except uploaded backup file
-ls|grep -v ${filename}|xargs rm -fr
+#ls|grep -v ${filename}|xargs rm -fr
 
 # uncompress backup file & restore file
-tar xvf ${filename}
+#tar xvf ${filename}
 
 # restore database
 db_res=`mysqlshow --host=${hostname} -u root -p${root_password} | grep ${database}`
@@ -29,6 +29,9 @@ if [ -z "${db_res}" ]; then
     mysqladmin --host=${hostname} -u root -p${root_password} -s create ${database}
 fi
 mysql  --host=${hostname} -u root -p${root_password} ${database} < backup/${database}.sql
+
+# clear backup
+rm -fr ${datadir}/backup*
 
 else
 # Backup Process --------------------------------------------------------------

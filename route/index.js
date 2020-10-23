@@ -23,10 +23,7 @@ router.get('/restore', async(ctx, next) => {
     const indexCtrl = ctx.controls['index'];
     var status = indexCtrl.restore_status();
 
-    if (status && (status.length == 1))
-    {
-        indexCtrl.restore(ctx);
-    }
+    await indexCtrl.restore(ctx);
     
     ctx.body = {'error':  0, 'message': indexCtrl.restore_status()};
 })

@@ -43,14 +43,10 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
     // 上传成功后删除记录
     uploader.onSuccessItem = function(fileItem, response, status, headers) {
         if (/^[\-0-9]+$/.test(response.error)) {
-            $scope.itemSel = null;
             if (response.error != 0) {
                 toastr.info(response.message+'('+fileItem.file.name+')', '', 
                     {"positionClass": "toast-bottom-right", "timeOut": 5000}); 
-            } else {
-                /* 请求数据恢复过程 */
-                timer_query = $interval(restore_request, 3000);
-            }            
+            }     
         } else {
             console.log(response);
             toastr.info('文件上传错误！');            
@@ -65,6 +61,12 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
         $('.data-log').html('');        
     })
 
+    $scope.restore_triger = () => {
+        /* 请求数据恢复过程 */
+        restore_request();
+        timer_query = $interval(restore_request, 3000);
+    }
+
     function restore_request()
     {
         $http.get('/restore').then((res)=>{
@@ -72,7 +74,7 @@ function systemCtrl($scope, $http, $interval, FileUploader) {
                 return ;
             
             var msgs = res.data.message;
-            if (msgs.length == 3) 
+            if (msgs.length == 2) 
             {
                 $interval.cancel(timer_query);
                 $('#restore_wait').addClass('d-none');
