@@ -4,7 +4,7 @@ var router = new Router();
 
 /* 系统首页 */
 router.get('/', async (ctx)=>{
-    await ctx.redirect('/document'); 
+    await ctx.redirect('/category'); 
 })
 
 router.post('/restore/upload', async (ctx, next) => {
